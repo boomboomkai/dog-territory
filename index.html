@@ -387,11 +387,35 @@
 <div class="backdrop" id="rulesSheet" hidden>
   <div class="sheet rules" role="dialog" aria-labelledby="rulesTitle">
     <div class="shead"><h2 id="rulesTitle">怎麼玩</h2><button class="ibtn" id="rulesClose" aria-label="關閉" data-ic="close"></button></div>
-    <p><span class="sic" style="--c:var(--peach)" data-ic="grid"></span><span>棋盤分成好幾塊<b>彩色領地</b>，每塊領地要放<b>剛好一隻狗</b>。</span></p>
-    <p><span class="sic" style="--c:var(--lav)" data-ic="cross"></span><span>狗狗很愛獨佔地盤：任兩隻狗<b>不能同一橫排、不能同一直排</b>，也<b>不能相鄰</b>，斜角也不行。</span></p>
-    <p><span class="sic" style="--c:var(--mint)" data-ic="hand"></span><span><b>點一下</b>打叉，<b>滑過去</b>連續打叉；<b>點兩下</b>、<b>長按</b>或<b>右鍵</b>放狗。按左下角的切換鈕，可以改成<b>點一下就放狗</b>（這時長按是打叉）。</span></p>
-    <p><span class="sic" style="--c:var(--butter)" data-ic="trophy"></span><span>關卡每 <b>20 關一章</b>，過完一章拿一座<b>獎杯</b>，共 5 座。每題都有<b>題號</b>，點下方題號可以複製，傳給朋友在「自由練習」輸入就能挑戰同一題。</span></p>
-    <p><span class="sic" style="--c:var(--rose)" data-ic="heart"></span><span>放錯狗扣一顆愛心，共 3 顆。每題都只有一個答案，一步一步推理就解得出來。</span></p>
+    <div class="seg" id="rulesSeg" style="grid-template-columns:repeat(4,1fr)">
+      <button data-t="rule">規則</button><button data-t="pc">電腦版</button><button data-t="phone">手機版</button><button data-t="more">更多</button>
+    </div>
+    <div class="rtab" data-t="rule">
+      <p><span class="sic" style="--c:var(--peach)" data-ic="grid"></span><span>棋盤分成好幾塊<b>彩色領地</b>，每塊領地要放<b>剛好一隻狗</b>。</span></p>
+      <p><span class="sic" style="--c:var(--lav)" data-ic="cross"></span><span>狗狗很愛獨佔地盤：任兩隻狗<b>不能同一橫排、不能同一直排</b>，也<b>不能相鄰</b>，斜角也不行。</span></p>
+      <p><span class="sic" style="--c:var(--rose)" data-ic="heart"></span><span>放錯狗扣一顆愛心，共 <b>3 顆</b>，扣完要重來。每題都只有一個答案，一步一步推理就解得出來，不用猜。</span></p>
+      <p><span class="sic" style="--c:var(--mint)" data-ic="bulb"></span><span>小技巧：先把<b>確定不能放狗的格子打叉</b>。某塊領地只剩一格沒打叉時，那格就一定是狗。</span></p>
+    </div>
+    <div class="rtab" data-t="pc">
+      <p><span class="sic" style="--c:var(--lav)" data-ic="cross"></span><span><b>左鍵點一下</b>：打叉；再點一次就擦掉。</span></p>
+      <p><span class="sic" style="--c:var(--mint)" data-ic="hand"></span><span><b>左鍵按住拖曳</b>：一次打很多個叉；從有叉的格子開始拖，就是一次擦掉很多個。</span></p>
+      <p><span class="sic" style="--c:var(--peach)" data-ic="heart"></span><span><b>左鍵點兩下</b>或<b>按右鍵</b>：放狗。</span></p>
+      <p><span class="sic" style="--c:var(--butter)" data-ic="restart"></span><span>左下角切換鈕改成「<b>點一下：放狗</b>」後，左鍵點一下就是放狗，拖曳一樣是打叉。</span></p>
+      <p><span class="sic" style="--c:var(--lav)" data-ic="pause"></span><span><b>Esc 鍵</b>：暫停，叫出設定。右上角的小圖示可以開關音樂和音效。</span></p>
+    </div>
+    <div class="rtab" data-t="phone">
+      <p><span class="sic" style="--c:var(--lav)" data-ic="cross"></span><span><b>點一下</b>：打叉；再點一次就擦掉。</span></p>
+      <p><span class="sic" style="--c:var(--mint)" data-ic="hand"></span><span><b>手指按著滑過去</b>：一次打很多個叉；從有叉的格子開始滑，就是一次擦掉很多個。</span></p>
+      <p><span class="sic" style="--c:var(--peach)" data-ic="heart"></span><span><b>快速點兩下</b>，或<b>按住不放約半秒</b>（手機會輕輕震一下）：放狗。</span></p>
+      <p><span class="sic" style="--c:var(--butter)" data-ic="restart"></span><span>覺得點兩下不好按？把左下角切換鈕改成「<b>點一下：放狗</b>」，點一下就放狗，這時<b>按住</b>變成打叉。</span></p>
+      <p><span class="sic" style="--c:var(--lav)" data-ic="pause"></span><span>左上角 <b>暫停鈕</b> 叫出設定；切到別的 App 時遊戲會自動暫停。</span></p>
+      <p><span class="sic" style="--c:var(--rose)" data-ic="sound"></span><span>iPhone 聽不到聲音？檢查側邊的<b>靜音開關</b>。想像 App 一樣打開：在 Safari 按「分享」→「<b>加入主畫面</b>」。</span></p>
+    </div>
+    <div class="rtab" data-t="more">
+      <p><span class="sic" style="--c:var(--butter)" data-ic="trophy"></span><span>關卡每 <b>20 關一章</b>，過完一章拿一座<b>獎杯</b>，共 5 座。小圓點代表難度：綠＝簡單、黃＝普通、紅＝困難。</span></p>
+      <p><span class="sic" style="--c:var(--mint)" data-ic="copy"></span><span>每題都有 6 位數<b>題號</b>，點棋盤下方的題號就能複製。朋友在「自由練習」最下面輸入，就能挑戰同一題。</span></p>
+      <p><span class="sic" style="--c:var(--peach)" data-ic="podium"></span><span><b>得分</b>看棋盤大小和難度，解得越快加越多；放錯一次 −15%、用一次提示 −20%。登入後成績會上<b>排行榜</b>（只在 GitHub 版網頁）。</span></p>
+    </div>
     <div class="sbtns"><button class="b3d" id="rulesOk">知道了</button></div>
   </div>
 </div>
@@ -1264,6 +1288,12 @@ $('pHome').onclick=()=>{ clearInterval(timerId); finished=true; paused=false; cl
 $('pLevels').onclick=()=>{ clearInterval(timerId); finished=true; paused=false; closeSheet('pauseSheet'); refreshHome(); showScreen('home'); $('btnLevels').onclick(); };
 function closeRules(){ closeSheet('rulesSheet'); if($('rulesSheet').dataset.back==='pause'){ $('rulesSheet').dataset.back=''; openSheet('pauseSheet'); } else Sound.play('shut'); }
 $('rulesClose').onclick=closeRules; $('rulesOk').onclick=closeRules;
+function showRulesTab(t){
+  document.querySelectorAll('#rulesSeg button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  document.querySelectorAll('#rulesSheet .rtab').forEach(d=>d.hidden=d.dataset.t!==t);
+}
+document.querySelectorAll('#rulesSeg button').forEach(b=>b.onclick=()=>{ showRulesTab(b.dataset.t); Sound.play('click'); });
+showRulesTab('rule');
 $('sizeClose').onclick=()=>{closeSheet('sizeSheet');Sound.play('shut');};
 $('statsClose').onclick=()=>{closeSheet('statsSheet');Sound.play('shut');};
 
