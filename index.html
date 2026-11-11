@@ -1,5 +1,5 @@
 <!doctype html>
-<title>喵喵領地</title>
+<title>汪汪領地</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -208,6 +208,44 @@
   .endless .bub .ic{width:26px;height:26px}
   .endless .t1{font-size:17px} .endless .t2{font-size:12px;color:var(--ink-dim);margin-top:2px}
   .endless.locked{opacity:.5;cursor:default}
+  /* 難度小圓點 */
+  em.d1,em.d2,em.d3{display:inline-block;width:8px;height:8px;border-radius:50%;flex:none}
+  em.d1{background:#86dfc6} em.d2{background:#ffd76e} em.d3{background:#ff7d8e}
+  .lv em{position:absolute;top:6px;right:6px;width:7px;height:7px;box-shadow:0 0 0 1.5px rgba(36,28,63,.45)}
+  .lv.locked em{display:none}
+  .legend{display:flex;justify-content:center;align-items:center;gap:6px 12px;margin-top:14px;font-size:12px;color:var(--ink-dim)}
+  .legend em{margin-left:6px}
+  /* 獎杯架 */
+  .shelf{display:flex;justify-content:space-between;gap:6px;padding:12px 10px 10px;border-radius:18px;background:rgba(0,0,0,.18);border:1px solid var(--glass-line)}
+  .tro{position:relative;width:50px;height:50px;display:grid;place-items:center}
+  .tro svg{width:44px;height:44px;filter:grayscale(1) brightness(.45);opacity:.6}
+  .tro.got svg{filter:drop-shadow(0 0 10px rgba(255,215,110,.55));opacity:1}
+  .tro i{position:absolute;bottom:-4px;font-style:normal;font-family:var(--num);font-size:11px;color:var(--ink-dim)}
+  .chprog{margin-left:auto;font-family:var(--num);font-size:12px;color:var(--ink-dim)}
+  .chprog.full{color:var(--butter)}
+  .result .badge.gold{background:radial-gradient(circle at 50% 40%,#7a5a2a,#2a2350 70%);box-shadow:0 0 70px rgba(255,215,110,.6);animation:bob 2s ease-in-out infinite}
+  .result .badge .trophy{width:84px;height:84px}
+  /* 難度切換與題號輸入 */
+  .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:16px;background:rgba(0,0,0,.22);margin-bottom:14px}
+  .seg button{display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 4px;border-radius:12px;font-size:16px;color:var(--ink-dim);transition:background .15s,color .15s}
+  .seg button.on{background:var(--card-hi);color:var(--ink);box-shadow:0 2px 0 #1a1533,inset 0 1px 0 rgba(255,255,255,.12)}
+  .coderow{display:flex;gap:10px}
+  .coderow input{flex:1;min-width:0;font:inherit;font-family:var(--num);font-size:20px;letter-spacing:.12em;color:var(--ink);background:rgba(0,0,0,.25);
+    border:1px solid var(--glass-line);border-radius:16px;padding:12px 14px;outline:none;user-select:text;-webkit-user-select:text;touch-action:auto}
+  .coderow input::placeholder{color:var(--ink-dim);letter-spacing:.02em;font-family:var(--font);font-size:16px}
+  .coderow input:focus{border-color:var(--butter)}
+  .coderow .b3d{font-size:17px;padding:12px 18px}
+  .codeerr{min-height:20px;margin-top:6px;font-size:13px;color:var(--rose)}
+  /* 題號小標籤 */
+  .msg{display:flex;align-items:center;justify-content:center}
+  .codechip{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-dim);padding:3px 10px;border-radius:99px;background:var(--glass);border:1px solid var(--glass-line)}
+  .codechip b{font-family:var(--num);font-weight:600;color:var(--ink);letter-spacing:.08em}
+  .codechip .ic{width:14px;height:14px}
+  /* 工具鈕顏色 */
+  .tool.butter .knob{--c:var(--butter);--d:var(--butter-d)} .tool.peach .knob{--c:var(--peach);--d:var(--peach-d)} .tool.lav2 .knob{--c:var(--lav);--d:var(--lav-d)}
+  .tool .knob svg.pencat{width:40px;height:40px;position:relative}
+  #penLabel{white-space:nowrap}
+  .bigstats.three{grid-template-columns:repeat(3,1fr)}
   .stat{display:flex;justify-content:space-between;align-items:center;padding:11px 2px;border-bottom:1px solid rgba(255,255,255,.07);font-size:15px}
   .stat span:last-child{font-family:var(--num);font-weight:600;font-variant-numeric:tabular-nums}
   .bigstats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
@@ -240,8 +278,8 @@
 <main class="screen" id="home">
   <div class="hero">
     <div class="logo" id="logo"></div>
-    <h1>喵喵領地</h1>
-    <p>幫每一隻貓找到自己的地盤</p>
+    <h1>汪汪領地</h1>
+    <p>幫每一隻狗狗找到自己的地盤</p>
   </div>
   <button class="b3d" id="btnPlay"><span id="playIcon"></span><span id="playText">開始第 1 關</span><span class="chip" id="playChip">5×5</span></button>
   <button class="tile" id="btnLevels" style="--c:var(--butter)">
@@ -257,7 +295,7 @@
   </button>
   <button class="tile" id="btnFree" style="--c:var(--lav)">
     <span class="bub" id="icFree"></span>
-    <span class="txt"><div class="t1">自由練習</div><div class="t2">5×5 到 10×10，隨機出題</div></span>
+    <span class="txt"><div class="t1">自由練習</div><div class="t2">選大小和難度，或輸入題號</div></span>
     <span class="chev" data-ic="chev"></span>
   </button>
   <div class="homebar">
@@ -280,13 +318,13 @@
   <div class="hearts" id="hearts"></div>
   <div class="boardArea" id="boardArea">
     <div class="board" id="board"></div>
-    <div class="loading" id="loading" hidden><div class="dots"><i></i><i></i><i></i></div>貓咪正在劃地盤…</div>
+    <div class="loading" id="loading" hidden><div class="dots"><i></i><i></i><i></i></div>狗狗正在劃地盤…</div>
   </div>
-  <div class="msg" id="msg"></div>
+  <div class="msg" id="msg"><span id="msgText"></span><button class="codechip" id="codeChip" hidden></button></div>
   <div class="gtools">
-    <button class="tool" id="btnHint"><span class="knob" data-ic="bulb"></span>提示</button>
-    <button class="tool lav" id="btnClear"><span class="knob" data-ic="eraser"></span>清除叉叉</button>
-    <button class="tool mint" id="btnRestart"><span class="knob" data-ic="restart"></span>重來</button>
+    <button class="tool" id="btnPen"><span class="knob" id="penKnob"></span><span id="penLabel">點一下：打叉</span></button>
+    <button class="tool butter" id="btnHint"><span class="knob" data-ic="bulb"></span>提示</button>
+    <button class="tool mint" id="btnClear"><span class="knob" data-ic="eraser"></span>清除叉叉</button>
   </div>
 </main>
 
@@ -294,7 +332,7 @@
 <div class="backdrop" id="pauseSheet" hidden>
   <div class="sheet" role="dialog" aria-labelledby="pauseTitle">
     <div class="shead"><h2 id="pauseTitle">暫停</h2><button class="ibtn" id="pauseClose" aria-label="關閉" data-ic="close"></button></div>
-    <div class="srow" style="--c:var(--peach)"><span class="sic" data-ic="cross"></span><label for="swAuto">自動打叉<small>放貓後自動標記不可能的格子</small></label><input type="checkbox" class="sw" id="swAuto"></div>
+    <div class="srow" style="--c:var(--peach)"><span class="sic" data-ic="cross"></span><label for="swAuto">自動打叉<small>放狗後自動標記不可能的格子</small></label><input type="checkbox" class="sw" id="swAuto"></div>
     <div class="srow" style="--c:var(--lav)"><span class="sic" data-ic="music"></span><label for="swMusic">背景音樂</label><input type="checkbox" class="sw" id="swMusic"></div>
     <div class="srow" style="--c:var(--mint)"><span class="sic" data-ic="sound"></span><label for="swSfx">音效</label><input type="checkbox" class="sw" id="swSfx"></div>
     <div id="pauseGameBtns">
@@ -314,10 +352,11 @@
 <div class="backdrop" id="rulesSheet" hidden>
   <div class="sheet rules" role="dialog" aria-labelledby="rulesTitle">
     <div class="shead"><h2 id="rulesTitle">怎麼玩</h2><button class="ibtn" id="rulesClose" aria-label="關閉" data-ic="close"></button></div>
-    <p><span class="sic" style="--c:var(--peach)" data-ic="grid"></span><span>棋盤分成好幾塊<b>彩色領地</b>，每塊領地要放<b>剛好一隻貓</b>。</span></p>
-    <p><span class="sic" style="--c:var(--lav)" data-ic="cross"></span><span>貓咪很孤僻：任兩隻貓<b>不能同一橫排、不能同一直排</b>，也<b>不能相鄰</b>，斜角也不行。</span></p>
-    <p><span class="sic" style="--c:var(--mint)" data-ic="hand"></span><span><b>點一下</b>打叉，<b>滑過去</b>連續打叉；<b>點兩下</b>、<b>長按</b>或<b>右鍵</b>放貓。</span></p>
-    <p><span class="sic" style="--c:var(--rose)" data-ic="heart"></span><span>放錯貓扣一顆愛心，共 3 顆。每題都只有一個答案，一步一步推理就解得出來。</span></p>
+    <p><span class="sic" style="--c:var(--peach)" data-ic="grid"></span><span>棋盤分成好幾塊<b>彩色領地</b>，每塊領地要放<b>剛好一隻狗</b>。</span></p>
+    <p><span class="sic" style="--c:var(--lav)" data-ic="cross"></span><span>狗狗很愛獨佔地盤：任兩隻狗<b>不能同一橫排、不能同一直排</b>，也<b>不能相鄰</b>，斜角也不行。</span></p>
+    <p><span class="sic" style="--c:var(--mint)" data-ic="hand"></span><span><b>點一下</b>打叉，<b>滑過去</b>連續打叉；<b>點兩下</b>、<b>長按</b>或<b>右鍵</b>放狗。按左下角的切換鈕，可以改成<b>點一下就放狗</b>（這時長按是打叉）。</span></p>
+    <p><span class="sic" style="--c:var(--butter)" data-ic="trophy"></span><span>關卡每 <b>20 關一章</b>，過完一章拿一座<b>獎杯</b>，共 5 座。每題都有<b>題號</b>，點下方題號可以複製，傳給朋友在「自由練習」輸入就能挑戰同一題。</span></p>
+    <p><span class="sic" style="--c:var(--rose)" data-ic="heart"></span><span>放錯狗扣一顆愛心，共 3 顆。每題都只有一個答案，一步一步推理就解得出來。</span></p>
     <div class="sbtns"><button class="b3d" id="rulesOk">知道了</button></div>
   </div>
 </div>
@@ -332,7 +371,16 @@
 <div class="backdrop" id="sizeSheet" hidden>
   <div class="sheet" role="dialog" aria-labelledby="sizeTitle">
     <div class="shead"><h2 id="sizeTitle">自由練習</h2><button class="ibtn" id="sizeClose" aria-label="關閉" data-ic="close"></button></div>
+    <div class="seg" id="diffSeg" role="group" aria-label="難度">
+      <button data-d="1"><em class="d1"></em>簡單</button><button data-d="2"><em class="d2"></em>普通</button><button data-d="3"><em class="d3"></em>困難</button>
+    </div>
     <div class="sizegrid" id="sizegrid"></div>
+    <div class="lvsec" style="margin-top:18px">有朋友給的題號？</div>
+    <div class="coderow">
+      <input id="codeInput" type="text" inputmode="numeric" maxlength="8" placeholder="輸入 6 位數題號" autocomplete="off" aria-label="題號">
+      <button class="b3d butter" id="codeGo">挑戰</button>
+    </div>
+    <div class="codeerr" id="codeErr"></div>
   </div>
 </div>
 
@@ -362,7 +410,7 @@
   <div class="sheet result" role="dialog" aria-labelledby="loseTitle">
     <div class="badge" id="loseCat"></div>
     <h2 id="loseTitle">愛心用完了</h2>
-    <div class="sub">別灰心，貓咪們還在等你安排位置</div>
+    <div class="sub">別灰心，狗狗們還在等你安排位置</div>
     <div class="sbtns"><button class="b3d" id="btnRetry"><span data-ic="restart"></span>重新挑戰</button></div>
     <div class="sbtns"><button class="b3d ghost" id="lHome"><span data-ic="home"></span>主選單</button></div>
   </div>
@@ -375,14 +423,15 @@
     <path d="M140 55 H215 V90 H140Z"/><path d="M135 55 L177 32 L220 55Z"/>
     <path d="M215 72 L255 50 L295 72 V90 H215Z"/><rect x="265" y="44" width="9" height="18"/>
     <path d="M290 58 L340 36 L400 58 V90 H290Z"/>
-    <path d="M168 33 q-2-9 3-13 l2 5 h7 l2-5 q5 4 3 13 q0 6-8.5 6 q-8.5 0-8.5-6Z"/>
-    <path d="M186 35 q10 2 8-10" stroke="#161230" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="177" cy="33" rx="8" ry="5.5"/><circle cx="173" cy="22" r="6.5"/><ellipse cx="168" cy="21" rx="3" ry="6.5" transform="rotate(15 168 21)"/>
+    <ellipse cx="166" cy="25" rx="5.5" ry="3.6"/><rect x="170" y="27" width="5" height="9" rx="2"/>
+    <path d="M184 31 q8-3 7-11" stroke="#161230" stroke-width="3" fill="none" stroke-linecap="round"/>
   </g>
   <g fill="#ffd76e" opacity=".7"><rect x="160" y="64" width="9" height="10" rx="1"/><rect x="186" y="64" width="9" height="10" rx="1"/><rect x="92" y="66" width="8" height="9" rx="1"/><rect x="330" y="64" width="8" height="9" rx="1"/></g>
 </svg>
 
 <script>
-/* ===================== 圖示與貓 ===================== */
+/* ===================== 圖示與狗 ===================== */
 const ICON={
   pause:'<path d="M9 5v14M15 5v14"/>',
   music:'<path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>',
@@ -405,6 +454,7 @@ const ICON={
   hand:'<path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M12 10V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M15 10.5V6.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7h-.5a6 6 0 0 1-4.9-2.5L3 14.5a1.6 1.6 0 0 1 2.5-2L9 15V8.5a1.5 1.5 0 0 1 3 0"/>',
   heart:'<path d="M12 20s-7-4.3-8.8-8.6C1.8 8 3.8 4.8 7.1 4.8c1.9 0 3.2 1 4.9 2.8 1.7-1.8 3-2.8 4.9-2.8 3.3 0 5.3 3.2 3.9 6.6C19 15.7 12 20 12 20z"/>',
   clock:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M10 2.5h4"/>',
+  copy:'<rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M15 9V6.5A2.5 2.5 0 0 0 12.5 4h-6A2.5 2.5 0 0 0 4 6.5v6A2.5 2.5 0 0 0 6.5 15H9"/>',
   map:'<path d="M4 6.5l5-2.5 6 2.5 5-2.5v13.5l-5 2.5-6-2.5-5 2.5z"/><path d="M9 4v13.5M15 6.5V20"/>',
   lock:'<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
   dice:'<rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><circle cx="15" cy="9" r="1.2" fill="currentColor"/><circle cx="9" cy="15" r="1.2" fill="currentColor"/>'
@@ -412,24 +462,28 @@ const ICON={
 const ic=(n,extra='')=>`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]}${extra}</svg>`;
 const HEART='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.6-4.7-9.6-9.4C.9 7.9 3.1 4.3 6.8 4.3c2.1 0 3.5 1.1 5.2 3.1 1.7-2 3.1-3.1 5.2-3.1 3.7 0 5.9 3.6 4.4 7.3C19.6 16.3 12 21 12 21z"/></svg>';
 const PAW='<svg viewBox="0 0 24 24"><g fill="currentColor"><ellipse cx="12" cy="16" rx="5" ry="4.2"/><circle cx="6" cy="10" r="2.2"/><circle cx="10" cy="6.5" r="2.2"/><circle cx="14" cy="6.5" r="2.2"/><circle cx="18" cy="10" r="2.2"/></g></svg>';
+const TROPHY_SVG='<svg class="trophy" viewBox="0 0 64 64" aria-hidden="true"><path d="M18 10h28v14a14 14 0 0 1-28 0z" fill="#ffd76e" stroke="#8a5a12" stroke-width="3" stroke-linejoin="round"/><path d="M18 14H10a9 9 0 0 0 10 11M46 14h8a9 9 0 0 1-10 11" fill="none" stroke="#8a5a12" stroke-width="3" stroke-linecap="round"/><path d="M24 13h4v12a6 6 0 0 1-4-5z" fill="#fff3c4" opacity=".8"/><path d="M28 37h8v8h-8z" fill="#e8b84a" stroke="#8a5a12" stroke-width="3"/><rect x="19" y="45" width="26" height="8" rx="3" fill="#c98b3a" stroke="#8a5a12" stroke-width="3"/><path d="M29 18l3-3 3 3M32 15v9" stroke="#8a5a12" stroke-width="0" /><circle cx="32" cy="21" r="4" fill="#fff3c4"/></svg>';
 const XM='<svg class="xm" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6"/></svg>';
 
-const CAT_COLORS=['#f4a259','#6b6680','#f7f3ea','#c98b5a','#e8d2b0','#3d3a4b'];
-function catSVG(fur='#f4a259',cls='cat'){
-  const s='#2b2140', dark=fur==='#3d3a4b'||fur==='#6b6680';
-  const eye=dark?'#ffd76e':s;
-  return `<svg class="${cls}" viewBox="0 0 100 100" aria-label="貓">
-    <path d="M18 42 L21 10 L43 29 Z" fill="${fur}" stroke="${s}" stroke-width="4.5" stroke-linejoin="round"/>
-    <path d="M82 42 L79 10 L57 29 Z" fill="${fur}" stroke="${s}" stroke-width="4.5" stroke-linejoin="round"/>
-    <path d="M24 21 L26.5 34 L35 28 Z" fill="#f7a8b8"/><path d="M76 21 L73.5 34 L65 28 Z" fill="#f7a8b8"/>
-    <ellipse cx="50" cy="57" rx="38" ry="32" fill="${fur}" stroke="${s}" stroke-width="4.5"/>
-    <ellipse cx="36" cy="53" rx="5" ry="6.5" fill="${eye}"/><ellipse cx="64" cy="53" rx="5" ry="6.5" fill="${eye}"/>
-    ${dark?`<ellipse cx="36" cy="53" rx="1.8" ry="5" fill="${s}"/><ellipse cx="64" cy="53" rx="1.8" ry="5" fill="${s}"/>`:''}
-    <circle cx="37.8" cy="50.5" r="1.8" fill="#fff"/><circle cx="65.8" cy="50.5" r="1.8" fill="#fff"/>
-    <path d="M46 63 L54 63 L50 67 Z" fill="#e8798b"/>
-    <path d="M50 67 Q45 73 40 70 M50 67 Q55 73 60 70" fill="none" stroke="${s}" stroke-width="3" stroke-linecap="round"/>
-    <path d="M13 59 L27 61 M13 67 L27 65 M87 59 L73 61 M87 67 L73 65" stroke="${s}" stroke-width="2.5" stroke-linecap="round"/>
-    <ellipse cx="27" cy="66" rx="5" ry="3" fill="#f7a8b8" opacity=".75"/><ellipse cx="73" cy="66" rx="5" ry="3" fill="#f7a8b8" opacity=".75"/>
+// 狗狗毛色：[臉, 耳朵, 嘴巴周圍, 有沒有眼罩斑]
+const DOGS=[['#e8b77a','#a86a3a','#fff3e0',0],['#f7f0e4','#c9a27a','#ffffff',1],['#9a6644','#5e3b26','#ecd2b4',0],
+  ['#4a4658','#2a2734','#d9d2e3',0],['#d9a066','#7a4a2a','#f6e1c4',1],['#c4bfcf','#77728a','#f3eff8',0]];
+const CAT_COLORS=DOGS.map((_,k)=>k);
+function catSVG(kind=0,cls='cat'){   // 函式名沿用，畫的是狗
+  const [fur,ear,muz,patch]=DOGS[typeof kind==='number'?kind:0], s='#2b2140';
+  const dark=fur==='#4a4658';
+  return `<svg class="${cls}" viewBox="0 0 100 100" aria-label="狗">
+    <ellipse cx="19" cy="47" rx="12" ry="23" transform="rotate(20 19 47)" fill="${ear}" stroke="${s}" stroke-width="4.5"/>
+    <ellipse cx="81" cy="47" rx="12" ry="23" transform="rotate(-20 81 47)" fill="${ear}" stroke="${s}" stroke-width="4.5"/>
+    <ellipse cx="50" cy="53" rx="33" ry="32" fill="${fur}" stroke="${s}" stroke-width="4.5"/>
+    ${patch?`<ellipse cx="62" cy="45" rx="11" ry="10" fill="${ear}" opacity=".85"/>`:''}
+    <ellipse cx="50" cy="69" rx="18" ry="13" fill="${muz}"/>
+    <ellipse cx="38" cy="48" rx="4.8" ry="5.6" fill="${s}"/><ellipse cx="62" cy="48" rx="4.8" ry="5.6" fill="${s}"/>
+    <circle cx="39.8" cy="46" r="1.8" fill="#fff"/><circle cx="63.8" cy="46" r="1.8" fill="#fff"/>
+    <ellipse cx="50" cy="62" rx="7" ry="5" fill="${s}"/><ellipse cx="48" cy="60.5" rx="2.2" ry="1.3" fill="#fff" opacity=".6"/>
+    <path d="M50 67 v3.5 M50 70.5 Q44.5 76.5 39.5 72 M50 70.5 Q55.5 76.5 60.5 72" fill="none" stroke="${s}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M46 74 Q50 84 54 74 Z" fill="#ff8fa3" stroke="${s}" stroke-width="2" stroke-linejoin="round"/>
+    <ellipse cx="29" cy="62" rx="5" ry="3" fill="#f7a8b8" opacity="${dark?.5:.75}"/><ellipse cx="71" cy="62" rx="5" ry="3" fill="#f7a8b8" opacity="${dark?.5:.75}"/>
   </svg>`;
 }
 const REGION_COLORS=['#ffb1bb','#ffd29a','#fff0a0','#bde9a6','#a3dbf4','#cdb7ff','#ffc0e1','#9fe4d0','#e9cfa9','#c3cce2'];
@@ -572,22 +626,28 @@ const Sound=(function(){
     if(lp){const fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.value=lp;o.connect(fl);node=fl;}
     node.connect(g); g.connect(dest||sfxBus); o.start(s); o.stop(s+dur+.05);
   }
-  function meow(){
-    if(!ctx) return; const t=ctx.currentTime, k=0.9+Math.random()*0.3;
+  // 小狗「汪！」：鋸齒波快速往下滑＋一點氣音
+  function bark(delay=0){
+    if(!ctx) return; const t=ctx.currentTime+delay, k=0.9+Math.random()*0.25;
     const o=ctx.createOscillator(); o.type='sawtooth';
-    o.frequency.setValueAtTime(480*k,t); o.frequency.linearRampToValueAtTime(820*k,t+.09); o.frequency.linearRampToValueAtTime(560*k,t+.34);
-    const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=5;
-    bp.frequency.setValueAtTime(800,t); bp.frequency.linearRampToValueAtTime(1900,t+.1); bp.frequency.linearRampToValueAtTime(900,t+.34);
-    const g=ctx.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.5,t+.03); g.gain.exponentialRampToValueAtTime(.0001,t+.38);
-    o.connect(bp); bp.connect(g); g.connect(sfxBus); o.start(t); o.stop(t+.42);
+    o.frequency.setValueAtTime(380*k,t); o.frequency.linearRampToValueAtTime(560*k,t+.03); o.frequency.exponentialRampToValueAtTime(260*k,t+.16);
+    const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=2.5;
+    bp.frequency.setValueAtTime(900,t); bp.frequency.linearRampToValueAtTime(1500,t+.03); bp.frequency.exponentialRampToValueAtTime(650,t+.16);
+    const g=ctx.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.6,t+.012); g.gain.exponentialRampToValueAtTime(.0001,t+.2);
+    o.connect(bp); bp.connect(g); g.connect(sfxBus); o.start(t); o.stop(t+.24);
+    const len=Math.floor(ctx.sampleRate*.06), nb=ctx.createBuffer(1,len,ctx.sampleRate), d=nb.getChannelData(0);
+    for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*(1-i/len);
+    const ns=ctx.createBufferSource(); ns.buffer=nb; const nf=ctx.createBiquadFilter(); nf.type='bandpass'; nf.frequency.value=1800; nf.Q.value=1;
+    const ng=ctx.createGain(); ng.gain.value=.25; ns.connect(nf); nf.connect(ng); ng.connect(sfxBus); ns.start(t);
   }
+  const meow=()=>bark();
   const SFX={
     tap(){ tone({f:900,type:'triangle',dur:.06,vol:.12,slide:600}); },
     tick(){ tone({f:700,type:'triangle',dur:.04,vol:.06}); },
     cat(){ meow(); tone({f:1568,t:.02,dur:.15,vol:.05}); },
     wrong(){ tone({f:220,type:'square',dur:.28,vol:.09,slide:110,lp:900}); tone({f:233,type:'square',t:.02,dur:.26,vol:.06,slide:116,lp:900}); },
     hint(){ [1319,1568,2093].forEach((f,i)=>tone({f,t:i*.07,dur:.25,vol:.07})); },
-    win(){ [72,76,79,84,79,84,88].forEach((m,i)=>tone({f:mtof(m),type:'triangle',t:i*.11,dur:.35,vol:.14})); setTimeout(meow,850); },
+    win(){ [72,76,79,84,79,84,88].forEach((m,i)=>tone({f:mtof(m),type:'triangle',t:i*.11,dur:.35,vol:.14})); bark(.85); bark(1.05); },
     lose(){ [67,63,60,55].forEach((m,i)=>tone({f:mtof(m),type:'triangle',t:i*.22,dur:.4,vol:.12})); },
     click(){ tone({f:1200,type:'sine',dur:.05,vol:.06}); },
     open(){ tone({f:660,type:'sine',dur:.09,vol:.07,slide:990}); },
@@ -730,39 +790,131 @@ function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catc
 /* ===================== 畫面切換與面板 ===================== */
 const $=id=>document.getElementById(id);
 document.querySelectorAll('[data-ic]').forEach(el=>el.innerHTML=ic(el.dataset.ic));
-$('logo').innerHTML=catSVG('#f4a259','');
+$('logo').innerHTML=catSVG(0,'');
 $('icDaily').innerHTML=ic('calendar'); $('icFree').innerHTML=ic('grid'); $('playIcon').innerHTML=ic('play');
-$('winCat').innerHTML=catSVG('#f4a259',''); $('loseCat').innerHTML=catSVG('#6b6680','');
+$('winCat').innerHTML=catSVG(0,''); $('loseCat').innerHTML=catSVG(3,'');
 
 function showScreen(name){ $('home').hidden=name!=='home'; $('game').hidden=name!=='game'; $('roofs').style.display=name==='home'?'':'none'; document.querySelector('.moon').style.display=name==='home'?'':'none'; }
 function openSheet(id){ document.querySelectorAll('.backdrop').forEach(b=>b.hidden=true); $(id).hidden=false; Sound.play('open'); }
 function closeSheet(id){ $(id).hidden=true; }
 const anySheetOpen=()=>[...document.querySelectorAll('.backdrop')].some(b=>!b.hidden);
 
+/* ===================== 難度評分（模擬人類推理） ===================== */
+function ratePuzzle(n,reg){
+  const N=n*n, cand=new Uint8Array(N).fill(1), units=[];
+  for(let r=0;r<n;r++){const u=[];for(let c=0;c<n;c++)u.push(r*n+c);units.push(u);}
+  for(let c=0;c<n;c++){const u=[];for(let r=0;r<n;r++)u.push(r*n+c);units.push(u);}
+  const regs=Array.from({length:n},()=>[]);for(let i=0;i<N;i++)regs[reg[i]].push(i);
+  regs.forEach(u=>units.push(u));
+  const done=new Uint8Array(units.length), R=i=>Math.floor(i/n), C=i=>i%n;
+  const unitsOf=i=>[R(i),n+C(i),2*n+reg[i]];
+  const hits=(i,j)=>R(i)===R(j)||C(i)===C(j)||reg[i]===reg[j]||(Math.abs(R(i)-R(j))<=1&&Math.abs(C(i)-C(j))<=1);
+  const place=i=>{for(let j=0;j<N;j++) if(hits(i,j)) cand[j]=0; unitsOf(i).forEach(u=>done[u]=1);};
+  const live=u=>units[u].filter(i=>cand[i]);
+  let placed=0,l2=0,l3=0,max=1;
+  while(placed<n){
+    let prog=false;
+    for(let u=0;u<units.length;u++){ if(done[u]) continue; const cs=live(u);
+      if(cs.length===0) return {ok:false,max:9,l2,l3};
+      if(cs.length===1){place(cs[0]);placed++;prog=true;} }
+    if(prog) continue;
+    let el=false;
+    for(let u=0;u<units.length;u++){ if(done[u]) continue; const cs=live(u);
+      const rs=new Set(cs.map(R)), cl=new Set(cs.map(C)), gs=new Set(cs.map(i=>reg[i]));
+      const kill=pred=>{for(let j=0;j<N;j++) if(cand[j]&&pred(j)&&!units[u].includes(j)){cand[j]=0;el=true;}};
+      if(rs.size===1&&u>=n){const r0=[...rs][0];kill(j=>R(j)===r0);}
+      if(cl.size===1&&!(u>=n&&u<2*n)){const c0=[...cl][0];kill(j=>C(j)===c0);}
+      if(gs.size===1&&u<2*n){const g0=[...gs][0];kill(j=>reg[j]===g0);}
+    }
+    if(!el){
+      for(let i=0;i<N;i++){ if(!cand[i]) continue; const mine=unitsOf(i);
+        for(let u=0;u<units.length;u++){ if(done[u]||mine.includes(u)) continue;
+          if(live(u).every(j=>hits(i,j))){cand[i]=0;el=true;break;} } }
+    }
+    if(el){l2++;max=Math.max(max,2);continue;}
+    const groups=[[0,n],[n,2*n],[2*n,3*n]], lineOf=[R,C,i=>reg[i]];
+    for(let k=2;k<=Math.min(4,n-1)&&!el;k++){
+      for(let A=0;A<3&&!el;A++) for(let B=0;B<3&&!el;B++){ if(A===B) continue;
+        const open=[];for(let u=groups[A][0];u<groups[A][1];u++) if(!done[u]) open.push(u);
+        if(open.length<=k) continue;
+        const combo=(start,pick)=>{
+          if(pick.length===k){
+            const cells=pick.flatMap(live), lines=new Set(cells.map(lineOf[B]));
+            if(lines.size===k){ const set=new Set(cells);
+              for(let j=0;j<N;j++) if(cand[j]&&lines.has(lineOf[B](j))&&!set.has(j)){cand[j]=0;el=true;} }
+            return el; }
+          for(let x=start;x<open.length;x++){ pick.push(open[x]); if(combo(x+1,pick)) return true; pick.pop(); }
+          return false; };
+        combo(0,[]);
+        if(el){l3++;max=Math.max(max,k===2?3:4);}
+      }
+    }
+    if(el) continue;
+    return {ok:false,max:9,l2,l3};
+  }
+  return {ok:true,max,l2,l3};
+}
+// 1=簡單（只要基本推理） 2=普通（推理步驟較多） 3=困難（要用到「幾塊領地擠在幾條線」的進階推理）；0=要靠猜，不採用
+function puzzleTier(r,n){ if(!r.ok) return 0; if(r.max>=3) return 3; return r.l2<(n<=6?2:3)?1:2; }
+const DIFF_NAME={1:'簡單',2:'普通',3:'困難'};
+
+/* ===================== 題號：6 位數 = 大小(5–9，0 代表 10) + 難度(1–3) + 4 位編號 ===================== */
+function codeOf(n,d,num){ return `${n===10?0:n}${d}${String(num).padStart(4,'0')}`; }
+function parseCode(s){
+  const m=String(s||'').replace(/\D/g,'');
+  if(!/^[05-9][1-3]\d{4}$/.test(m)) return null;
+  return {code:m,n:m[0]==='0'?10:+m[0],d:+m[1],num:+m.slice(2)};
+}
+const fmtCode=c=>`${c.slice(0,2)} ${c.slice(2)}`;
+let genToken=0;
+async function genFromCode(info){
+  const tok=++genToken; let best=null,bestDist=9;
+  for(let a=0;a<120;a++){
+    const p=makePuzzle(info.n,`c${info.code}-${a}`), t=puzzleTier(ratePuzzle(info.n,p.reg),info.n);
+    if(t===info.d) return p;
+    if(t){const dist=Math.abs(t-info.d); if(dist<bestDist){best=p;bestDist=dist;}}
+    if(a%2===1){ await new Promise(r=>setTimeout(r,0)); if(tok!==genToken) return null; }
+  }
+  return best||makePuzzle(info.n,'c'+info.code);
+}
+
 /* ===================== 遊戲狀態 ===================== */
 const boardEl=$('board');
 let P=null, mode=null, marks=[], cats=new Set(), hearts=3, mistakes=0, hintsUsed=0;
 let startT=0, elapsed=0, timerId=null, finished=false, paused=false, pauseAt=0, lastTap=null, drag=null, msgT=null;
 
-const MAX_LEVEL=100;
-function levelSize(k){return k<=5?5:k<=15?6:k<=35?7:k<=60?8:k<=100?9:10;}
+// 關卡：每 20 關一章，過完一章拿一座獎杯；棋盤大小逐步變大，同一個大小裡難度由易到難
+const MAX_LEVEL=100, CHAPTER=20;
+const SIZE_RUNS=[[1,8,5],[9,24,6],[25,42,7],[43,62,8],[63,82,9],[83,100,10]];
+function levelSize(k){ for(const [a,b,n] of SIZE_RUNS) if(k>=a&&k<=b) return n; return 10; }
+function levelTier(k){ for(const [a,b] of SIZE_RUNS) if(k>=a&&k<=b){ const p=(k-a)/(b-a+1); return p<.4?1:p<.8?2:3; } return 2; }
+function levelCode(k){ return codeOf(levelSize(k),levelTier(k),hashStr('lv'+k)%10000); }
+const trophyCount=()=>Math.floor(Math.min(save.level-1,MAX_LEVEL)/CHAPTER);
 
 function startGame(m){
   mode=m;
-  let n,seed,title;
-  if(m.type==='level'){n=levelSize(m.level);seed=m.level<=MAX_LEVEL?'level-'+m.level:'endless-'+m.level+'-'+Math.random();title=`第 ${m.level} 關 · ${n}×${n}`;}
-  else if(m.type==='daily'){n=8;seed='daily-'+m.date;title=`每日挑戰 · ${+m.date.slice(5,7)}/${+m.date.slice(8)}`;}
-  else {n=m.size;seed='free-'+Math.random();title=`自由練習 · ${n}×${n}`;}
-  m.n=n; $('title').textContent=title;
+  let info,title;
+  if(m.type==='level'){
+    if(!m.code) m.code=m.level<=MAX_LEVEL?levelCode(m.level):codeOf(10,2+Math.floor(Math.random()*2),Math.floor(Math.random()*10000));
+    info=parseCode(m.code); title=`第 ${m.level} 關 · ${info.n}×${info.n} · ${DIFF_NAME[info.d]}`;
+  }else if(m.type==='daily'){
+    m.code=codeOf(8,2,hashStr('daily-'+m.date)%10000); info=parseCode(m.code);
+    title=`每日挑戰 · ${+m.date.slice(5,7)}/${+m.date.slice(8)}`;
+  }else{
+    if(!m.code) m.code=codeOf(m.size,m.diff,Math.floor(Math.random()*10000));
+    info=parseCode(m.code); title=`${m.type==='code'?'題號挑戰':'自由練習'} · ${info.n}×${info.n} · ${DIFF_NAME[info.d]}`;
+  }
+  m.n=info.n; m.diff=info.d;
+  $('title').textContent=title;
   document.querySelectorAll('.backdrop').forEach(b=>b.hidden=true);
   showScreen('game');
   $('loading').hidden=false; boardEl.style.visibility='hidden'; boardEl.innerHTML='';
-  clearInterval(timerId); $('timer').textContent='0:00'; finished=true;
-  setTimeout(()=>{
-    P=makePuzzle(n,seed);
-    resetBoard();
+  clearInterval(timerId); $('timer').textContent='0:00'; finished=true; P=null; setMsg('');
+  setTimeout(()=>genFromCode(info).then(p=>{
+    if(!p||mode!==m) return;
+    P=p; resetBoard();
     $('loading').hidden=true; boardEl.style.visibility='';
-  },40);
+  }),40);
 }
 function resetBoard(){
   const n=P.n;
@@ -817,7 +969,20 @@ function drawCell(i){
 function renderHearts(breakIdx=-1){
   $('hearts').innerHTML=[0,1,2].map(k=>HEART.replace('<svg',`<svg class="${k<hearts?'':'lost'}${k===breakIdx?' break':''}"`)).join('');
 }
-function setMsg(t){ $('msg').textContent=t; clearTimeout(msgT); if(t) msgT=setTimeout(()=>$('msg').textContent='',2600); }
+// 訊息列：有訊息時顯示訊息，沒有時顯示題號（點一下可複製）
+function setMsg(t){
+  $('msgText').textContent=t; clearTimeout(msgT);
+  const showCode=!t&&mode&&mode.code;
+  $('codeChip').hidden=!showCode; if(showCode) $('codeChip').innerHTML=`題號 <b>${fmtCode(mode.code)}</b>${ic('copy')}`;
+  if(t) msgT=setTimeout(()=>setMsg(''),2600);
+}
+function copyCode(){
+  if(!mode||!mode.code) return;
+  const text=`汪汪領地 題號 ${mode.code}`;
+  const done=()=>setMsg('已複製題號，傳給朋友挑戰吧！'), fail=()=>setMsg(`題號是 ${mode.code}，記下來傳給朋友吧`);
+  try{ navigator.clipboard.writeText(text).then(done,fail); }catch(e){ fail(); }
+  Sound.play('click');
+}
 
 /* ===================== 操作 ===================== */
 function toggleX(i){ if(finished||cats.has(i)) return; Sound.play('tap'); marks[i]=marks[i]===1?0:1; drawCell(i); }
@@ -843,12 +1008,12 @@ function placeCat(i){
     if(hearts>0) Sound.play('wrong');
     marks[i]=1; drawCell(i);
     el.classList.remove('wrong'); void el.offsetWidth; el.classList.add('wrong');
-    setMsg('這裡不能放貓！');
+    setMsg('這裡不能放狗！');
     if(hearts<=0) lose();
   }
 }
 function hint(){
-  if(finished||paused) return;
+  if(finished||paused||!P) return;
   const n=P.n;
   boardEl.querySelectorAll('.hint').forEach(e=>e.classList.remove('hint'));
   for(let r=0;r<n;r++){const i=r*n+P.sol[r]; if(marks[i]===1&&!cats.has(i)){marks[i]=0;drawCell(i);cellEl(i).classList.add('hint');Sound.play('hint');setMsg('發光的這格叉叉打錯了，已幫你擦掉');hintsUsed++;return;}}
@@ -859,9 +1024,15 @@ function hint(){
     for(let j=0;j<n*n;j++) if(P.reg[j]===g&&marks[j]===0&&!cats.has(j)) cnt++;
     if(cnt<bestCnt){bestCnt=cnt;best=i;}
   }
-  if(best!==null){hintsUsed++; Sound.play('hint'); placeCat(best); if(!finished) cellEl(best).classList.add('hint'); setMsg('幫你放了一隻貓');}
+  if(best!==null){hintsUsed++; Sound.play('hint'); placeCat(best); if(!finished) cellEl(best).classList.add('hint'); setMsg('幫你放了一隻狗');}
 }
 function clearX(){ if(finished||paused) return; Sound.play('click'); for(let i=0;i<marks.length;i++) if(marks[i]===1){marks[i]=0;drawCell(i);} }
+function renderPen(){
+  const cat=save.pen==='cat';
+  $('btnPen').classList.toggle('peach',cat); $('btnPen').classList.toggle('lav2',!cat);
+  $('penKnob').innerHTML=cat?catSVG(0,'pencat'):ic('cross');
+  $('penLabel').textContent=cat?'點一下：放狗':'點一下：打叉';
+}
 
 function pawRain(){
   const colors=['#ffd76e','#ffa47e','#86dfc6','#bba8ff','#ffb1bb'];
@@ -881,20 +1052,25 @@ function win(){
   const isBest=prev==null||elapsed<prev;
   if(isBest) save.best[key]=elapsed;
   save.wins=(save.wins||0)+1;
+  let trophy=0;
   if(mode.type==='level'){
     save.levels=save.levels||{};
     if(mode.level<=MAX_LEVEL&&(save.levels[mode.level]==null||elapsed<save.levels[mode.level])) save.levels[mode.level]=Math.round(elapsed);
-    if(mode.level===save.level) save.level++;
+    if(mode.level===save.level){ save.level++; if(mode.level<=MAX_LEVEL&&mode.level%CHAPTER===0) trophy=mode.level/CHAPTER; }
   }
   if(mode.type==='daily'&&(save.daily[mode.date]==null||elapsed<save.daily[mode.date])) save.daily[mode.date]=elapsed;
   persist(); refreshHome();
   setTimeout(()=>{
-    $('winSub').textContent=mode.type==='level'?`第 ${mode.level} 關完成`:mode.type==='daily'?'今天的每日挑戰完成了':`${P.n}×${P.n} 完成`;
+    $('winCat').innerHTML=trophy?TROPHY_SVG:catSVG(0,'');
+    $('winCat').classList.toggle('gold',!!trophy);
+    $('winTitle').textContent=trophy?`獲得第 ${trophy} 座獎杯！`:'全部就位！';
+    $('winSub').textContent=trophy?`第 ${trophy} 章（第 ${mode.level-CHAPTER+1}–${mode.level} 關）全部完成`:
+      mode.type==='level'?`第 ${mode.level} 關完成`:mode.type==='daily'?'今天的每日挑戰完成了':`${P.n}×${P.n} ${DIFF_NAME[mode.diff]} 完成`;
     $('winChips').innerHTML=`<span>${ic('clock')}${fmt(elapsed)}</span><span>${ic('heart')}錯 ${mistakes}</span><span>${ic('bulb')}提示 ${hintsUsed}</span>`;
     $('winBest').innerHTML=isBest?'<span class="newbest">新紀錄！</span>':`<div class="sub" style="margin-top:10px">最佳紀錄 ${fmt(prev)}</div>`;
     $('btnNext').innerHTML=ic('play')+(mode.type==='level'?`下一關（第 ${mode.level+1} 關）`:mode.type==='daily'?'去關卡模式':'再來一題');
     openSheet('winSheet');
-  },1000);
+  },trophy?1300:1000);
 }
 function lose(){ finished=true; Sound.play('lose'); setTimeout(()=>openSheet('loseSheet'),600); }
 
@@ -910,7 +1086,9 @@ boardEl.addEventListener('pointerdown',e=>{
   drag={start:i,moved:false,val:marks[i]===1?0:1,seen:new Set([i]),timer:null};
   if(e.pointerType!=='mouse'){
     const d=drag;
-    d.timer=setTimeout(()=>{ if(drag===d&&!d.moved){ drag=null; lastTap=null; if(navigator.vibrate) try{navigator.vibrate(20);}catch(_){} placeCat(d.start);} },450);
+    // 長按：一般模式＝放狗；放狗模式＝打叉
+    d.timer=setTimeout(()=>{ if(drag===d&&!d.moved){ drag=null; lastTap=null; if(navigator.vibrate) try{navigator.vibrate(20);}catch(_){}
+      if(save.pen==='cat') toggleX(d.start); else placeCat(d.start);} },450);
   }
   boardEl.setPointerCapture(e.pointerId);
 });
@@ -926,6 +1104,7 @@ boardEl.addEventListener('pointerup',()=>{
   if(!drag) return;
   const d=drag; drag=null; clearTimeout(d.timer);
   if(d.moved){lastTap=null;return;}
+  if(save.pen==='cat'){ lastTap=null; placeCat(d.start); return; }
   const now=performance.now();
   if(lastTap&&lastTap.i===d.start&&now-lastTap.t<350){ lastTap=null; placeCat(d.start); }
   else { lastTap={i:d.start,t:now}; toggleX(d.start); }
@@ -933,34 +1112,37 @@ boardEl.addEventListener('pointerup',()=>{
 
 /* ===================== 首頁與設定 ===================== */
 function refreshHome(){
-  const n=levelSize(save.level);
-  $('playText').textContent=`開始第 ${save.level} 關`; $('playChip').textContent=`${n}×${n}`;
+  const lvl=save.level, n=levelSize(lvl);
+  $('playText').textContent=`開始第 ${lvl} 關`;
+  $('playChip').textContent=lvl<=MAX_LEVEL?`${n}×${n} · ${DIFF_NAME[levelTier(lvl)]}`:'10×10 隨機';
   const d=todayStr(), done=save.daily[d]!=null;
-  $('dailySub').textContent=`${+d.slice(5,7)}/${+d.slice(8)} · 8×8`+(done?` · ${fmt(save.daily[d])}`:'');
+  $('dailySub').textContent=`${+d.slice(5,7)}/${+d.slice(8)} · 8×8 普通`+(done?` · ${fmt(save.daily[d])}`:'');
   $('dailyDone').hidden=!done;
-  const cleared=Math.min(save.level-1,MAX_LEVEL);
-  $('levelsSub').textContent=save.level>MAX_LEVEL?`100 關全破！之後是隨機 10×10`:`已過 ${cleared} / ${MAX_LEVEL} 關，100 關後隨機出題`;
+  const cleared=Math.min(lvl-1,MAX_LEVEL);
+  $('levelsSub').textContent=lvl>MAX_LEVEL?`🏆 5 / 5 全破！之後是隨機 10×10`:`🏆 ${trophyCount()} / 5 · 已過 ${cleared} / ${MAX_LEVEL} 關`;
 }
-const SIZE_RANGES=[[1,5],[6,15],[16,35],[36,60],[61,100]];
 function renderLevels(){
-  const lv=save.levels||{};
-  let h='';
-  for(const [a,b] of SIZE_RANGES){
-    const n=levelSize(a);
-    h+=`<div class="lvsec"><b>${n}×${n}</b>第 ${a}–${b} 關</div><div class="lvgrid">`;
+  const lv=save.levels||{}, tc=trophyCount();
+  let h=`<div class="shelf">${[1,2,3,4,5].map(t=>`<span class="tro${t<=tc?' got':''}" title="第 ${t} 章">${TROPHY_SVG}<i>${t}</i></span>`).join('')}</div>`;
+  for(let ch=0;ch<MAX_LEVEL/CHAPTER;ch++){
+    const a=ch*CHAPTER+1, b=a+CHAPTER-1, sizes=[...new Set(Array.from({length:CHAPTER},(_,x)=>levelSize(a+x)))];
+    const got=Math.max(0,Math.min(CHAPTER,save.level-a));
+    h+=`<div class="lvsec"><b>第 ${ch+1} 章</b>第 ${a}–${b} 關 · ${sizes.map(s=>s+'×'+s).join('、')}<span class="chprog${got===CHAPTER?' full':''}">${got===CHAPTER?'🏆 完成':`${got} / ${CHAPTER}`}</span></div><div class="lvgrid">`;
     for(let k=a;k<=b;k++){
-      if(k<save.level) h+=`<button class="lv done" data-k="${k}">${k}<small>${lv[k]!=null?fmt(lv[k]):'✓'}</small></button>`;
-      else if(k===save.level) h+=`<button class="lv cur" data-k="${k}" id="lvCur">${k}<small>開始</small></button>`;
+      const dot=`<em class="d${levelTier(k)}"></em>`;
+      if(k<save.level) h+=`<button class="lv done" data-k="${k}">${dot}${k}<small>${lv[k]!=null?fmt(lv[k]):'✓'}</small></button>`;
+      else if(k===save.level) h+=`<button class="lv cur" data-k="${k}" id="lvCur">${dot}${k}<small>開始</small></button>`;
       else h+=`<button class="lv locked" disabled aria-label="第 ${k} 關（未解鎖）">${ic('lock')}</button>`;
     }
     h+='</div>';
   }
   const open=save.level>MAX_LEVEL;
-  h+=`<div class="lvsec"><b>10×10</b>第 101 關以後</div>
+  h+=`<div class="lvsec"><b>無限</b>第 101 關以後</div>
     <button class="endless${open?'':' locked'}" id="lvEndless" ${open?'':'disabled'}>
       <span class="bub">${ic(open?'dice':'lock')}</span>
-      <span><div class="t1">${open?`隨機挑戰 · 第 ${save.level} 關`:'隨機挑戰'}</div><div class="t2">${open?'每次都是全新的 10×10 題目':'過完第 100 關後解鎖，每次都是新題目'}</div></span>
-    </button>`;
+      <span><div class="t1">${open?`隨機挑戰 · 第 ${save.level} 關`:'隨機挑戰'}</div><div class="t2">${open?'每次都是全新的 10×10 題目':'拿到 5 座獎杯後解鎖，每次都是新題目'}</div></span>
+    </button>
+    <div class="legend"><em class="d1"></em>簡單 <em class="d2"></em>普通 <em class="d3"></em>困難</div>`;
   $('levelBody').innerHTML=h;
   $('levelBody').querySelectorAll('.lv[data-k]').forEach(b=>b.onclick=()=>startGame({type:'level',level:+b.dataset.k}));
   if(open) $('lvEndless').onclick=()=>startGame({type:'level',level:save.level});
@@ -973,18 +1155,26 @@ function refreshToggles(){
 function setMusic(on){ save.music=on; persist(); refreshToggles(); on?Sound.startMusic():Sound.stopMusic(); }
 function setSfx(on){ save.sfx=on; persist(); refreshToggles(); Sound.play('click'); }
 function renderSizes(){
+  const d=save.freeDiff||2;
+  $('diffSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.d===d));
   $('sizegrid').innerHTML=[5,6,7,8,9,10].map((n,k)=>{
     const b=save.best['size'+n], cell=36/n;
     return `<button class="sz" data-n="${n}"><span class="mini" style="--c:${REGION_COLORS[k*2%10]};background-size:${cell}px ${cell}px"></span><span class="n">${n}×${n}</span><span class="best">${b!=null?'最快 '+fmt(b):'還沒玩過'}</span></button>`;
   }).join('');
-  $('sizegrid').querySelectorAll('.sz').forEach(b=>b.onclick=()=>startGame({type:'free',size:+b.dataset.n}));
+  $('sizegrid').querySelectorAll('.sz').forEach(b=>b.onclick=()=>startGame({type:'free',size:+b.dataset.n,diff:save.freeDiff||2}));
+  $('codeErr').textContent='';
 }
 function renderStats(){
-  let h=`<div class="bigstats"><div><b>${save.wins||0}</b><span>完成題數</span></div><div><b>${Object.keys(save.daily).length}</b><span>每日挑戰天數</span></div></div>`;
+  let h=`<div class="bigstats three"><div><b>${trophyCount()}</b><span>獎杯</span></div><div><b>${save.wins||0}</b><span>完成題數</span></div><div><b>${Object.keys(save.daily).length}</b><span>每日挑戰天數</span></div></div>`;
   h+=`<div class="stat"><span>目前關卡</span><span>第 ${save.level} 關</span></div>`;
   for(let n=5;n<=10;n++){const b=save.best['size'+n];h+=`<div class="stat"><span>${n}×${n} 最快</span><span>${b!=null?fmt(b):'—'}</span></div>`;}
   const db=save.best.daily; h+=`<div class="stat"><span>每日挑戰最快</span><span>${db!=null?fmt(db):'—'}</span></div>`;
   $('statsBody').innerHTML=h;
+}
+function playCode(){
+  const info=parseCode($('codeInput').value);
+  if(!info){ $('codeErr').textContent='題號是 6 位數字，例如 72 4821'; Sound.play('wrong'); return; }
+  $('codeInput').blur(); startGame({type:'code',code:info.code});
 }
 
 $('btnPlay').onclick=()=>startGame({type:'level',level:save.level});
@@ -992,6 +1182,9 @@ $('btnDaily').onclick=()=>startGame({type:'daily',date:todayStr()});
 $('btnLevels').onclick=()=>{ renderLevels(); openSheet('levelSheet'); const c=$('lvCur'); if(c) c.scrollIntoView({block:'center'}); };
 $('levelClose').onclick=()=>{closeSheet('levelSheet');Sound.play('shut');};
 $('btnFree').onclick=()=>{renderSizes();openSheet('sizeSheet');};
+$('diffSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>{ save.freeDiff=+b.dataset.d; persist(); renderSizes(); Sound.play('click'); });
+$('codeGo').onclick=playCode;
+$('codeInput').addEventListener('keydown',e=>{ if(e.key==='Enter') playCode(); });
 $('hbStats').onclick=()=>{renderStats();openSheet('statsSheet');};
 $('hbRules').onclick=()=>openSheet('rulesSheet');
 $('hbSettings').onclick=()=>{$('pauseGameBtns').hidden=true;$('pauseTitle').textContent='設定';openSheet('pauseSheet');};
@@ -1016,11 +1209,12 @@ $('qSfx').onclick=()=>setSfx(!save.sfx);
 
 $('btnHint').onclick=hint;
 $('btnClear').onclick=clearX;
-$('btnRestart').onclick=()=>{ if(P&&!paused){ Sound.play('click'); resetBoard(); } };
+$('btnPen').onclick=()=>{ save.pen=save.pen==='cat'?'x':'cat'; persist(); renderPen(); Sound.play('click'); setMsg(save.pen==='cat'?'現在點一下＝放狗（長按＝打叉）':'現在點一下＝打叉（點兩下或長按＝放狗）'); };
+$('codeChip').onclick=copyCode;
 $('btnRetry').onclick=resetBoard;
-$('btnReplay').onclick=()=>{ if(mode.type==='free') startGame({type:'free',size:mode.size}); else resetBoard(); };
+$('btnReplay').onclick=()=>{ if(mode.type==='free') startGame({type:'free',size:mode.n,diff:mode.diff}); else resetBoard(); };
 $('btnNext').onclick=()=>{
-  if(mode.type==='free') startGame({type:'free',size:mode.size});
+  if(mode.type==='free'||mode.type==='code') startGame({type:'free',size:mode.n,diff:mode.diff});
   else if(mode.type==='level') startGame({type:'level',level:Math.min(mode.level+1,save.level)});
   else startGame({type:'level',level:save.level});
 };
@@ -1040,8 +1234,9 @@ document.addEventListener('visibilitychange',()=>{ if(document.hidden&&!$('game'
 let resizeT=null, lastSize='';
 addEventListener('resize',()=>{ clearTimeout(resizeT); resizeT=setTimeout(()=>{
   const sz=innerWidth+'x'+innerHeight; if(sz===lastSize) return; lastSize=sz;
-  if(P&&!$('game').hidden){ buildBoard(); if(boardEl.classList.contains('done')){} }
+  if(P&&!$('game').hidden) buildBoard();
 },150); });
+renderPen();
 
 refreshHome(); refreshToggles(); showScreen('home');
 </script>
