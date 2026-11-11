@@ -1,0 +1,469 @@
+<!doctype html>
+<title>喵喵領地</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  /* 版面：桌機三欄（模式 | 棋盤 | 規則），手機單欄、棋盤置頂 */
+  :root{
+    --bg:#fbf6ee; --panel:#ffffff; --ink:#3b2f2a; --muted:#8a7a70;
+    --line:#3b2f2a; --accent:#f08a5d; --accent2:#6a9bd8; --bad:#e5484d; --good:#3fa66b;
+    --btn:#f3ebe1; --btn-hover:#eadfce; --veil:rgba(251,246,238,.9); --dash:#eee;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --bg:#211b18; --panel:#2d2622; --ink:#f1e7dd; --muted:#b3a397;
+    --btn:#3a312c; --btn-hover:#463b35; --veil:rgba(33,27,24,.9); --dash:#40362f; color-scheme:dark } }
+  :root[data-theme="dark"]{
+    --bg:#211b18; --panel:#2d2622; --ink:#f1e7dd; --muted:#b3a397;
+    --btn:#3a312c; --btn-hover:#463b35; --veil:rgba(33,27,24,.9); --dash:#40362f; color-scheme:dark }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",system-ui,sans-serif;
+    user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+  .app{display:grid;grid-template-columns:260px 1fr 260px;gap:24px;max-width:1240px;margin:0 auto;
+    padding-block:24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  @media (max-width:900px){
+    .app{grid-template-columns:1fr;gap:16px;padding-block:12px}
+    .center{order:-1}
+    .modes{flex-direction:row!important;flex-wrap:wrap}
+    .modes button{flex:1 1 140px}
+    .sizes{grid-template-columns:repeat(6,1fr)!important}
+    h1{font-size:22px!important}
+  }
+  .panel{background:var(--panel);border-radius:16px;padding:18px;box-shadow:0 2px 10px rgba(80,50,30,.08)}
+  h1{margin:0 0 4px;font-size:28px;display:flex;align-items:center;gap:8px}
+  h1 svg{width:36px;height:36px}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:16px}
+  h2{font-size:15px;margin:18px 0 8px;color:var(--muted);font-weight:600}
+  button{font:inherit;cursor:pointer;border:none;border-radius:10px;padding:9px 12px;
+    background:var(--btn);color:var(--ink);transition:transform .08s, background .15s;touch-action:manipulation}
+  @media (hover:hover){ button:hover{background:var(--btn-hover)} }
+  button:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
+  button:active{transform:scale(.96)}
+  button.primary{background:var(--accent);color:#fff}
+  button.primary:hover{background:#e2774a}
+  button.on{background:var(--accent2);color:#fff}
+  .modes{display:flex;flex-direction:column;gap:8px}
+  .modes button{text-align:left;display:flex;justify-content:space-between;align-items:center}
+  .sizes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .center{display:flex;flex-direction:column;align-items:center}
+  .topbar{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:600px;margin-bottom:14px}
+  .title{font-size:20px;font-weight:700}
+  .hearts{font-size:24px;letter-spacing:4px}
+  .hearts .lost{filter:grayscale(1);opacity:.3}
+  .timer{font-variant-numeric:tabular-nums;font-size:18px;color:var(--muted);min-width:64px;text-align:right}
+  .boardwrap{position:relative}
+  .board{display:grid;border:3px solid var(--line);border-radius:6px;overflow:hidden;background:var(--line);touch-action:none}
+  .cell{position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    border-style:solid;border-color:var(--line);border-width:0}
+  @media (hover:hover){ .cell:hover::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.28)} }
+  .cell .x{font-weight:700;color:rgba(59,47,42,.55);font-size:calc(var(--cs)*.42);line-height:1}
+  .cell svg.cat{width:78%;height:78%;animation:pop .28s ease-out}
+  .cell.wrong{animation:shake .4s}
+  .cell.wrong::before{content:"";position:absolute;inset:0;background:rgba(229,72,77,.55);animation:fade 1s forwards}
+  .cell.hint{box-shadow:inset 0 0 0 4px #fff, inset 0 0 0 7px var(--accent2)}
+  .cell.badx .x{color:var(--bad)}
+  .board.done .cell svg.cat{animation:dance .6s ease-in-out infinite alternate}
+  @keyframes pop{0%{transform:scale(.2)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  @keyframes fade{to{opacity:0}}
+  @keyframes dance{from{transform:rotate(-8deg) translateY(0)}to{transform:rotate(8deg) translateY(-3px)}}
+  .tools{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;justify-content:center}
+  .overlay{position:absolute;inset:-3px;display:none;align-items:center;justify-content:center;
+    background:var(--veil);border-radius:8px;flex-direction:column;text-align:center;padding:20px}
+  .overlay.show{display:flex}
+  .overlay h3{font-size:30px;margin:6px 0}
+  .overlay p{margin:4px 0;color:var(--muted)}
+  .overlay .btns{display:flex;gap:10px;margin-top:16px}
+  .overlay svg{width:90px;height:90px}
+  .rules p{font-size:14px;line-height:1.7;margin:6px 0}
+  .rules b{color:var(--accent)}
+  .stat{display:flex;justify-content:space-between;font-size:14px;padding:4px 0;border-bottom:1px dashed var(--dash)}
+  @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
+  @media (max-width:480px){ .overlay h3{font-size:24px} .overlay svg{width:64px;height:64px} .overlay .btns{margin-top:10px} }
+  .msg{height:22px;margin-top:10px;font-size:14px;color:var(--muted)}
+  .muted{color:var(--muted);font-size:13px}
+  .loading{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:18px;color:var(--muted)}
+  .loading.show{display:flex}
+</style>
+<div class="app">
+  <!-- 左側：模式選擇 -->
+  <div class="panel">
+    <h1><span id="logo"></span>喵喵領地</h1>
+    <div class="sub">自己玩的無廣告版 🐾</div>
+    <h2>遊戲模式</h2>
+    <div class="modes">
+      <button id="btnLevel" class="primary"><span>🏆 關卡模式</span><span id="lvlBadge"></span></button>
+      <button id="btnDaily"><span>📅 每日挑戰</span><span id="dailyBadge"></span></button>
+    </div>
+    <h2>自由練習（隨機出題）</h2>
+    <div class="sizes" id="sizes"></div>
+    <h2>設定</h2>
+    <div class="modes">
+      <button id="btnAuto"><span>自動打叉</span><span id="autoState"></span></button>
+    </div>
+  </div>
+
+  <!-- 中間：棋盤 -->
+  <div class="center">
+    <div class="topbar">
+      <div class="title" id="title">-</div>
+      <div class="hearts" id="hearts"></div>
+      <div class="timer" id="timer">0:00</div>
+    </div>
+    <div class="boardwrap">
+      <div class="board" id="board"></div>
+      <div class="loading" id="loading">貓咪正在劃地盤…</div>
+      <div class="overlay" id="winBox">
+        <div id="winCat"></div>
+        <h3>全部就位！</h3>
+        <p id="winText"></p>
+        <p id="winBest"></p>
+        <div class="btns">
+          <button class="primary" id="btnNext">下一題</button>
+          <button id="btnReplay">再玩一次</button>
+        </div>
+      </div>
+      <div class="overlay" id="loseBox">
+        <h3>💔 愛心用完了</h3>
+        <p>別灰心，貓咪們還在等你安排位置</p>
+        <div class="btns">
+          <button class="primary" id="btnRetry">重新挑戰</button>
+        </div>
+      </div>
+    </div>
+    <div class="tools">
+      <button id="btnHint">💡 提示</button>
+      <button id="btnClear">🧹 清除叉叉</button>
+      <button id="btnRestart">↺ 重來</button>
+    </div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <!-- 右側：規則與紀錄 -->
+  <div class="panel rules">
+    <h2 style="margin-top:0">怎麼玩</h2>
+    <p>棋盤被分成好幾塊<b>彩色領地</b>，每塊領地要放<b>剛好一隻貓</b>。</p>
+    <p>貓咪很孤僻：任兩隻貓<b>不能同一列、不能同一行</b>，也<b>不能相鄰</b>（斜角也不行）。</p>
+    <p>🖱 <b>點一下</b>：打叉（標記不可能的格子）<br>
+       🖱 <b>按住拖曳</b>：連續打叉<br>
+       🖱 <b>點兩下</b> 或 <b>右鍵</b>：放貓<br>
+       📱 手機：<b>點兩下</b> 或 <b>長按</b>：放貓</p>
+    <p>放錯貓會扣一顆 ❤️，共 3 顆。不要用猜的，一步一步推理！</p>
+    <h2>紀錄</h2>
+    <div id="stats"></div>
+  </div>
+</div>
+
+<script>
+/* ===================== 小工具 ===================== */
+const CAT_COLORS = ['#f4a259','#5b5b5b','#f7f3ea','#c98b5a','#e8d2b0'];
+function catSVG(fur='#f4a259'){
+  const stroke='#3b2f2a';
+  return `<svg class="cat" viewBox="0 0 100 100" aria-label="貓">
+    <path d="M18 40 L22 10 L42 28 Z" fill="${fur}" stroke="${stroke}" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M82 40 L78 10 L58 28 Z" fill="${fur}" stroke="${stroke}" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M24 20 L27 34 L35 28 Z" fill="#f7b5c0"/><path d="M76 20 L73 34 L65 28 Z" fill="#f7b5c0"/>
+    <ellipse cx="50" cy="56" rx="38" ry="32" fill="${fur}" stroke="${stroke}" stroke-width="4"/>
+    <ellipse cx="36" cy="52" rx="4.5" ry="6" fill="${stroke}"/><ellipse cx="64" cy="52" rx="4.5" ry="6" fill="${stroke}"/>
+    <circle cx="37.5" cy="50" r="1.6" fill="#fff"/><circle cx="65.5" cy="50" r="1.6" fill="#fff"/>
+    <path d="M46 62 L54 62 L50 66 Z" fill="#e8798b"/>
+    <path d="M50 66 Q45 72 40 69 M50 66 Q55 72 60 69" fill="none" stroke="${stroke}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M14 58 L28 60 M14 66 L28 64 M86 58 L72 60 M86 66 L72 64" stroke="${stroke}" stroke-width="2.5" stroke-linecap="round"/>
+    <ellipse cx="27" cy="64" rx="5" ry="3" fill="#f7b5c0" opacity=".7"/><ellipse cx="73" cy="64" rx="5" ry="3" fill="#f7b5c0" opacity=".7"/>
+  </svg>`;
+}
+const REGION_COLORS = ['#ff9aa2','#ffc77d','#fff07a','#a8e6a1','#86d3f0','#c3a6f5','#f7a8d8','#7fdcc4','#d9c2a5','#b8c4d6'];
+
+function hashStr(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19;}return h>>>0;}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+function shuffle(arr,rnd){for(let i=arr.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+const fmt = ms => {const s=Math.floor(ms/1000);return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;};
+const todayStr = () => {const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
+
+/* ===================== 出題 ===================== */
+function genSolution(n,rnd){
+  const cols=[],used=Array(n).fill(false);
+  (function bt(r){
+    if(r===n) return true;
+    for(const c of shuffle([...Array(n).keys()],rnd)){
+      if(used[c]||(r>0&&Math.abs(cols[r-1]-c)<=1)) continue;
+      used[c]=true;cols[r]=c;
+      if(bt(r+1)) return true;
+      used[c]=false;
+    }
+    return false;
+  })(0);
+  return cols;
+}
+function nbrs4(i,n){const r=Math.floor(i/n),c=i%n,o=[];if(r>0)o.push(i-n);if(r<n-1)o.push(i+n);if(c>0)o.push(i-1);if(c<n-1)o.push(i+1);return o;}
+function growRegions(n,sol,rnd){
+  const reg=Array(n*n).fill(-1);
+  sol.forEach((c,r)=>reg[r*n+c]=r);
+  let left=n*n-n;
+  while(left>0){
+    const edges=[];
+    for(let i=0;i<n*n;i++) if(reg[i]===-1) for(const j of nbrs4(i,n)) if(reg[j]!==-1) edges.push([i,reg[j]]);
+    const [i,g]=edges[Math.floor(rnd()*edges.length)];
+    reg[i]=g;left--;
+  }
+  return reg;
+}
+function findSolutions(n,reg,limit){
+  const colU=Array(n).fill(false),regU=Array(n).fill(false),cols=[],out=[];
+  (function bt(r){
+    if(r===n){out.push(cols.slice());return out.length>=limit;}
+    for(let c=0;c<n;c++){
+      const g=reg[r*n+c];
+      if(colU[c]||regU[g]||(r>0&&Math.abs(cols[r-1]-c)<=1)) continue;
+      colU[c]=regU[g]=true;cols[r]=c;
+      if(bt(r+1)) return true;
+      colU[c]=regU[g]=false;
+    }
+    return false;
+  })(0);
+  return out;
+}
+function regionConnected(n,reg,g){
+  const cells=[];for(let i=0;i<n*n;i++) if(reg[i]===g) cells.push(i);
+  if(!cells.length) return false;
+  const seen=new Set([cells[0]]),st=[cells[0]];
+  while(st.length){const i=st.pop();for(const j of nbrs4(i,n)) if(reg[j]===g&&!seen.has(j)){seen.add(j);st.push(j);}}
+  return seen.size===cells.length;
+}
+function makePuzzle(n,seed){
+  const rnd=mulberry32(hashStr(seed));
+  for(let attempt=0;attempt<200;attempt++){
+    const sol=genSolution(n,rnd),reg=growRegions(n,sol,rnd);
+    for(let it=0;it<400;it++){
+      const sols=findSolutions(n,reg,2);
+      if(sols.length===1) return {n,reg,sol};
+      const other=sols.find(s=>s.some((c,r)=>c!==sol[r]));
+      const cand=shuffle(other.map((c,r)=>r*n+c).filter((_,r)=>other[r]!==sol[r]),rnd);
+      let moved=false;
+      for(const cell of cand){
+        const A=reg[cell];
+        const Bs=shuffle([...new Set(nbrs4(cell,n).map(j=>reg[j]).filter(g=>g!==A))],rnd);
+        for(const B of Bs){
+          reg[cell]=B;
+          if(regionConnected(n,reg,A)){moved=true;break;}
+          reg[cell]=A;
+        }
+        if(moved) break;
+      }
+      if(!moved) break;
+    }
+  }
+  throw new Error('出題失敗');
+}
+
+/* ===================== 存檔 ===================== */
+const SAVE_KEY='cat-territory-v1';
+let save={level:1,best:{},daily:{},auto:true,wins:0};
+try{Object.assign(save,JSON.parse(localStorage.getItem(SAVE_KEY))||{});}catch(e){}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}}
+
+/* ===================== 遊戲狀態 ===================== */
+const $=id=>document.getElementById(id);
+const boardEl=$('board');
+let P=null, mode=null, marks=[], cats=new Set(), hearts=3, mistakes=0, hintsUsed=0;
+let startT=0, elapsed=0, timerId=null, finished=false, lastTap=null, drag=null;
+
+function levelSize(k){return k<=5?5:k<=15?6:k<=35?7:k<=60?8:k<=100?9:10;}
+
+function startGame(m){
+  mode=m;
+  let n,seed,title;
+  if(m.type==='level'){n=levelSize(m.level);seed='level-'+m.level;title=`第 ${m.level} 關`;}
+  else if(m.type==='daily'){n=8;seed='daily-'+m.date;title=`每日挑戰 ${m.date.slice(5)}`;}
+  else {n=m.size;seed='free-'+Math.random();title=`自由練習 ${n}×${n}`;}
+  m.n=n; $('title').textContent=title;
+  ['btnLevel','btnDaily'].forEach(id=>$(id).classList.remove('primary'));
+  if(m.type==='level') $('btnLevel').classList.add('primary');
+  if(m.type==='daily') $('btnDaily').classList.add('primary');
+  document.querySelectorAll('#sizes button').forEach(b=>b.classList.toggle('primary',m.type==='free'&&+b.dataset.n===n));
+  $('loading').classList.add('show'); boardEl.style.visibility='hidden';
+  hideOverlays();
+  setTimeout(()=>{
+    P=makePuzzle(n,seed);
+    resetBoard();
+    $('loading').classList.remove('show'); boardEl.style.visibility='';
+  },30);
+}
+function resetBoard(){
+  const n=P.n;
+  marks=Array(n*n).fill(0); cats=new Set(); hearts=3; mistakes=0; hintsUsed=0; finished=false;
+  hideOverlays(); boardEl.classList.remove('done');
+  buildBoard(); renderHearts(); setMsg('');
+  startT=performance.now(); elapsed=0;
+  clearInterval(timerId); timerId=setInterval(tick,250); tick();
+}
+function tick(){ if(!finished){elapsed=performance.now()-startT;} $('timer').textContent=fmt(elapsed); }
+
+function buildBoard(){
+  const n=P.n, avail=Math.min(580,document.querySelector('.center').clientWidth-6), cs=Math.max(28,Math.min(64,Math.floor(avail/n)));
+  boardEl.style.setProperty('--cs',cs+'px');
+  boardEl.style.gridTemplateColumns=`repeat(${n},${cs}px)`;
+  boardEl.innerHTML='';
+  for(let i=0;i<n*n;i++){
+    const r=Math.floor(i/n),c=i%n,g=P.reg[i];
+    const d=document.createElement('div');
+    d.className='cell'; d.dataset.i=i;
+    d.style.width=d.style.height=cs+'px';
+    d.style.background=REGION_COLORS[g];
+    const thick=3,thin=1;
+    d.style.borderTopWidth   = r===0?'0':(P.reg[i-n]!==g?thick:thin)/2+'px';
+    d.style.borderBottomWidth= r===n-1?'0':(P.reg[i+n]!==g?thick:thin)/2+'px';
+    d.style.borderLeftWidth  = c===0?'0':(P.reg[i-1]!==g?thick:thin)/2+'px';
+    d.style.borderRightWidth = c===n-1?'0':(P.reg[i+1]!==g?thick:thin)/2+'px';
+    if(r>0&&P.reg[i-n]===g) d.style.borderTopColor='rgba(59,47,42,.25)';
+    if(r<n-1&&P.reg[i+n]===g) d.style.borderBottomColor='rgba(59,47,42,.25)';
+    if(c>0&&P.reg[i-1]===g) d.style.borderLeftColor='rgba(59,47,42,.25)';
+    if(c<n-1&&P.reg[i+1]===g) d.style.borderRightColor='rgba(59,47,42,.25)';
+    boardEl.appendChild(d);
+  }
+}
+function cellEl(i){return boardEl.children[i];}
+function drawCell(i,animate=true){
+  const el=cellEl(i);
+  if(cats.has(i)){ if(!el.querySelector('svg')) el.innerHTML=catSVG(CAT_COLORS[P.reg[i]%CAT_COLORS.length]); }
+  else el.innerHTML = marks[i]===1?'<span class="x">✕</span>':'';
+}
+function renderHearts(){$('hearts').innerHTML=[0,1,2].map(k=>`<span class="${k<hearts?'':'lost'}">❤️</span>`).join('');}
+function setMsg(t){$('msg').textContent=t;}
+
+/* ===================== 操作 ===================== */
+function toggleX(i){ if(finished||cats.has(i)) return; marks[i]=marks[i]===1?0:1; cellEl(i).classList.remove('badx'); drawCell(i); }
+function setX(i,val){ if(cats.has(i)) return; if(marks[i]!==val){marks[i]=val;cellEl(i).classList.remove('badx');drawCell(i);} }
+
+function autoMark(i){
+  const n=P.n,r=Math.floor(i/n),c=i%n,g=P.reg[i];
+  for(let j=0;j<n*n;j++){
+    if(j===i||cats.has(j)) continue;
+    const rj=Math.floor(j/n),cj=j%n;
+    if(rj===r||cj===c||P.reg[j]===g||(Math.abs(rj-r)<=1&&Math.abs(cj-c)<=1)) setX(j,1);
+  }
+}
+function placeCat(i){
+  if(finished||cats.has(i)) return;
+  const n=P.n,r=Math.floor(i/n),c=i%n;
+  const el=cellEl(i); el.classList.remove('hint','badx');
+  if(P.sol[r]===c){
+    cats.add(i); marks[i]=0; drawCell(i);
+    if(save.auto) autoMark(i);
+    setMsg('');
+    if(cats.size===n) win();
+  }else{
+    hearts--; mistakes++; renderHearts();
+    marks[i]=1; drawCell(i);
+    el.classList.remove('wrong'); void el.offsetWidth; el.classList.add('wrong');
+    setMsg('這裡不能放貓！');
+    if(hearts<=0) lose();
+  }
+}
+function hint(){
+  if(finished) return;
+  const n=P.n;
+  boardEl.querySelectorAll('.hint').forEach(e=>e.classList.remove('hint'));
+  // 先抓錯：打了叉但其實是正解
+  for(let r=0;r<n;r++){const i=r*n+P.sol[r]; if(marks[i]===1&&!cats.has(i)){marks[i]=0;drawCell(i);cellEl(i).classList.add('hint');setMsg('框起來的這格叉叉打錯了，已幫你擦掉');hintsUsed++;return;}}
+  // 再提示一隻貓：挑選目前候選格最少的領地
+  let best=null,bestCnt=1e9;
+  for(let r=0;r<n;r++){
+    const i=r*n+P.sol[r]; if(cats.has(i)) continue;
+    const g=P.reg[i]; let cnt=0;
+    for(let j=0;j<n*n;j++) if(P.reg[j]===g&&marks[j]===0&&!cats.has(j)) cnt++;
+    if(cnt<bestCnt){bestCnt=cnt;best=i;}
+  }
+  if(best!==null){hintsUsed++; placeCat(best); if(!finished){cellEl(best).classList.add('hint');} setMsg('幫你放了一隻貓 🐾');}
+}
+function clearX(){ if(finished) return; for(let i=0;i<marks.length;i++) if(marks[i]===1){marks[i]=0;cellEl(i).classList.remove('badx');drawCell(i);} }
+
+function win(){
+  finished=true; elapsed=performance.now()-startT; tick();
+  boardEl.classList.add('done');
+  const key = mode.type==='daily' ? 'daily' : `size${P.n}`;
+  const prev=save.best[key];
+  const isBest = prev==null || elapsed<prev;
+  if(isBest) save.best[key]=elapsed;
+  save.wins=(save.wins||0)+1;
+  if(mode.type==='level' && mode.level===save.level) save.level++;
+  if(mode.type==='daily' && (save.daily[mode.date]==null||elapsed<save.daily[mode.date])) save.daily[mode.date]=elapsed;
+  persist(); refreshSide();
+  setTimeout(()=>{
+    $('winCat').innerHTML=catSVG('#f4a259');
+    $('winText').textContent=`用時 ${fmt(elapsed)}　錯誤 ${mistakes} 次　提示 ${hintsUsed} 次`;
+    $('winBest').textContent=isBest?'🎉 新紀錄！':`最佳紀錄 ${fmt(prev)}`;
+    $('btnNext').textContent = mode.type==='level' ? '下一關' : mode.type==='daily' ? '去關卡模式' : '再來一題';
+    $('winBox').classList.add('show');
+  },900);
+}
+function lose(){ finished=true; setTimeout(()=>$('loseBox').classList.add('show'),500); }
+function hideOverlays(){ $('winBox').classList.remove('show'); $('loseBox').classList.remove('show'); }
+
+/* ===================== 滑鼠事件 ===================== */
+function idxAt(x,y){const el=document.elementFromPoint(x,y);const c=el&&el.closest('.cell');return c&&boardEl.contains(c)?+c.dataset.i:null;}
+boardEl.addEventListener('contextmenu',e=>e.preventDefault());
+boardEl.addEventListener('pointerdown',e=>{
+  if(finished) return;
+  const i=idxAt(e.clientX,e.clientY); if(i==null) return;
+  e.preventDefault();
+  if(e.button===2){ placeCat(i); return; }
+  if(e.button!==0) return;
+  drag={start:i,moved:false,val:marks[i]===1?0:1,seen:new Set([i]),timer:null};
+  if(e.pointerType!=='mouse'){ // 手機：長按放貓
+    const d=drag;
+    d.timer=setTimeout(()=>{ if(drag===d&&!d.moved){ drag=null; lastTap=null; if(navigator.vibrate) try{navigator.vibrate(20);}catch(_){} placeCat(d.start);} },450);
+  }
+  boardEl.setPointerCapture(e.pointerId);
+});
+boardEl.addEventListener('pointercancel',()=>{ if(drag) clearTimeout(drag.timer); drag=null; });
+boardEl.addEventListener('pointermove',e=>{
+  if(!drag) return;
+  const i=idxAt(e.clientX,e.clientY); if(i==null||drag.seen.has(i)) return;
+  clearTimeout(drag.timer);
+  if(!drag.moved){drag.moved=true; setX(drag.start,drag.val);}
+  drag.seen.add(i); setX(i,drag.val);
+});
+boardEl.addEventListener('pointerup',e=>{
+  if(!drag) return;
+  const d=drag; drag=null; clearTimeout(d.timer);
+  if(d.moved){lastTap=null;return;}
+  const now=performance.now();
+  if(lastTap&&lastTap.i===d.start&&now-lastTap.t<350){ lastTap=null; placeCat(d.start); }
+  else { lastTap={i:d.start,t:now}; toggleX(d.start); }
+});
+
+/* ===================== 側欄 ===================== */
+function refreshSide(){
+  $('lvlBadge').textContent=`第 ${save.level} 關`;
+  $('dailyBadge').textContent=save.daily[todayStr()]!=null?'✅':'';
+  $('autoState').textContent=save.auto?'開':'關';
+  $('btnAuto').classList.toggle('on',save.auto);
+  let h=`<div class="stat"><span>完成題數</span><span>${save.wins||0}</span></div>`;
+  for(let n=5;n<=10;n++){const b=save.best['size'+n];h+=`<div class="stat"><span>${n}×${n} 最快</span><span>${b!=null?fmt(b):'-'}</span></div>`;}
+  const db=save.best.daily; h+=`<div class="stat"><span>每日挑戰最快</span><span>${db!=null?fmt(db):'-'}</span></div>`;
+  h+=`<div class="stat"><span>每日挑戰完成天數</span><span>${Object.keys(save.daily).length}</span></div>`;
+  $('stats').innerHTML=h;
+}
+$('logo').innerHTML=catSVG().replace('class="cat"','');
+const sizesEl=$('sizes');
+for(let n=5;n<=10;n++){const b=document.createElement('button');b.textContent=`${n}×${n}`;b.dataset.n=n;b.onclick=()=>startGame({type:'free',size:n});sizesEl.appendChild(b);}
+$('btnLevel').onclick=()=>startGame({type:'level',level:save.level});
+$('btnDaily').onclick=()=>startGame({type:'daily',date:todayStr()});
+$('btnAuto').onclick=()=>{save.auto=!save.auto;persist();refreshSide();};
+$('btnHint').onclick=hint;
+$('btnClear').onclick=clearX;
+$('btnRestart').onclick=()=>P&&resetBoard();
+$('btnRetry').onclick=resetBoard;
+$('btnReplay').onclick=resetBoard;
+$('btnNext').onclick=()=>{
+  if(mode.type==='level') startGame({type:'level',level:save.level});
+  else if(mode.type==='daily') startGame({type:'level',level:save.level});
+  else startGame({type:'free',size:mode.size});
+};
+let resizeT=null, lastW=innerWidth;
+addEventListener('resize',()=>{ if(innerWidth===lastW) return; lastW=innerWidth; clearTimeout(resizeT); resizeT=setTimeout(()=>{ if(P){ buildBoard(); for(let i=0;i<marks.length;i++) drawCell(i); if(finished&&cats.size===P.n) boardEl.classList.add('done'); } },150); });
+refreshSide();
+startGame({type:'level',level:save.level});
+</script>
