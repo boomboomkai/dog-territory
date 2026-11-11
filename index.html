@@ -477,13 +477,31 @@ function makePuzzle(n,seed){
 
 /* ===================== 防止手機點兩下放大 ===================== */
 (function(){
+  // 1. 遊戲畫面上，按鈕以外的地方一律不讓瀏覽器處理觸控手勢（不會放大、不會捲動）
+  document.addEventListener('touchstart',e=>{
+    const g=document.getElementById('game');
+    if(g&&!g.hidden&&g.contains(e.target)&&!e.target.closest('button')&&e.cancelable) e.preventDefault();
+  },{passive:false});
+  // 2. 任何地方連點兩下：擋掉第二下，避免 iPhone 放大
   let lastEnd=0;
   document.addEventListener('touchend',e=>{
     const now=Date.now();
-    if(now-lastEnd<=350 && e.cancelable) e.preventDefault();
+    if(now-lastEnd<=500 && e.cancelable) e.preventDefault();
     lastEnd=now;
   },{passive:false});
-  ['gesturestart','gesturechange'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+  // 3. 擋掉兩指縮放
+  ['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+  // 4. 萬一還是被放大了：自動縮回原本大小
+  const meta=document.querySelector('meta[name=viewport]');
+  const base='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';
+  let fixing=false;
+  function unzoom(){
+    if(fixing||!window.visualViewport||visualViewport.scale<=1.01||!meta) return;
+    fixing=true;
+    meta.setAttribute('content',base.replace('initial-scale=1','initial-scale=1.0001'));
+    setTimeout(()=>{ meta.setAttribute('content',base); window.scrollTo(0,0); fixing=false; },60);
+  }
+  if(window.visualViewport) visualViewport.addEventListener('resize',()=>setTimeout(unzoom,250));
 })();
 
 /* ===================== 音樂與音效（全部用程式即時合成） ===================== */
