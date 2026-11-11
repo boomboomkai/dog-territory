@@ -303,7 +303,10 @@
         <button class="b3d ghost" id="pRestart"><span data-ic="restart"></span>重新開始</button>
         <button class="b3d ghost" id="pRules"><span data-ic="help"></span>怎麼玩</button>
       </div>
-      <div class="sbtns"><button class="b3d ghost" id="pHome"><span data-ic="home"></span>回主選單</button></div>
+      <div class="sbtns two">
+        <button class="b3d ghost" id="pLevels"><span data-ic="map"></span>關卡選單</button>
+        <button class="b3d ghost" id="pHome"><span data-ic="home"></span>回主選單</button>
+      </div>
     </div>
   </div>
 </div>
@@ -999,6 +1002,7 @@ $('pauseClose').onclick=()=>{ if(!$('game').hidden) resumeGame(); else {closeShe
 $('pRestart').onclick=()=>{ if(P) resetBoard(); };
 $('pRules').onclick=()=>{ $('rulesSheet').dataset.back='pause'; openSheet('rulesSheet'); };
 $('pHome').onclick=()=>{ clearInterval(timerId); finished=true; paused=false; closeSheet('pauseSheet'); refreshHome(); showScreen('home'); };
+$('pLevels').onclick=()=>{ clearInterval(timerId); finished=true; paused=false; closeSheet('pauseSheet'); refreshHome(); showScreen('home'); $('btnLevels').onclick(); };
 function closeRules(){ closeSheet('rulesSheet'); if($('rulesSheet').dataset.back==='pause'){ $('rulesSheet').dataset.back=''; openSheet('pauseSheet'); } else Sound.play('shut'); }
 $('rulesClose').onclick=closeRules; $('rulesOk').onclick=closeRules;
 $('sizeClose').onclick=()=>{closeSheet('sizeSheet');Sound.play('shut');};
