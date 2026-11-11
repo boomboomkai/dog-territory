@@ -2,7 +2,7 @@
 <title>喵喵領地</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
   /* 版面：桌機三欄（模式 | 棋盤 | 規則），手機單欄、棋盤置頂 */
   :root{
@@ -16,19 +16,27 @@
   :root[data-theme="dark"]{
     --bg:#211b18; --panel:#2d2622; --ink:#f1e7dd; --muted:#b3a397;
     --btn:#3a312c; --btn-hover:#463b35; --veil:rgba(33,27,24,.9); --dash:#40362f; color-scheme:dark }
-  *{box-sizing:border-box}
+  *{box-sizing:border-box;touch-action:manipulation;-webkit-touch-callout:none}
+  html{touch-action:manipulation;-webkit-text-size-adjust:100%}
   body{margin:0;background:var(--bg);color:var(--ink);
     font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",system-ui,sans-serif;
     user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
   .app{display:grid;grid-template-columns:260px 1fr 260px;gap:24px;max-width:1240px;margin:0 auto;
     padding-block:24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
   @media (max-width:900px){
-    .app{grid-template-columns:1fr;gap:16px;padding-block:12px}
+    .app{grid-template-columns:minmax(0,1fr);gap:16px;padding-block:12px}
+    .app>*{min-width:0}
     .center{order:-1}
     .modes{flex-direction:row!important;flex-wrap:wrap}
     .modes button{flex:1 1 140px}
     .sizes{grid-template-columns:repeat(6,1fr)!important}
     h1{font-size:22px!important}
+  }
+  @media (max-width:520px){
+    .sizes{grid-template-columns:repeat(3,1fr)!important}
+    .modes button{flex-basis:100%}
+    .topbar{gap:8px}
+    .title{font-size:17px}
   }
   .panel{background:var(--panel);border-radius:16px;padding:18px;box-shadow:0 2px 10px rgba(80,50,30,.08)}
   h1{margin:0 0 4px;font-size:28px;display:flex;align-items:center;gap:8px}
@@ -101,6 +109,8 @@
     <h2>設定</h2>
     <div class="modes">
       <button id="btnAuto"><span>自動打叉</span><span id="autoState"></span></button>
+      <button id="btnMusic"><span>🎵 背景音樂</span><span id="musicState"></span></button>
+      <button id="btnSfx"><span>🔔 音效</span><span id="sfxState"></span></button>
     </div>
   </div>
 
@@ -257,9 +267,115 @@ function makePuzzle(n,seed){
   throw new Error('出題失敗');
 }
 
+/* ===================== 防止手機點兩下放大 ===================== */
+(function(){
+  let lastEnd=0;
+  document.addEventListener('touchend',e=>{
+    const now=Date.now();
+    if(now-lastEnd<=350 && e.cancelable) e.preventDefault();
+    lastEnd=now;
+  },{passive:false});
+  ['gesturestart','gesturechange'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+  document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
+})();
+
+/* ===================== 音樂與音效（全部用程式即時合成） ===================== */
+const Sound=(function(){
+  let ctx=null, master, musicBus, sfxBus, musicTimer=null, nextBar=0, bar=0;
+  const mtof=m=>440*Math.pow(2,(m-69)/12);
+  function ensure(){
+    if(!ctx){
+      const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null;
+      ctx=new AC();
+      const comp=ctx.createDynamicsCompressor(); comp.connect(ctx.destination);
+      master=ctx.createGain(); master.gain.value=0.9; master.connect(comp);
+      musicBus=ctx.createGain(); musicBus.gain.value=0; musicBus.connect(master);
+      sfxBus=ctx.createGain(); sfxBus.gain.value=0.8; sfxBus.connect(master);
+    }
+    if(ctx.state==='suspended') ctx.resume().catch(()=>{});
+    return ctx;
+  }
+  // 一個音：可滑音、可指定濾波
+  function tone({f,type='sine',t=0,dur=.2,vol=.2,a=.005,slide=null,dest=null,lp=null}){
+    if(!ctx) return; const s=ctx.currentTime+t;
+    const o=ctx.createOscillator(); o.type=type; o.frequency.setValueAtTime(f,s);
+    if(slide) o.frequency.exponentialRampToValueAtTime(slide,s+dur);
+    const g=ctx.createGain(); g.gain.setValueAtTime(0,s); g.gain.linearRampToValueAtTime(vol,s+a);
+    g.gain.exponentialRampToValueAtTime(0.0001,s+dur);
+    let node=o;
+    if(lp){const fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.value=lp;o.connect(fl);node=fl;}
+    node.connect(g); g.connect(dest||sfxBus); o.start(s); o.stop(s+dur+.05);
+  }
+  function meow(){
+    if(!ctx) return; const t=ctx.currentTime, k=0.9+Math.random()*0.3;
+    const o=ctx.createOscillator(); o.type='sawtooth';
+    o.frequency.setValueAtTime(480*k,t); o.frequency.linearRampToValueAtTime(820*k,t+.09); o.frequency.linearRampToValueAtTime(560*k,t+.34);
+    const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=5;
+    bp.frequency.setValueAtTime(800,t); bp.frequency.linearRampToValueAtTime(1900,t+.1); bp.frequency.linearRampToValueAtTime(900,t+.34);
+    const g=ctx.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.5,t+.03); g.gain.exponentialRampToValueAtTime(.0001,t+.38);
+    o.connect(bp); bp.connect(g); g.connect(sfxBus); o.start(t); o.stop(t+.42);
+  }
+  const SFX={
+    tap(){ tone({f:900,type:'triangle',dur:.06,vol:.12,slide:600}); },
+    tick(){ tone({f:700,type:'triangle',dur:.04,vol:.06}); },
+    cat(){ meow(); tone({f:1568,t:.02,dur:.15,vol:.05}); },
+    wrong(){ tone({f:220,type:'square',dur:.28,vol:.09,slide:110,lp:900}); tone({f:233,type:'square',t:.02,dur:.26,vol:.06,slide:116,lp:900}); },
+    hint(){ [1319,1568,2093].forEach((f,i)=>tone({f,t:i*.07,dur:.25,vol:.07})); },
+    win(){ [72,76,79,84,79,84,88].forEach((m,i)=>tone({f:mtof(m),type:'triangle',t:i*.11,dur:.35,vol:.14})); setTimeout(meow,850); },
+    lose(){ [67,63,60,55].forEach((m,i)=>tone({f:mtof(m),type:'triangle',t:i*.22,dur:.4,vol:.12})); },
+    click(){ tone({f:1200,type:'sine',dur:.05,vol:.06}); }
+  };
+  function play(name){ if(!save.sfx) return; if(!ensure()) return; SFX[name]&&SFX[name](); }
+
+  // 背景音樂：慢板 Cmaj7–Am7–Fmaj7–G 循環，軟墊和弦＋低音＋隨機五聲音階旋律
+  const BPM=74, BEAT=60/BPM;
+  const CHORDS=[[60,64,67,71],[57,60,64,67],[53,57,60,64],[55,59,62,65]];
+  const MEL=[72,74,76,79,81,84];
+  function scheduleBar(t0){
+    const ch=CHORDS[bar%4];
+    ch.forEach(m=>{ // 軟墊
+      const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=mtof(m);
+      const g=ctx.createGain(); const L=BEAT*4;
+      g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(.035,t0+.8); g.gain.setValueAtTime(.035,t0+L-.6); g.gain.linearRampToValueAtTime(0,t0+L+.3);
+      o.connect(g); g.connect(musicBus); o.start(t0); o.stop(t0+L+.4);
+    });
+    [0,2].forEach(b=>{ // 低音
+      const s=t0+b*BEAT, o=ctx.createOscillator(); o.type='triangle'; o.frequency.value=mtof(ch[0]-24);
+      const g=ctx.createGain(); g.gain.setValueAtTime(0,s); g.gain.linearRampToValueAtTime(.12,s+.02); g.gain.exponentialRampToValueAtTime(.0001,s+BEAT*1.8);
+      o.connect(g); g.connect(musicBus); o.start(s); o.stop(s+BEAT*2);
+    });
+    for(let k=0;k<8;k++){ // 旋律（八分音符，隨機留白）
+      if(Math.random()>(k%2?0.3:0.5)) continue;
+      const s=t0+k*BEAT/2, m=MEL[Math.floor(Math.random()*MEL.length)];
+      const o=ctx.createOscillator(); o.type='triangle'; o.frequency.value=mtof(m);
+      const g=ctx.createGain(); g.gain.setValueAtTime(0,s); g.gain.linearRampToValueAtTime(.05,s+.01); g.gain.exponentialRampToValueAtTime(.0001,s+.6);
+      o.connect(g); g.connect(musicBus); o.start(s); o.stop(s+.65);
+    }
+    bar++;
+  }
+  function startMusic(){
+    if(!ensure()||musicTimer) return;
+    nextBar=Math.max(nextBar,ctx.currentTime+.1);
+    musicBus.gain.cancelScheduledValues(ctx.currentTime);
+    musicBus.gain.setTargetAtTime(.55,ctx.currentTime,.5);
+    musicTimer=setInterval(()=>{ while(nextBar<ctx.currentTime+1.2){ scheduleBar(nextBar); nextBar+=BEAT*4; } },200);
+  }
+  function stopMusic(){
+    if(!ctx||!musicTimer) return;
+    clearInterval(musicTimer); musicTimer=null;
+    musicBus.gain.cancelScheduledValues(ctx.currentTime);
+    musicBus.gain.setTargetAtTime(0,ctx.currentTime,.3);
+  }
+  // 第一次觸碰畫面時才能開始出聲（瀏覽器規定）
+  function unlock(){ if(save.music) startMusic(); else ensure(); }
+  document.addEventListener('pointerdown',unlock,true);
+  document.addEventListener('visibilitychange',()=>{ if(!ctx) return; if(document.hidden) ctx.suspend().catch(()=>{}); else ctx.resume().catch(()=>{}); });
+  return {play,startMusic,stopMusic,state:()=>ctx?ctx.state+(musicTimer?' / 音樂播放中':''):'未啟動'};
+})();
+
 /* ===================== 存檔 ===================== */
 const SAVE_KEY='cat-territory-v1';
-let save={level:1,best:{},daily:{},auto:true,wins:0};
+let save={level:1,best:{},daily:{},auto:true,wins:0,music:true,sfx:true};
 try{Object.assign(save,JSON.parse(localStorage.getItem(SAVE_KEY))||{});}catch(e){}
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}}
 
@@ -333,7 +449,7 @@ function renderHearts(){$('hearts').innerHTML=[0,1,2].map(k=>`<span class="${k<h
 function setMsg(t){$('msg').textContent=t;}
 
 /* ===================== 操作 ===================== */
-function toggleX(i){ if(finished||cats.has(i)) return; marks[i]=marks[i]===1?0:1; cellEl(i).classList.remove('badx'); drawCell(i); }
+function toggleX(i){ if(finished||cats.has(i)) return; Sound.play('tap'); marks[i]=marks[i]===1?0:1; cellEl(i).classList.remove('badx'); drawCell(i); }
 function setX(i,val){ if(cats.has(i)) return; if(marks[i]!==val){marks[i]=val;cellEl(i).classList.remove('badx');drawCell(i);} }
 
 function autoMark(i){
@@ -352,9 +468,10 @@ function placeCat(i){
     cats.add(i); marks[i]=0; drawCell(i);
     if(save.auto) autoMark(i);
     setMsg('');
-    if(cats.size===n) win();
+    if(cats.size===n) win(); else Sound.play('cat');
   }else{
     hearts--; mistakes++; renderHearts();
+    if(hearts>0) Sound.play('wrong');
     marks[i]=1; drawCell(i);
     el.classList.remove('wrong'); void el.offsetWidth; el.classList.add('wrong');
     setMsg('這裡不能放貓！');
@@ -375,13 +492,13 @@ function hint(){
     for(let j=0;j<n*n;j++) if(P.reg[j]===g&&marks[j]===0&&!cats.has(j)) cnt++;
     if(cnt<bestCnt){bestCnt=cnt;best=i;}
   }
-  if(best!==null){hintsUsed++; placeCat(best); if(!finished){cellEl(best).classList.add('hint');} setMsg('幫你放了一隻貓 🐾');}
+  if(best!==null){hintsUsed++; Sound.play('hint'); placeCat(best); if(!finished){cellEl(best).classList.add('hint');} setMsg('幫你放了一隻貓 🐾');}
 }
 function clearX(){ if(finished) return; for(let i=0;i<marks.length;i++) if(marks[i]===1){marks[i]=0;cellEl(i).classList.remove('badx');drawCell(i);} }
 
 function win(){
   finished=true; elapsed=performance.now()-startT; tick();
-  boardEl.classList.add('done');
+  boardEl.classList.add('done'); Sound.play('win');
   const key = mode.type==='daily' ? 'daily' : `size${P.n}`;
   const prev=save.best[key];
   const isBest = prev==null || elapsed<prev;
@@ -398,7 +515,7 @@ function win(){
     $('winBox').classList.add('show');
   },900);
 }
-function lose(){ finished=true; setTimeout(()=>$('loseBox').classList.add('show'),500); }
+function lose(){ finished=true; Sound.play('lose'); setTimeout(()=>$('loseBox').classList.add('show'),500); }
 function hideOverlays(){ $('winBox').classList.remove('show'); $('loseBox').classList.remove('show'); }
 
 /* ===================== 滑鼠事件 ===================== */
@@ -423,7 +540,7 @@ boardEl.addEventListener('pointermove',e=>{
   const i=idxAt(e.clientX,e.clientY); if(i==null||drag.seen.has(i)) return;
   clearTimeout(drag.timer);
   if(!drag.moved){drag.moved=true; setX(drag.start,drag.val);}
-  drag.seen.add(i); setX(i,drag.val);
+  drag.seen.add(i); setX(i,drag.val); Sound.play('tick');
 });
 boardEl.addEventListener('pointerup',e=>{
   if(!drag) return;
@@ -440,6 +557,8 @@ function refreshSide(){
   $('dailyBadge').textContent=save.daily[todayStr()]!=null?'✅':'';
   $('autoState').textContent=save.auto?'開':'關';
   $('btnAuto').classList.toggle('on',save.auto);
+  $('musicState').textContent=save.music?'開':'關'; $('btnMusic').classList.toggle('on',save.music);
+  $('sfxState').textContent=save.sfx?'開':'關'; $('btnSfx').classList.toggle('on',save.sfx);
   let h=`<div class="stat"><span>完成題數</span><span>${save.wins||0}</span></div>`;
   for(let n=5;n<=10;n++){const b=save.best['size'+n];h+=`<div class="stat"><span>${n}×${n} 最快</span><span>${b!=null?fmt(b):'-'}</span></div>`;}
   const db=save.best.daily; h+=`<div class="stat"><span>每日挑戰最快</span><span>${db!=null?fmt(db):'-'}</span></div>`;
@@ -451,7 +570,9 @@ const sizesEl=$('sizes');
 for(let n=5;n<=10;n++){const b=document.createElement('button');b.textContent=`${n}×${n}`;b.dataset.n=n;b.onclick=()=>startGame({type:'free',size:n});sizesEl.appendChild(b);}
 $('btnLevel').onclick=()=>startGame({type:'level',level:save.level});
 $('btnDaily').onclick=()=>startGame({type:'daily',date:todayStr()});
-$('btnAuto').onclick=()=>{save.auto=!save.auto;persist();refreshSide();};
+$('btnAuto').onclick=()=>{save.auto=!save.auto;persist();refreshSide();Sound.play('click');};
+$('btnMusic').onclick=()=>{save.music=!save.music;persist();refreshSide();save.music?Sound.startMusic():Sound.stopMusic();};
+$('btnSfx').onclick=()=>{save.sfx=!save.sfx;persist();refreshSide();Sound.play('click');};
 $('btnHint').onclick=hint;
 $('btnClear').onclick=clearX;
 $('btnRestart').onclick=()=>P&&resetBoard();
