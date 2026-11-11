@@ -301,6 +301,29 @@
 
   @media (min-width:700px){ .moon{width:90px;height:90px} }
   @media (max-height:640px){ .logo{width:84px;height:84px} .logo svg{width:60px;height:60px} .hero h1{font-size:36px} .tool .knob{width:52px;height:52px} }
+  /* ---------- 手機橫拿：遊戲左右三欄、首頁左右兩欄 ---------- */
+  @media (orientation:landscape) and (max-height:560px){
+    #game{display:grid;max-width:none;column-gap:20px;align-items:center;padding-block:max(8px,env(safe-area-inset-top,0px)) max(8px,env(safe-area-inset-bottom,0px));
+      grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-rows:auto auto 1fr auto;
+      grid-template-areas:"top board tools" "hearts board tools" ". board tools" "msg board tools"}
+    .gtop{grid-area:top;grid-template-columns:auto 1fr;grid-template-areas:"pause icons" "title title";row-gap:10px;justify-self:end;width:min(100%,260px)}
+    #btnPause{grid-area:pause} .gright{grid-area:icons;justify-self:end} .gtitle{grid-area:title}
+    .gtitle .lvname{font-size:14px}
+    .hearts{grid-area:hearts;justify-self:end;width:min(100%,260px);margin-top:6px}
+    .msg{grid-area:msg;justify-self:end;width:min(100%,260px);height:auto;min-height:22px;flex-wrap:wrap;text-align:center}
+    .boardArea{grid-area:board;height:100%;width:min(calc(100dvh - 16px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)),58vw)}
+    .gtools{grid-area:tools;flex-direction:column;justify-self:start;justify-content:center;gap:12px;padding:0}
+    .tool{flex-direction:row;gap:12px}
+    .tool .knob{width:52px;height:52px;border-radius:18px}
+    #home{display:grid;max-width:880px;grid-template-columns:1fr 1fr;column-gap:28px;row-gap:10px;align-content:center;padding-top:max(56px,env(safe-area-inset-top,0px))}
+    #home .hero{grid-column:1;grid-row:1 / span 5;margin:0}
+    #home>button:not(.acct),#home .homebar{grid-column:2}
+    #home .tile{padding:10px 14px} #home .tile .bub{width:40px;height:40px}
+    #home .b3d{padding:12px 18px;font-size:18px}
+    #home .homebar{margin-top:0}
+    .logo{width:96px;height:96px} .logo svg{width:70px;height:70px} .hero h1{font-size:36px}
+    .roofs{height:60px}
+  }
   @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
 </style>
 
