@@ -104,7 +104,7 @@
   #game{gap:8px}
   .gtop{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px}
   .gtitle{text-align:center;line-height:1.15}
-  .gtitle .lv{font-size:15px;color:var(--ink-dim)}
+  .gtitle .lvname{font-size:15px;color:var(--ink-dim)}
   .gtitle .tm{font-family:var(--num);font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.03em}
   .gright{display:flex;gap:8px}
   .hearts{display:flex;justify-content:center;gap:8px;height:28px}
@@ -184,6 +184,30 @@
     background-color:var(--c);background-image:linear-gradient(rgba(36,28,63,.35) 1px,transparent 1px),linear-gradient(90deg,rgba(36,28,63,.35) 1px,transparent 1px)}
   .sz .n{font-family:var(--num);font-size:20px;font-weight:600}
   .sz .best{font-size:11px;color:var(--ink-dim);font-variant-numeric:tabular-nums}
+  #levelSheet .sheet{display:flex;flex-direction:column}
+  #levelBody{overflow-y:auto;min-height:0;margin:0 -8px;padding:0 8px 8px}
+  .lvsec{margin:14px 0 8px;display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-dim)}
+  .lvsec:first-child{margin-top:4px}
+  .lvsec b{font-family:var(--num);font-weight:600;color:var(--ink);background:var(--glass);border-radius:99px;padding:2px 10px;font-size:13px}
+  .lvgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
+  .lv{position:relative;aspect-ratio:1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+    font-family:var(--num);font-size:19px;font-weight:600;background:linear-gradient(180deg,#43397a,#352c66);border:1px solid var(--glass-line);
+    box-shadow:0 4px 0 #1a1533;transition:transform .08s,box-shadow .08s}
+  .lv:active{transform:translateY(3px);box-shadow:0 1px 0 #1a1533}
+  .lv small{font-size:10px;font-weight:500;opacity:.75;font-variant-numeric:tabular-nums}
+  .lv.done{background:var(--mint);color:var(--btn-ink);box-shadow:0 4px 0 var(--mint-d),inset 0 2px 0 rgba(255,255,255,.45);border-color:transparent}
+  .lv.done:active{box-shadow:0 1px 0 var(--mint-d)}
+  .lv.cur{background:var(--peach);color:var(--btn-ink);box-shadow:0 4px 0 var(--peach-d),0 0 0 3px rgba(255,164,126,.35),inset 0 2px 0 rgba(255,255,255,.45);border-color:transparent;animation:curPulse 1.6s ease-in-out infinite}
+  .lv.locked{color:rgba(255,255,255,.28);cursor:default;box-shadow:0 4px 0 #1a1533;opacity:.7}
+  .lv.locked .ic{width:16px;height:16px}
+  @keyframes curPulse{50%{box-shadow:0 4px 0 var(--peach-d),0 0 0 6px rgba(255,164,126,.18),inset 0 2px 0 rgba(255,255,255,.45)}}
+  .endless{display:flex;align-items:center;gap:14px;width:100%;text-align:left;margin-top:4px;padding:14px;border-radius:18px;
+    background:linear-gradient(135deg,#5a4a9a,#3a2f70);border:1px solid var(--glass-line);box-shadow:0 4px 0 #1a1533}
+  .endless:active{transform:translateY(3px);box-shadow:0 1px 0 #1a1533}
+  .endless .bub{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:var(--lav);color:var(--btn-ink);flex:none}
+  .endless .bub .ic{width:26px;height:26px}
+  .endless .t1{font-size:17px} .endless .t2{font-size:12px;color:var(--ink-dim);margin-top:2px}
+  .endless.locked{opacity:.5;cursor:default}
   .stat{display:flex;justify-content:space-between;align-items:center;padding:11px 2px;border-bottom:1px solid rgba(255,255,255,.07);font-size:15px}
   .stat span:last-child{font-family:var(--num);font-weight:600;font-variant-numeric:tabular-nums}
   .bigstats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
@@ -220,6 +244,11 @@
     <p>幫每一隻貓找到自己的地盤</p>
   </div>
   <button class="b3d" id="btnPlay"><span id="playIcon"></span><span id="playText">開始第 1 關</span><span class="chip" id="playChip">5×5</span></button>
+  <button class="tile" id="btnLevels" style="--c:var(--butter)">
+    <span class="bub" data-ic="map"></span>
+    <span class="txt"><div class="t1">選擇關卡</div><div class="t2" id="levelsSub">第 1–100 關</div></span>
+    <span class="chev" data-ic="chev"></span>
+  </button>
   <button class="tile" id="btnDaily" style="--c:var(--mint)">
     <span class="bub" id="icDaily"></span>
     <span class="txt"><div class="t1">每日挑戰</div><div class="t2" id="dailySub">每天一題 8×8</div></span>
@@ -242,7 +271,7 @@
 <main class="screen" id="game" hidden>
   <div class="gtop">
     <button class="ibtn" id="btnPause" aria-label="暫停" data-ic="pause"></button>
-    <div class="gtitle"><div class="lv" id="title">第 1 關</div><div class="tm" id="timer">0:00</div></div>
+    <div class="gtitle"><div class="lvname" id="title">第 1 關</div><div class="tm" id="timer">0:00</div></div>
     <div class="gright">
       <button class="ibtn" id="qMusic" aria-label="背景音樂"></button>
       <button class="ibtn" id="qSfx" aria-label="音效"></button>
@@ -287,6 +316,13 @@
     <p><span class="sic" style="--c:var(--mint)" data-ic="hand"></span><span><b>點一下</b>打叉，<b>滑過去</b>連續打叉；<b>點兩下</b>、<b>長按</b>或<b>右鍵</b>放貓。</span></p>
     <p><span class="sic" style="--c:var(--rose)" data-ic="heart"></span><span>放錯貓扣一顆愛心，共 3 顆。每題都只有一個答案，一步一步推理就解得出來。</span></p>
     <div class="sbtns"><button class="b3d" id="rulesOk">知道了</button></div>
+  </div>
+</div>
+
+<div class="backdrop" id="levelSheet" hidden>
+  <div class="sheet" role="dialog" aria-labelledby="levelTitle">
+    <div class="shead"><h2 id="levelTitle">選擇關卡</h2><button class="ibtn" id="levelClose" aria-label="關閉" data-ic="close"></button></div>
+    <div id="levelBody"></div>
   </div>
 </div>
 
@@ -365,7 +401,10 @@ const ICON={
   cross:'<path d="M7 7l10 10M17 7L7 17"/>',
   hand:'<path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M12 10V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M15 10.5V6.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7h-.5a6 6 0 0 1-4.9-2.5L3 14.5a1.6 1.6 0 0 1 2.5-2L9 15V8.5a1.5 1.5 0 0 1 3 0"/>',
   heart:'<path d="M12 20s-7-4.3-8.8-8.6C1.8 8 3.8 4.8 7.1 4.8c1.9 0 3.2 1 4.9 2.8 1.7-1.8 3-2.8 4.9-2.8 3.3 0 5.3 3.2 3.9 6.6C19 15.7 12 20 12 20z"/>',
-  clock:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M10 2.5h4"/>'
+  clock:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M10 2.5h4"/>',
+  map:'<path d="M4 6.5l5-2.5 6 2.5 5-2.5v13.5l-5 2.5-6-2.5-5 2.5z"/><path d="M9 4v13.5M15 6.5V20"/>',
+  lock:'<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  dice:'<rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><circle cx="15" cy="9" r="1.2" fill="currentColor"/><circle cx="9" cy="15" r="1.2" fill="currentColor"/>'
 };
 const ic=(n,extra='')=>`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]}${extra}</svg>`;
 const HEART='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.6-4.7-9.6-9.4C.9 7.9 3.1 4.3 6.8 4.3c2.1 0 3.5 1.1 5.2 3.1 1.7-2 3.1-3.1 5.2-3.1 3.7 0 5.9 3.6 4.4 7.3C19.6 16.3 12 21 12 21z"/></svg>';
@@ -702,12 +741,13 @@ const boardEl=$('board');
 let P=null, mode=null, marks=[], cats=new Set(), hearts=3, mistakes=0, hintsUsed=0;
 let startT=0, elapsed=0, timerId=null, finished=false, paused=false, pauseAt=0, lastTap=null, drag=null, msgT=null;
 
+const MAX_LEVEL=100;
 function levelSize(k){return k<=5?5:k<=15?6:k<=35?7:k<=60?8:k<=100?9:10;}
 
 function startGame(m){
   mode=m;
   let n,seed,title;
-  if(m.type==='level'){n=levelSize(m.level);seed='level-'+m.level;title=`第 ${m.level} 關 · ${n}×${n}`;}
+  if(m.type==='level'){n=levelSize(m.level);seed=m.level<=MAX_LEVEL?'level-'+m.level:'endless-'+m.level+'-'+Math.random();title=`第 ${m.level} 關 · ${n}×${n}`;}
   else if(m.type==='daily'){n=8;seed='daily-'+m.date;title=`每日挑戰 · ${+m.date.slice(5,7)}/${+m.date.slice(8)}`;}
   else {n=m.size;seed='free-'+Math.random();title=`自由練習 · ${n}×${n}`;}
   m.n=n; $('title').textContent=title;
@@ -838,14 +878,18 @@ function win(){
   const isBest=prev==null||elapsed<prev;
   if(isBest) save.best[key]=elapsed;
   save.wins=(save.wins||0)+1;
-  if(mode.type==='level'&&mode.level===save.level) save.level++;
+  if(mode.type==='level'){
+    save.levels=save.levels||{};
+    if(mode.level<=MAX_LEVEL&&(save.levels[mode.level]==null||elapsed<save.levels[mode.level])) save.levels[mode.level]=Math.round(elapsed);
+    if(mode.level===save.level) save.level++;
+  }
   if(mode.type==='daily'&&(save.daily[mode.date]==null||elapsed<save.daily[mode.date])) save.daily[mode.date]=elapsed;
   persist(); refreshHome();
   setTimeout(()=>{
     $('winSub').textContent=mode.type==='level'?`第 ${mode.level} 關完成`:mode.type==='daily'?'今天的每日挑戰完成了':`${P.n}×${P.n} 完成`;
     $('winChips').innerHTML=`<span>${ic('clock')}${fmt(elapsed)}</span><span>${ic('heart')}錯 ${mistakes}</span><span>${ic('bulb')}提示 ${hintsUsed}</span>`;
     $('winBest').innerHTML=isBest?'<span class="newbest">新紀錄！</span>':`<div class="sub" style="margin-top:10px">最佳紀錄 ${fmt(prev)}</div>`;
-    $('btnNext').innerHTML=ic('play')+(mode.type==='level'?`下一關（第 ${save.level} 關）`:mode.type==='daily'?'去關卡模式':'再來一題');
+    $('btnNext').innerHTML=ic('play')+(mode.type==='level'?`下一關（第 ${mode.level+1} 關）`:mode.type==='daily'?'去關卡模式':'再來一題');
     openSheet('winSheet');
   },1000);
 }
@@ -891,6 +935,32 @@ function refreshHome(){
   const d=todayStr(), done=save.daily[d]!=null;
   $('dailySub').textContent=`${+d.slice(5,7)}/${+d.slice(8)} · 8×8`+(done?` · ${fmt(save.daily[d])}`:'');
   $('dailyDone').hidden=!done;
+  const cleared=Math.min(save.level-1,MAX_LEVEL);
+  $('levelsSub').textContent=save.level>MAX_LEVEL?`100 關全破！之後是隨機 10×10`:`已過 ${cleared} / ${MAX_LEVEL} 關，100 關後隨機出題`;
+}
+const SIZE_RANGES=[[1,5],[6,15],[16,35],[36,60],[61,100]];
+function renderLevels(){
+  const lv=save.levels||{};
+  let h='';
+  for(const [a,b] of SIZE_RANGES){
+    const n=levelSize(a);
+    h+=`<div class="lvsec"><b>${n}×${n}</b>第 ${a}–${b} 關</div><div class="lvgrid">`;
+    for(let k=a;k<=b;k++){
+      if(k<save.level) h+=`<button class="lv done" data-k="${k}">${k}<small>${lv[k]!=null?fmt(lv[k]):'✓'}</small></button>`;
+      else if(k===save.level) h+=`<button class="lv cur" data-k="${k}" id="lvCur">${k}<small>開始</small></button>`;
+      else h+=`<button class="lv locked" disabled aria-label="第 ${k} 關（未解鎖）">${ic('lock')}</button>`;
+    }
+    h+='</div>';
+  }
+  const open=save.level>MAX_LEVEL;
+  h+=`<div class="lvsec"><b>10×10</b>第 101 關以後</div>
+    <button class="endless${open?'':' locked'}" id="lvEndless" ${open?'':'disabled'}>
+      <span class="bub">${ic(open?'dice':'lock')}</span>
+      <span><div class="t1">${open?`隨機挑戰 · 第 ${save.level} 關`:'隨機挑戰'}</div><div class="t2">${open?'每次都是全新的 10×10 題目':'過完第 100 關後解鎖，每次都是新題目'}</div></span>
+    </button>`;
+  $('levelBody').innerHTML=h;
+  $('levelBody').querySelectorAll('.lv[data-k]').forEach(b=>b.onclick=()=>startGame({type:'level',level:+b.dataset.k}));
+  if(open) $('lvEndless').onclick=()=>startGame({type:'level',level:save.level});
 }
 function refreshToggles(){
   $('swAuto').checked=save.auto; $('swMusic').checked=save.music; $('swSfx').checked=save.sfx;
@@ -916,6 +986,8 @@ function renderStats(){
 
 $('btnPlay').onclick=()=>startGame({type:'level',level:save.level});
 $('btnDaily').onclick=()=>startGame({type:'daily',date:todayStr()});
+$('btnLevels').onclick=()=>{ renderLevels(); openSheet('levelSheet'); const c=$('lvCur'); if(c) c.scrollIntoView({block:'center'}); };
+$('levelClose').onclick=()=>{closeSheet('levelSheet');Sound.play('shut');};
 $('btnFree').onclick=()=>{renderSizes();openSheet('sizeSheet');};
 $('hbStats').onclick=()=>{renderStats();openSheet('statsSheet');};
 $('hbRules').onclick=()=>openSheet('rulesSheet');
@@ -945,6 +1017,7 @@ $('btnRetry').onclick=resetBoard;
 $('btnReplay').onclick=()=>{ if(mode.type==='free') startGame({type:'free',size:mode.size}); else resetBoard(); };
 $('btnNext').onclick=()=>{
   if(mode.type==='free') startGame({type:'free',size:mode.size});
+  else if(mode.type==='level') startGame({type:'level',level:Math.min(mode.level+1,save.level)});
   else startGame({type:'level',level:save.level});
 };
 const goHome=()=>{ clearInterval(timerId); document.querySelectorAll('.backdrop').forEach(b=>b.hidden=true); refreshHome(); showScreen('home'); };
@@ -955,7 +1028,7 @@ document.querySelectorAll('.backdrop').forEach(b=>b.addEventListener('click',e=>
   if(e.target!==b) return;
   if(b.id==='pauseSheet') $('pauseClose').onclick();
   else if(b.id==='rulesSheet') closeRules();
-  else if(b.id==='sizeSheet'||b.id==='statsSheet'){ closeSheet(b.id); Sound.play('shut'); }
+  else if(b.id==='sizeSheet'||b.id==='statsSheet'||b.id==='levelSheet'){ closeSheet(b.id); Sound.play('shut'); }
 }));
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(!$('pauseSheet').hidden) $('pauseClose').onclick(); else if(!$('game').hidden&&!anySheetOpen()) pauseGame(); } });
 document.addEventListener('visibilitychange',()=>{ if(document.hidden&&!$('game').hidden&&!finished&&!paused) pauseGame(); });
