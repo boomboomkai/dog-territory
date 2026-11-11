@@ -246,6 +246,39 @@
   .tool .knob svg.pencat{width:40px;height:40px;position:relative}
   #penLabel{white-space:nowrap}
   .bigstats.three{grid-template-columns:repeat(3,1fr)}
+  /* 帳號與排行榜 */
+  .acct{position:absolute;top:max(14px,env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px));z-index:2;
+    display:flex;align-items:center;gap:8px;padding:5px 14px 5px 5px;border-radius:99px;background:var(--glass);border:1px solid var(--glass-line);font-size:15px;max-width:60%}
+  .acct:active{transform:scale(.95)}
+  .acct span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .acct-av{width:30px;height:30px;border-radius:50%;background:#43397a;display:grid;place-items:center;flex:none;overflow:hidden}
+  .acct-av svg{width:28px;height:28px}
+  .acct.in{border-color:rgba(134,223,198,.5)}
+  .homebar{gap:18px}
+  .form{display:grid;gap:12px}
+  .form label{font-size:14px;color:var(--ink-dim)}
+  .form input{width:100%;font:inherit;font-size:18px;color:var(--ink);background:rgba(0,0,0,.25);border:1px solid var(--glass-line);border-radius:16px;
+    padding:12px 14px;outline:none;user-select:text;-webkit-user-select:text;touch-action:auto}
+  .form input:focus{border-color:var(--butter)}
+  .form .hint{font-size:12px;color:var(--ink-dim);line-height:1.5}
+  .me-card{display:flex;align-items:center;gap:14px;padding:14px;border-radius:18px;background:var(--glass);border:1px solid var(--glass-line);margin-bottom:6px}
+  .me-card .acct-av{width:56px;height:56px} .me-card .acct-av svg{width:52px;height:52px}
+  .me-card .nm{font-size:22px} .me-card .sc{font-size:13px;color:var(--ink-dim);margin-top:2px}
+  .me-card .sc b{font-family:var(--num);color:var(--butter);font-size:16px}
+  .rk{display:flex;align-items:center;gap:12px;padding:10px 6px;border-bottom:1px solid rgba(255,255,255,.07);font-size:16px}
+  .rk .no{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--num);font-weight:600;font-size:14px;background:var(--glass);flex:none}
+  .rk:nth-child(1) .no{background:#ffd76e;color:#5a3a00} .rk:nth-child(2) .no{background:#d9dbe8;color:#3a3a50} .rk:nth-child(3) .no{background:#e8a26a;color:#4a2400}
+  .rk .who{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rk .val{font-family:var(--num);font-weight:600;font-variant-numeric:tabular-nums}
+  .rk .sub2{font-size:12px;color:var(--ink-dim);margin-left:6px}
+  .rk.me{background:rgba(255,215,110,.12);border-radius:12px}
+  .rk.me .who::after{content:"（你）";color:var(--butter);font-size:13px}
+  .rank-empty{padding:28px 8px;text-align:center;color:var(--ink-dim);line-height:1.7}
+  #rankSheet .sheet{display:flex;flex-direction:column} #rankBody{overflow-y:auto;min-height:0}
+  .winscore{margin-top:12px;font-family:var(--num);font-size:30px;font-weight:700;color:var(--butter);text-shadow:0 2px 0 rgba(0,0,0,.3)}
+  .winscore small{font-family:var(--font);font-size:14px;font-weight:400;color:var(--ink-dim);margin-left:6px}
+  .winonline{min-height:20px;margin-top:4px;font-size:13px;color:var(--ink-dim)}
+  .winonline button{color:var(--butter);text-decoration:underline;font-size:13px}
   .stat{display:flex;justify-content:space-between;align-items:center;padding:11px 2px;border-bottom:1px solid rgba(255,255,255,.07);font-size:15px}
   .stat span:last-child{font-family:var(--num);font-weight:600;font-variant-numeric:tabular-nums}
   .bigstats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
@@ -276,6 +309,7 @@
 
 <!-- ===================== 首頁 ===================== -->
 <main class="screen" id="home">
+  <button class="acct" id="acctBtn"><span class="acct-av" id="acctAv"></span><span id="acctName">登入</span></button>
   <div class="hero">
     <div class="logo" id="logo"></div>
     <h1>汪汪領地</h1>
@@ -299,6 +333,7 @@
     <span class="chev" data-ic="chev"></span>
   </button>
   <div class="homebar">
+    <button class="hb" id="hbRank"><span class="ibtn" data-ic="podium"></span>排行榜</button>
     <button class="hb" id="hbStats"><span class="ibtn" data-ic="trophy"></span>紀錄</button>
     <button class="hb" id="hbRules"><span class="ibtn" data-ic="help"></span>怎麼玩</button>
     <button class="hb" id="hbSettings"><span class="ibtn" data-ic="sliders"></span>設定</button>
@@ -384,6 +419,21 @@
   </div>
 </div>
 
+<div class="backdrop" id="acctSheet" hidden>
+  <div class="sheet" role="dialog" aria-labelledby="acctTitle">
+    <div class="shead"><h2 id="acctTitle">帳號</h2><button class="ibtn" id="acctClose" aria-label="關閉" data-ic="close"></button></div>
+    <div id="acctBody"></div>
+  </div>
+</div>
+
+<div class="backdrop" id="rankSheet" hidden>
+  <div class="sheet" role="dialog" aria-labelledby="rankTitle">
+    <div class="shead"><h2 id="rankTitle">排行榜</h2><button class="ibtn" id="rankClose" aria-label="關閉" data-ic="close"></button></div>
+    <div class="seg" id="rankSeg"></div>
+    <div id="rankBody"></div>
+  </div>
+</div>
+
 <div class="backdrop" id="statsSheet" hidden>
   <div class="sheet" role="dialog" aria-labelledby="statsTitle">
     <div class="shead"><h2 id="statsTitle">紀錄</h2><button class="ibtn" id="statsClose" aria-label="關閉" data-ic="close"></button></div>
@@ -398,6 +448,8 @@
     <div class="sub" id="winSub"></div>
     <div class="chips" id="winChips"></div>
     <div id="winBest"></div>
+    <div class="winscore" id="winScore"></div>
+    <div class="winonline" id="winOnline"></div>
     <div class="sbtns"><button class="b3d" id="btnNext">下一關</button></div>
     <div class="sbtns two">
       <button class="b3d ghost" id="btnReplay"><span data-ic="restart"></span>再玩一次</button>
@@ -454,6 +506,8 @@ const ICON={
   hand:'<path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M12 10V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M15 10.5V6.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7h-.5a6 6 0 0 1-4.9-2.5L3 14.5a1.6 1.6 0 0 1 2.5-2L9 15V8.5a1.5 1.5 0 0 1 3 0"/>',
   heart:'<path d="M12 20s-7-4.3-8.8-8.6C1.8 8 3.8 4.8 7.1 4.8c1.9 0 3.2 1 4.9 2.8 1.7-1.8 3-2.8 4.9-2.8 3.3 0 5.3 3.2 3.9 6.6C19 15.7 12 20 12 20z"/>',
   clock:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M10 2.5h4"/>',
+  podium:'<path d="M9 21V10h6v11M3 21v-6h6M15 21v-8h6v8M2 21h20"/><path d="M12 3.5l.9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2L9.1 5.6l2-.3z"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
   copy:'<rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M15 9V6.5A2.5 2.5 0 0 0 12.5 4h-6A2.5 2.5 0 0 0 4 6.5v6A2.5 2.5 0 0 0 6.5 15H9"/>',
   map:'<path d="M4 6.5l5-2.5 6 2.5 5-2.5v13.5l-5 2.5-6-2.5-5 2.5z"/><path d="M9 4v13.5M15 6.5V20"/>',
   lock:'<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
@@ -1060,7 +1114,19 @@ function win(){
   }
   if(mode.type==='daily'&&(save.daily[mode.date]==null||elapsed<save.daily[mode.date])) save.daily[mode.date]=elapsed;
   persist(); refreshHome();
+  const score=calcScore(P.n,mode.diff,elapsed,mistakes,hintsUsed);
+  const up=submitRun({code:mode.code,n:P.n,d:mode.diff,ms:Math.round(elapsed),score}).catch(e=>({status:'error',e}));
   setTimeout(()=>{
+    $('winScore').innerHTML=`+${score}<small>分</small>`;
+    $('winOnline').textContent='';
+    up.then(res=>{
+      const el=$('winOnline');
+      if(res.status==='ok') el.innerHTML=`${res.improved?'已上傳排行榜':'沒有超過你這題的最高分'} · 總分 ${res.total} · <button id="winRank">看這題排名</button>`;
+      else if(res.status==='guest') el.innerHTML=Online.failed?'排行榜只在 GitHub 版網頁可以用':'<button id="winLogin">登入</button>後，成績才會上排行榜';
+      else el.textContent='成績上傳失敗，請檢查網路';
+      const wr=$('winRank'); if(wr) wr.onclick=()=>{ $('rankSheet').dataset.back='winSheet'; openRank(mode.type==='daily'?'daily':'code',mode.code); };
+      const wl=$('winLogin'); if(wl) wl.onclick=openAcct;
+    });
     $('winCat').innerHTML=trophy?TROPHY_SVG:catSVG(0,'');
     $('winCat').classList.toggle('gold',!!trophy);
     $('winTitle').textContent=trophy?`獲得第 ${trophy} 座獎杯！`:'全部就位！';
@@ -1237,6 +1303,209 @@ addEventListener('resize',()=>{ clearTimeout(resizeT); resizeT=setTimeout(()=>{
   if(P&&!$('game').hidden) buildBoard();
 },150); });
 renderPen();
+
+/* ===================== 分數 ===================== */
+// 基本分 = 格數 × 10 × 難度加成；在「標準時間」內越快解完，最多再加一倍；放錯一次 −15%、提示一次 −20%（最少保留一成）
+const DIFF_MULT=[0,1,1.5,2.2], PAR_MULT=[0,1,1.4,1.9];
+function calcScore(n,d,ms,mistakes,hints){
+  const base=n*n*10*DIFF_MULT[d], par=n*n*3000*PAR_MULT[d];
+  const bonus=base*Math.max(0,Math.min(1,(par-ms)/par));
+  const pen=Math.max(.1,1-.15*mistakes-.2*hints);
+  return Math.round((base+bonus)*pen);
+}
+
+/* ===================== 登入與排行榜（Firebase，只在 GitHub 版網頁可用） ===================== */
+const FB_CONFIG={
+  apiKey:"AIzaSyALUfKB-zs6mpSDIMvXK-zCIqe9f4B2Bqs",
+  authDomain:"dog-territory-7aff2.firebaseapp.com",
+  projectId:"dog-territory-7aff2",
+  storageBucket:"dog-territory-7aff2.firebasestorage.app",
+  messagingSenderId:"185976872453",
+  appId:"1:185976872453:web:aee7a3a6a7543e5a93066c"
+};
+const GH_URL='https://boomboomkai.github.io/dog-territory/';
+const Online={ready:false,failed:false,user:null,me:null};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// 暱稱轉成登入用的帳號（玩家看不到）：暱稱的 UTF-8 十六進位 + 固定網域
+function nickEmail(nick){ const b=new TextEncoder().encode(nick.trim().toLowerCase()); return 'u'+[...b].map(x=>x.toString(16).padStart(2,'0')).join('')+'@dog-territory.game'; }
+function nickProblem(nick){
+  const t=nick.trim();
+  if(!t) return '請輸入暱稱';
+  if([...t].length>10) return '暱稱最多 10 個字';
+  if(new TextEncoder().encode(t).length>31) return '暱稱太長了，請短一點';
+  if(/[\s<>"'&]/.test(t)) return '暱稱不能有空白或 < > " \' & 這些符號';
+  return '';
+}
+const AUTH_ERR={
+  'auth/email-already-in-use':'這個暱稱已經有人用了，換一個吧',
+  'auth/invalid-credential':'暱稱或密碼不對','auth/wrong-password':'暱稱或密碼不對','auth/user-not-found':'暱稱或密碼不對','auth/invalid-login-credentials':'暱稱或密碼不對',
+  'auth/weak-password':'密碼至少要 6 個字','auth/too-many-requests':'嘗試太多次了，請等幾分鐘再試',
+  'auth/network-request-failed':'連不上網路，請檢查網路後再試'
+};
+const authMsg=e=>AUTH_ERR[e&&e.code]||('發生錯誤：'+((e&&e.code)||'未知'));
+
+Online.init=function(){
+  if(Online._p) return Online._p;
+  Online._p=(async()=>{
+    try{
+      const base='https://www.gstatic.com/firebasejs/10.12.2/';
+      const [appM,authM,fsM]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-auth.js'),import(base+'firebase-firestore.js')]);
+      const app=appM.initializeApp(FB_CONFIG);
+      Online.A=authM; Online.F=fsM; Online.auth=authM.getAuth(app); Online.db=fsM.getFirestore(app);
+      Online.ready=true;
+      authM.onAuthStateChanged(Online.auth,async u=>{
+        Online.user=u; Online.me=null;
+        if(u){
+          try{ const s=await fsM.getDoc(fsM.doc(Online.db,'players',u.uid));
+            Online.me=s.exists()?s.data():{name:u.displayName||'玩家',total:0,solved:0,best:{}}; }
+          catch(e){ Online.me={name:u.displayName||'玩家',total:0,solved:0,best:{}}; }
+          Online.me.best=Online.me.best||{};
+        }
+        renderAcct();
+      });
+    }catch(e){ Online.failed=true; }
+    renderAcct();
+  })();
+  return Online._p;
+};
+async function doRegister(nick,pw){
+  const {A,F}=Online; nick=nick.trim();
+  const cred=await A.createUserWithEmailAndPassword(Online.auth,nickEmail(nick),pw);
+  await A.updateProfile(cred.user,{displayName:nick});
+  const me={name:nick,total:0,solved:0,best:{}};
+  await F.setDoc(F.doc(Online.db,'players',cred.user.uid),{...me,updated:F.serverTimestamp()});
+  Online.me=me; renderAcct();
+}
+async function doLogin(nick,pw){ await Online.A.signInWithEmailAndPassword(Online.auth,nickEmail(nick),pw); }
+async function doLogout(){ await Online.A.signOut(Online.auth); }
+
+// 過關後上傳：每一題記「最快時間」和「最高分」；總分 = 每一題最高分的加總
+async function submitRun(r){
+  if(!Online.ready||!Online.user||!Online.me) return {status:'guest'};
+  const {F}=Online, uid=Online.user.uid, me=Online.me;
+  const runRef=F.doc(Online.db,'runs',r.code+'_'+uid);
+  const snap=await F.getDoc(runRef), old=snap.exists()?snap.data():null;
+  const bestMs=old?Math.min(old.bestMs,r.ms):r.ms, bestScore=Math.max(old?old.bestScore:0,r.score);
+  if(!old||bestMs<old.bestMs||bestScore>old.bestScore)
+    await F.setDoc(runRef,{uid,name:me.name,code:r.code,n:r.n,d:r.d,bestMs,bestScore,at:F.serverTimestamp()});
+  const prev=me.best[r.code]||0;
+  if(r.score>prev){
+    me.best[r.code]=r.score; me.total=(me.total||0)+r.score-prev; me.solved=Object.keys(me.best).length;
+    await F.setDoc(F.doc(Online.db,'players',uid),{name:me.name,total:me.total,solved:me.solved,best:me.best,updated:F.serverTimestamp()});
+  }
+  return {status:'ok',total:me.total,improved:r.score>prev,prev};
+}
+
+/* ----- 帳號按鈕與面板 ----- */
+function renderAcct(){
+  const btn=$('acctBtn'); if(!btn) return;
+  const inUser=Online.user&&Online.me;
+  btn.classList.toggle('in',!!inUser);
+  $('acctAv').innerHTML=inUser?catSVG(hashStr(Online.me.name)%DOGS.length,''):ic('user');
+  $('acctName').textContent=inUser?Online.me.name:(Online.failed?'離線':'登入');
+  if(!$('acctSheet').hidden) renderAcctSheet();
+}
+function renderAcctSheet(mode){
+  const body=$('acctBody');
+  if(Online.failed){
+    body.innerHTML=`<div class="rank-empty">登入和排行榜只在 GitHub 版網頁可以用。<br>請用手機打開：<br><b style="color:var(--butter)">${GH_URL}</b></div>`;
+    return;
+  }
+  if(!Online.ready){ body.innerHTML='<div class="rank-empty">連線中…</div>'; return; }
+  if(Online.user&&Online.me){
+    const me=Online.me;
+    $('acctTitle').textContent='我的帳號';
+    body.innerHTML=`<div class="me-card"><span class="acct-av">${catSVG(hashStr(me.name)%DOGS.length,'')}</span>
+      <div><div class="nm">${esc(me.name)}</div><div class="sc">總分 <b>${me.total||0}</b> · 上榜題數 ${me.solved||0}</div></div></div>
+      <div class="sbtns"><button class="b3d butter" id="acctRank">${ic('podium')}看排行榜</button></div>
+      <div class="sbtns"><button class="b3d ghost" id="acctOut">登出</button></div>`;
+    $('acctRank').onclick=()=>openRank('total');
+    $('acctOut').onclick=async()=>{ await doLogout(); Sound.play('click'); };
+    return;
+  }
+  const reg=mode==='reg'||(mode==null&&body.dataset.mode==='reg');
+  body.dataset.mode=reg?'reg':'login';
+  $('acctTitle').textContent=reg?'註冊新帳號':'登入';
+  body.innerHTML=`<div class="seg" style="margin-bottom:16px;grid-template-columns:1fr 1fr"><button id="tabLogin" class="${reg?'':'on'}">登入</button><button id="tabReg" class="${reg?'on':''}">註冊</button></div>
+    <form class="form" id="acctForm" autocomplete="on">
+      <label for="fNick">暱稱</label><input id="fNick" name="username" autocomplete="username" maxlength="10" placeholder="最多 10 個字">
+      <label for="fPw">密碼</label><input id="fPw" name="password" type="password" autocomplete="${reg?'new-password':'current-password'}" minlength="6" placeholder="至少 6 個字">
+      ${reg?'<label for="fPw2">再輸入一次密碼</label><input id="fPw2" type="password" autocomplete="new-password" minlength="6">':''}
+      <div class="codeerr" id="fErr"></div>
+      <button class="b3d" type="submit" id="fGo">${reg?'註冊並登入':'登入'}</button>
+      <div class="hint">${reg?'註冊後，排行榜會顯示你的暱稱。不用填 Email，所以<b>忘記密碼就沒辦法找回</b>，請記好。':'還沒有帳號？點上面的「註冊」。'}</div>
+    </form>`;
+  $('tabLogin').onclick=e=>{e.preventDefault();renderAcctSheet('login');};
+  $('tabReg').onclick=e=>{e.preventDefault();renderAcctSheet('reg');};
+  $('acctForm').onsubmit=async e=>{
+    e.preventDefault();
+    const nick=$('fNick').value, pw=$('fPw').value, err=$('fErr');
+    const p=nickProblem(nick); if(p){ err.textContent=p; return; }
+    if(pw.length<6){ err.textContent='密碼至少要 6 個字'; return; }
+    if(reg&&pw!==$('fPw2').value){ err.textContent='兩次輸入的密碼不一樣'; return; }
+    err.textContent=''; $('fGo').disabled=true; $('fGo').textContent='處理中…';
+    try{ reg?await doRegister(nick,pw):await doLogin(nick,pw); Sound.play('hint'); }
+    catch(x){ err.textContent=authMsg(x); $('fGo').disabled=false; $('fGo').textContent=reg?'註冊並登入':'登入'; }
+  };
+}
+function openAcct(){ Online.init(); openSheet('acctSheet'); renderAcctSheet(); }
+
+/* ----- 排行榜面板 ----- */
+let rankTab='total', rankCode=null, rankToken=0;
+function openRank(tab,code){
+  Online.init();
+  rankCode=code||rankCode; rankTab=tab||rankTab;
+  openSheet('rankSheet'); renderRank();
+}
+async function renderRank(){
+  const tabs=[['total','總分榜'],['daily','今日挑戰']];
+  if(rankCode&&rankCode!==todayCode()) tabs.push(['code','這一題']);
+  if(!tabs.some(t=>t[0]===rankTab)) rankTab='total';
+  $('rankSeg').style.gridTemplateColumns=`repeat(${tabs.length},1fr)`;
+  $('rankSeg').innerHTML=tabs.map(([k,v])=>`<button data-k="${k}" class="${k===rankTab?'on':''}">${v}</button>`).join('');
+  $('rankSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>{rankTab=b.dataset.k;renderRank();Sound.play('click');});
+  const body=$('rankBody'), tok=++rankToken;
+  if(Online.failed){ body.innerHTML=`<div class="rank-empty">排行榜只在 GitHub 版網頁可以用。<br>請用手機打開：<br><b style="color:var(--butter)">${GH_URL}</b></div>`; return; }
+  body.innerHTML='<div class="rank-empty">載入中…</div>';
+  await Online.init(); if(tok!==rankToken) return;
+  if(!Online.ready){ body.innerHTML='<div class="rank-empty">連不上排行榜，請檢查網路。</div>'; return; }
+  const {F}=Online, myId=Online.user&&Online.user.uid;
+  try{
+    let rows=[], head='';
+    if(rankTab==='total'){
+      const q=F.query(F.collection(Online.db,'players'),F.orderBy('total','desc'),F.limit(50));
+      const s=await F.getDocs(q);
+      rows=s.docs.map(d=>({id:d.id,name:d.data().name,val:d.data().total||0,sub:`${d.data().solved||0} 題`})).filter(r=>r.val>0).map(r=>({...r,show:r.val+' 分'}));
+      head='每一題取你的最高分，全部加起來';
+    }else{
+      const code=rankTab==='daily'?todayCode():rankCode;
+      const s=await F.getDocs(F.query(F.collection(Online.db,'runs'),F.where('code','==',code)));
+      rows=s.docs.map(d=>d.data()).sort((a,b)=>a.bestMs-b.bestMs).slice(0,50)
+        .map(x=>({id:x.uid,name:x.name,show:fmt(x.bestMs),sub:`${x.bestScore} 分`}));
+      head=rankTab==='daily'?`今天的題目（題號 ${fmtCode(code)}），比誰最快`:`題號 ${fmtCode(code)}，比誰最快`;
+    }
+    if(tok!==rankToken) return;
+    const login=myId?'':'<div class="hint" style="text-align:center;margin-top:12px;color:var(--ink-dim);font-size:13px">登入後，你的成績也會上榜。<button id="rankLogin" style="color:var(--butter);text-decoration:underline">登入／註冊</button></div>';
+    body.innerHTML=`<div class="lvsec" style="margin-top:0">${head}</div>`+
+      (rows.length?rows.map((r,i)=>`<div class="rk${r.id===myId?' me':''}"><span class="no">${i+1}</span><span class="who">${esc(r.name)}</span><span class="val">${r.show}</span><span class="sub2">${r.sub}</span></div>`).join('')
+        :'<div class="rank-empty">還沒有人上榜，快來搶第一！</div>')+login;
+    const rl=$('rankLogin'); if(rl) rl.onclick=openAcct;
+  }catch(e){
+    if(tok!==rankToken) return;
+    body.innerHTML=`<div class="rank-empty">讀不到排行榜（${esc(e.code||'錯誤')}）。<br>如果是第一次使用，可能是資料庫規則還沒設定。</div>`;
+  }
+}
+const todayCode=()=>codeOf(8,2,hashStr('daily-'+todayStr())%10000);
+
+$('acctBtn').onclick=openAcct;
+$('acctClose').onclick=()=>{closeSheet('acctSheet');Sound.play('shut');};
+$('hbRank').onclick=()=>openRank('total');
+function closeRank(){ closeSheet('rankSheet'); const back=$('rankSheet').dataset.back; $('rankSheet').dataset.back=''; if(back) openSheet(back); else Sound.play('shut'); }
+$('rankClose').onclick=closeRank;
+$('acctSheet').addEventListener('click',e=>{ if(e.target===$('acctSheet')){ closeSheet('acctSheet'); Sound.play('shut'); } });
+$('rankSheet').addEventListener('click',e=>{ if(e.target===$('rankSheet')) closeRank(); });
+setTimeout(()=>Online.init(),300);
+renderAcct();
 
 refreshHome(); refreshToggles(); showScreen('home');
 </script>
