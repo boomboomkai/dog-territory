@@ -678,9 +678,107 @@ function makePuzzle(n,seed){
   if(window.visualViewport) visualViewport.addEventListener('resize',()=>setTimeout(unzoom,250));
 })();
 
+/* ===================== 背景音樂合成器：直接算出整首曲子的聲音資料（在背景執行緒跑，不卡畫面） ===================== */
+function musicRenderer(){
+  const BPM=112, STEP=60/BPM/4, BARS=16;
+  const CH={C:[60,64,67],G:[59,62,67],Am:[57,60,64],F:[57,60,65],Em:[59,64,67]};
+  const ROOT={C:36,G:43,Am:45,F:41,Em:40};
+  const SONG=[
+    {ch:['C','G','Am','F','C','G','F','G'], mel:[
+      [76,0,79,0,84,-1,79,76],[74,0,79,0,83,-1,81,79],[72,0,76,0,81,-1,79,76],[77,-1,76,-1,74,-1,72,-1],
+      [76,76,79,0,84,0,86,84],[83,-1,79,0,74,0,79,0],[81,-1,79,-1,77,-1,76,74],[74,-1,-1,-1,67,0,71,74]]},
+    {ch:['F','G','Em','Am','F','G','C','C'], mel:[
+      [81,0,81,84,0,81,79,77],[79,0,79,83,0,79,74,0],[76,0,79,83,-1,-1,81,79],[81,-1,-1,-1,76,0,81,0],
+      [77,0,81,84,0,84,86,84],[86,-1,83,-1,79,-1,83,86],[84,-1,-1,-1,79,0,76,0],[72,0,76,79,84,-1,-1,0]]}
+  ];
+  const mtof=m=>440*Math.pow(2,(m-69)/12);
+  return function render(sr){
+    const LEN=BARS*16*STEP, TAIL=2.5, N=Math.ceil(sr*(LEN+TAIL)), n=Math.round(sr*LEN), TP=2*Math.PI;
+    const dry=new Float32Array(N), rv=new Float32Array(N), ds=new Float32Array(N);
+    const blep=(t,dt)=>{ if(t<dt){t/=dt;return t+t-t*t-1;} if(t>1-dt){t=(t-1)/dt;return t*t+t+t+1;} return 0; };
+    const saw=(ph,dt)=>2*ph-1-blep(ph,dt);
+    const sqr=(ph,dt)=>(ph<.5?1:-1)+blep(ph,dt)-blep((ph+.5)%1,dt);
+    const tri=ph=>4*Math.abs(ph-.5)-1;
+    // 音量包絡：先線性升到 peak，再指數衰減到幾乎無聲（和原本 Web Audio 版一樣的形狀）
+    const envA=(tt,peak,a,d)=>tt<a?peak*tt/a:peak*Math.exp(-(tt-a)*Math.log(peak/1e-4)/d);
+    const put=(i,v,r,d)=>{ dry[i]+=v; if(r) rv[i]+=v*r; if(d) ds[i]+=v*d; };
+    // 狀態變數濾波器（低通／帶通）
+    const svf=()=>({lo:0,bd:0});
+    const svfRun=(s,x,fc,q)=>{ if(fc!==s.fc){ s.fc=fc; s.f=2*Math.sin(Math.PI*Math.min(fc,sr*.16)/sr); } const f=s.f; s.lo+=f*s.bd; const hi=x-s.lo-q*s.bd; s.bd+=f*hi; return s; };
+    const span=(t,dur,fn)=>{ const i0=Math.round(t*sr), len=Math.round(dur*sr); for(let k=0;k<len&&i0+k<N;k++) fn(i0+k,k/sr); };
+    const DR=.9;
+    function kick(t){ let ph=0; span(t,.35,(i,tt)=>{ const f=tt<.13?150*Math.pow(42/150,tt/.13):42; ph+=f/sr; ph-=Math.floor(ph);
+      put(i,DR*envA(tt,.85,.002,.28)*Math.sin(TP*ph)); }); }
+    function snare(t,v=1){ const s=svf(); span(t,.2,(i,tt)=>{ svfRun(s,Math.random()*2-1,1900,1/.7); put(i,DR*envA(tt,.42*v,.002,.15)*s.bd,.25); });
+      let ph=0; span(t,.12,(i,tt)=>{ const f=220*Math.pow(160/220,Math.min(tt,.08)/.08); ph+=f/sr; ph-=Math.floor(ph); put(i,DR*envA(tt,.22*v,.002,.08)*tri(ph)); }); }
+    const hatA=1-Math.exp(-TP*7500/sr);
+    function hat(t,v=1,open=false){ let y=0; span(t,open?.3:.06,(i,tt)=>{ const x=Math.random()*2-1; y+=hatA*(x-y); put(i,DR*envA(tt,.11*v,.001,open?.22:.035)*(x-y)); }); }
+    function bass(t,m,dur){ const f=mtof(m), dt=f/sr, s=svf(); let ph=0;
+      span(t,dur+.05,(i,tt)=>{ ph+=dt; ph-=Math.floor(ph); const fc=tt<.16?1500*Math.pow(260/1500,tt/.16):260;
+        svfRun(s,saw(ph,dt),fc,1/7); put(i,envA(tt,.2,.004,dur)*s.lo); }); }
+    function stab(t,notes){ notes.forEach((m,k)=>{ const f=mtof(m), f2=mtof(m+12)*Math.pow(2,6/1200), s=svf(); let p1=0,p2=0;
+      span(t+k*.008,.22,(i,tt)=>{ p1+=f/sr; p1-=Math.floor(p1); p2+=f2/sr; p2-=Math.floor(p2);
+        const fc=tt<.12?3200*Math.pow(700/3200,tt/.12):700; svfRun(s,sqr(p1,f/sr)+tri(p2),fc,1);
+        put(i,envA(tt,.045,.003,.16)*s.lo,.3); }); }); }
+    function pad(t,notes,dur){ notes.forEach(m=>{ [-8,8].forEach(dc=>{ const f=mtof(m)*Math.pow(2,dc/1200), dt=f/sr, s=svf(); let ph=Math.random();
+      span(t,dur+.3,(i,tt)=>{ ph+=dt; ph-=Math.floor(ph); svfRun(s,saw(ph,dt),900,1);
+        const a=tt<.35?.012*tt/.35:tt<dur-.15?.012:Math.max(0,.012*(1-(tt-(dur-.15))/.4)); put(i,a*s.lo,.6); }); }); }); }
+    function lead(t,m,dur){ const f=mtof(m), f2=f*Math.pow(2,-7/1200), s=svf(), h=Math.max(.02,dur-.04), dec=Math.log(.06/1e-4)/(dur+.12-h), vib=dur>.3?9:0;
+      let p1=0,p2=0;
+      span(t,dur+.2,(i,tt)=>{ const depth=vib*Math.min(1,tt/.25), mul=Math.pow(2,depth*Math.sin(TP*5.5*tt)/1200);
+        p1+=f*mul/sr; p1-=Math.floor(p1); p2+=f2*mul/sr; p2-=Math.floor(p2);
+        const fc=tt<.2?4200*Math.pow(1900/4200,tt/.2):1900; svfRun(s,sqr(p1,f/sr)+tri(p2),fc,1);
+        const a=tt<.01?.075*tt/.01:tt<h?.075:.06*Math.exp(-(tt-h)*dec); put(i,a*s.lo,.35,.6); }); }
+    function glock(t,m){ [[1,.05,.6],[3.98,.012,.15]].forEach(([r,v,d])=>{ const f=mtof(m+12)*r;
+      span(t,.7,(i,tt)=>put(i,envA(tt,v,.002,d)*Math.sin(TP*f*tt),.5)); }); }
+
+    // 曲子本體（和原本一樣的編曲；不含前奏，鐘琴只在 B 段）
+    const BP=[0,null,12,0,null,0,7,12,0,null,12,0,null,0,7,12];
+    for(let s=0;s<BARS*16;s++){
+      const t=s*STEP, bar=Math.floor(s/16), p=s%16, sec=SONG[Math.floor(bar/8)], b8=bar%8;
+      const chord=CH[sec.ch[b8]], root=ROOT[sec.ch[b8]];
+      if(p===0||p===8||(p===14&&b8%2===1)) kick(t);
+      if(p===4||p===12) snare(t);
+      if(b8===7&&p>=12) snare(t,.35+.15*(p-12));
+      if(p%2===0) hat(t,p%4===2?1:.55,p===14&&b8%4===3); else hat(t,.3);
+      if(BP[p]!==null) bass(t,root+BP[p],STEP*1.6);
+      if(p%4===2) stab(t,chord);
+      if(p===0) pad(t,chord.map(m=>m-12),STEP*16);
+      if(p%2===0){ const row=sec.mel[b8], e=p/2, m=row[e];
+        if(m>0){ let len=1; for(let k=e+1;k<8&&row[k]===-1;k++) len++; lead(t,m,len*STEP*2*.92); if(Math.floor(bar/8)===1) glock(t,m); } }
+    }
+    // 回音：附點八分，回授 0.32，回授路徑上有低通
+    const D=Math.round(STEP*3*sr), dlA=1-Math.exp(-TP*2500/sr), w=new Float32Array(N); let ly=0;
+    const L=new Float32Array(N), R=new Float32Array(N);
+    for(let i=0;i<N;i++){ const xd=i>=D?w[i-D]:0; ly+=dlA*(xd-ly); w[i]=ds[i]+.32*ly; const v=dry[i]+.22*ly; L[i]=v; R[i]=v; }
+    // 殘響：簡化版 Freeverb（左右聲道各 4 個梳狀＋2 個全通）
+    const sc=sr/44100;
+    function reverb(spread){
+      const out=new Float32Array(N);
+      const combs=[1116,1188,1277,1356].map(x=>({b:new Float32Array(Math.round((x+spread)*sc)),i:0,s:0}));
+      const aps=[556,441].map(x=>({b:new Float32Array(Math.round((x+spread)*sc)),i:0}));
+      for(let i=0;i<N;i++){ const x=rv[i]*.25; let y=0;
+        for(const c of combs){ const o=c.b[c.i]; c.s=o*.7+c.s*.3; c.b[c.i]=x+c.s*.8; c.i=(c.i+1)%c.b.length; y+=o; }
+        for(const a of aps){ const o=a.b[a.i]; a.b[a.i]=y+o*.5; a.i=(a.i+1)%a.b.length; y=o-y; }
+        out[i]=y; }
+      return out;
+    }
+    const rl=reverb(0), rr=reverb(23);
+    let ed=0,er=0; for(let i=0;i<N;i+=7){ ed+=L[i]*L[i]; er+=rl[i]*rl[i]; }
+    const rg=er>0?.35*Math.sqrt(ed/er):0;
+    for(let i=0;i<N;i++){ L[i]+=rg*rl[i]; R[i]+=rg*rr[i]; }
+    // 尾巴疊回開頭，循環接縫才不會斷；最後把音量調到一致
+    for(let i=n;i<N;i++){ L[i-n]+=L[i]; R[i-n]+=R[i]; }
+    let pk=0; for(let i=0;i<n;i++){ pk=Math.max(pk,Math.abs(L[i]),Math.abs(R[i])); }
+    const g=pk>0?.9/pk:1, OL=new Float32Array(n), OR=new Float32Array(n);
+    for(let i=0;i<n;i++){ OL[i]=L[i]*g; OR[i]=R[i]*g; }
+    return {L:OL,R:OR,sr};
+  };
+}
+
 /* ===================== 音樂與音效（全部用程式即時合成） ===================== */
 const Sound=(function(){
-  let ctx=null, master, musicBus, sfxBus, musicTimer=null;
+  let ctx=null, master, musicBus, sfxBus;
   const mtof=m=>440*Math.pow(2,(m-69)/12);
   function ensure(){
     if(!ctx){
@@ -732,131 +830,47 @@ const Sound=(function(){
     shut(){ tone({f:880,type:'sine',dur:.09,vol:.06,slide:560}); }
   };
   function play(name){ if(!save.sfx) return; if(!ensure()) return; SFX[name]&&SFX[name](); }
-  /* ---------- 背景音樂：112 BPM 輕快編曲（鼓組＋彈跳貝斯＋和弦切分＋柔和鋪底＋主旋律＋鐘琴，含殘響與回音） ---------- */
-  const BPM=112, STEP=60/BPM/4;             // 一格 = 16 分音符
-  let fx=null, noise=null, step=0, nextStep=0;
-  // 和弦（三和弦）與貝斯根音
-  const CH={C:[60,64,67],G:[59,62,67],Am:[57,60,64],F:[57,60,65],Em:[59,64,67]};
-  const ROOT={C:36,G:43,Am:45,F:41,Em:40};
-  // A 段與 B 段，各 8 小節；旋律每小節 8 個八分音符（0=休止，-1=延長）
-  const SONG=[
-    {ch:['C','G','Am','F','C','G','F','G'], mel:[
-      [76,0,79,0,84,-1,79,76],[74,0,79,0,83,-1,81,79],[72,0,76,0,81,-1,79,76],[77,-1,76,-1,74,-1,72,-1],
-      [76,76,79,0,84,0,86,84],[83,-1,79,0,74,0,79,0],[81,-1,79,-1,77,-1,76,74],[74,-1,-1,-1,67,0,71,74]]},
-    {ch:['F','G','Em','Am','F','G','C','C'], mel:[
-      [81,0,81,84,0,81,79,77],[79,0,79,83,0,79,74,0],[76,0,79,83,-1,-1,81,79],[81,-1,-1,-1,76,0,81,0],
-      [77,0,81,84,0,84,86,84],[86,-1,83,-1,79,-1,83,86],[84,-1,-1,-1,79,0,76,0],[72,0,76,79,84,-1,-1,0]]}
-  ];
-  const BARS=16;
-  function setupFx(){
-    if(fx) return fx;
-    // 殘響：自己產生一段衰減雜訊當作空間感
-    const len=ctx.sampleRate*1.8, ir=ctx.createBuffer(2,len,ctx.sampleRate);
-    for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3);}
-    const rev=ctx.createConvolver(); rev.buffer=ir;
-    const revOut=ctx.createGain(); revOut.gain.value=.32; rev.connect(revOut); revOut.connect(musicBus);
-    // 回音：附點八分音符
-    const dl=ctx.createDelay(1); dl.delayTime.value=STEP*3;
-    const fb=ctx.createGain(); fb.gain.value=.32;
-    const dlf=ctx.createBiquadFilter(); dlf.type='lowpass'; dlf.frequency.value=2500;
-    dl.connect(dlf); dlf.connect(fb); fb.connect(dl);
-    const dlOut=ctx.createGain(); dlOut.gain.value=.22; dlf.connect(dlOut); dlOut.connect(musicBus);
-    const drums=ctx.createGain(); drums.gain.value=.9; drums.connect(musicBus);
-    const inst=ctx.createGain(); inst.gain.value=1; inst.connect(musicBus);
-    noise=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate);
-    const nd=noise.getChannelData(0); for(let i=0;i<nd.length;i++) nd[i]=Math.random()*2-1;
-    fx={rev,dl,drums,inst}; return fx;
+  // 整首曲子先在背景執行緒算成一段音檔，再無縫循環播放：
+  // 播放時幾乎不吃手機效能，遊戲在出題或畫面忙的時候音樂也不會卡。
+  let musicOn=false, src=null, building=null;
+  function buildLoop(){
+    if(building) return building;
+    building=new Promise((res,rej)=>{
+      const SR=32000;
+      const done=o=>{ const b=ctx.createBuffer(2,o.L.length,o.sr); b.copyToChannel(o.L,0); b.copyToChannel(o.R,1); res(b); };
+      const fallback=()=>{ try{ done(musicRenderer()(SR)); }catch(e){ rej(e); } };
+      try{
+        const code=`const render=(${musicRenderer.toString()})();onmessage=e=>{const o=render(e.data.sr);postMessage(o,[o.L.buffer,o.R.buffer]);};`;
+        const url=URL.createObjectURL(new Blob([code],{type:'text/javascript'}));
+        const w=new Worker(url);
+        w.onmessage=e=>{ done(e.data); w.terminate(); URL.revokeObjectURL(url); };
+        w.onerror=e=>{ e.preventDefault&&e.preventDefault(); w.terminate(); URL.revokeObjectURL(url); fallback(); };
+        w.postMessage({sr:SR});
+      }catch(e){ fallback(); }
+    });
+    building.catch(()=>{ building=null; });
+    return building;
   }
-  function env(g,t,peak,a,d){ g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(peak,t+a); g.gain.exponentialRampToValueAtTime(0.0001,t+a+d); }
-  function out(node,{dry=fx.inst,rev=0,dly=0}={}){
-    node.connect(dry);
-    if(rev){const s=ctx.createGain();s.gain.value=rev;node.connect(s);s.connect(fx.rev);}
-    if(dly){const s=ctx.createGain();s.gain.value=dly;node.connect(s);s.connect(fx.dl);}
-  }
-  function noiseSrc(t,dur){const n=ctx.createBufferSource();n.buffer=noise;n.start(t);n.stop(t+dur);return n;}
-  // 鼓
-  function kick(t){const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(42,t+.13);
-    env(g,t,.85,.002,.28);o.connect(g);out(g,{dry:fx.drums});o.start(t);o.stop(t+.35);}
-  function snare(t,v=1){const n=noiseSrc(t,.2),bp=ctx.createBiquadFilter(),g=ctx.createGain();bp.type='bandpass';bp.frequency.value=1900;bp.Q.value=.7;
-    env(g,t,.42*v,.002,.15);n.connect(bp);bp.connect(g);out(g,{dry:fx.drums,rev:.25});
-    const o=ctx.createOscillator(),g2=ctx.createGain();o.type='triangle';o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(160,t+.08);
-    env(g2,t,.22*v,.002,.08);o.connect(g2);out(g2,{dry:fx.drums});o.start(t);o.stop(t+.12);}
-  function hat(t,v=1,open=false){const n=noiseSrc(t,open?.3:.06),hp=ctx.createBiquadFilter(),g=ctx.createGain();hp.type='highpass';hp.frequency.value=7500;
-    env(g,t,.11*v,.001,open?.22:.035);n.connect(hp);hp.connect(g);out(g,{dry:fx.drums});}
-  // 貝斯：鋸齒波＋會「啵」一下的濾波器
-  function bass(t,m,dur){const o=ctx.createOscillator(),f=ctx.createBiquadFilter(),g=ctx.createGain();o.type='sawtooth';o.frequency.value=mtof(m);
-    f.type='lowpass';f.Q.value=7;f.frequency.setValueAtTime(1500,t);f.frequency.exponentialRampToValueAtTime(260,t+.16);
-    env(g,t,.2,.004,dur);o.connect(f);f.connect(g);out(g);o.start(t);o.stop(t+dur+.05);}
-  // 和弦切分（像烏克麗麗刷弦）
-  function stab(t,notes){notes.forEach((m,k)=>{const s=t+k*.008,o=ctx.createOscillator(),o2=ctx.createOscillator(),f=ctx.createBiquadFilter(),g=ctx.createGain();
-    o.type='square';o2.type='triangle';o.frequency.value=mtof(m);o2.frequency.value=mtof(m+12);o2.detune.value=6;
-    f.type='lowpass';f.frequency.setValueAtTime(3200,s);f.frequency.exponentialRampToValueAtTime(700,s+.12);
-    env(g,s,.045,.003,.16);o.connect(f);o2.connect(f);f.connect(g);out(g,{rev:.3});o.start(s);o2.start(s);o.stop(s+.22);o2.stop(s+.22);});}
-  // 柔和鋪底
-  function pad(t,notes,dur){notes.forEach(m=>{[-8,8].forEach(dt=>{const o=ctx.createOscillator(),f=ctx.createBiquadFilter(),g=ctx.createGain();
-    o.type='sawtooth';o.frequency.value=mtof(m);o.detune.value=dt;f.type='lowpass';f.frequency.value=900;
-    g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(.012,t+.35);g.gain.setValueAtTime(.012,t+dur-.15);g.gain.linearRampToValueAtTime(0.0001,t+dur+.25);
-    o.connect(f);f.connect(g);out(g,{rev:.6});o.start(t);o.stop(t+dur+.3);});});}
-  // 主旋律：方波＋三角波，帶顫音、回音
-  function lead(t,m,dur){const o=ctx.createOscillator(),o2=ctx.createOscillator(),f=ctx.createBiquadFilter(),g=ctx.createGain();
-    o.type='square';o2.type='triangle';o.frequency.value=mtof(m);o2.frequency.value=mtof(m);o2.detune.value=-7;
-    const lfo=ctx.createOscillator(),lg=ctx.createGain();lfo.frequency.value=5.5;lg.gain.setValueAtTime(0,t);lg.gain.linearRampToValueAtTime(dur>.3?9:0,t+.25);
-    lfo.connect(lg);lg.connect(o.detune);lg.connect(o2.detune);
-    f.type='lowpass';f.frequency.setValueAtTime(4200,t);f.frequency.exponentialRampToValueAtTime(1900,t+.2);
-    g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(.075,t+.01);g.gain.setValueAtTime(.06,t+Math.max(.02,dur-.04));g.gain.exponentialRampToValueAtTime(0.0001,t+dur+.12);
-    o.connect(f);o2.connect(f);f.connect(g);out(g,{rev:.35,dly:.6});
-    [o,o2,lfo].forEach(x=>{x.start(t);x.stop(t+dur+.2);});}
-  // 鐘琴（高八度，亮亮的）
-  function glock(t,m){[[1,.05],[3.98,.012]].forEach(([r,v])=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.value=mtof(m+12)*r;
-    env(g,t,v,.002,r>1?.15:.6);o.connect(g);out(g,{rev:.5});o.start(t);o.stop(t+.7);});}
-
-  function scheduleStep(t){
-    const s=step%(BARS*16), bar=Math.floor(s/16), p=s%16, sec=SONG[Math.floor(bar/8)], b8=bar%8;
-    const cName=sec.ch[b8], chord=CH[cName], root=ROOT[cName];
-    const loop=Math.floor(step/(BARS*16)), intro=(loop===0&&bar<2);
-    // 鼓組
-    if(!intro){
-      if(p===0||p===8||(p===14&&b8%2===1)) kick(t);
-      if(p===4||p===12) snare(t);
-      if(b8===7&&p>=12) snare(t,.35+.15*(p-12));      // 段落結尾的小過門
-    }
-    if(p%2===0) hat(t,p%4===2?1:.55,p===14&&b8%4===3); else if(!intro) hat(t,.3);
-    // 貝斯：彈跳的八度
-    const bp=[0,null,12,0,null,0,7,12,0,null,12,0,null,0,7,12];
-    if(!intro&&bp[p]!==null) bass(t,root+bp[p],STEP*1.6);
-    // 和弦切分：反拍
-    if(p%4===2) stab(t,chord);
-    // 鋪底：每小節一次
-    if(p===0) pad(t,chord.map(m=>m-12),STEP*16);
-    // 主旋律（第一輪前兩小節當前奏不唱）
-    if(p%2===0&&!intro){
-      const row=sec.mel[b8], e=p/2, m=row[e];
-      if(m>0){
-        let len=1; for(let k=e+1;k<8&&row[k]===-1;k++) len++;
-        lead(t,m,len*STEP*2*.92);
-        if(loop%2===1||Math.floor(bar/8)===1) glock(t,m);   // 第二輪與 B 段加上鐘琴
-      }
-    }
-    step++;
-  }
-  function startMusic(){
-    if(!ensure()||musicTimer) return;
-    setupFx();
-    nextStep=Math.max(nextStep,ctx.currentTime+.1);
-    musicBus.gain.cancelScheduledValues(ctx.currentTime);
-    musicBus.gain.setTargetAtTime(.6,ctx.currentTime,.4);
-    musicTimer=setInterval(()=>{ while(nextStep<ctx.currentTime+.4){ scheduleStep(nextStep); nextStep+=STEP; } },60);
+  async function startMusic(){
+    if(!ensure()||musicOn) return;
+    musicOn=true;
+    let buf; try{ buf=await buildLoop(); }catch(e){ musicOn=false; return; }
+    if(!musicOn||src) return;
+    src=ctx.createBufferSource(); src.buffer=buf; src.loop=true; src.connect(musicBus);
+    const t=ctx.currentTime+.05; src.start(t);
+    musicBus.gain.cancelScheduledValues(t); musicBus.gain.setValueAtTime(0,t); musicBus.gain.setTargetAtTime(.6,t,.4);
   }
   function stopMusic(){
-    if(!ctx||!musicTimer) return;
-    clearInterval(musicTimer); musicTimer=null;
+    if(!ctx||!musicOn) return;
+    musicOn=false;
     musicBus.gain.cancelScheduledValues(ctx.currentTime);
     musicBus.gain.setTargetAtTime(0,ctx.currentTime,.3);
+    const s0=src; src=null; if(s0) setTimeout(()=>{ try{s0.stop();}catch(e){} },1500);
   }
   function unlock(){ if(save.music) startMusic(); else ensure(); }
   document.addEventListener('pointerdown',unlock,true);
   document.addEventListener('visibilitychange',()=>{ if(!ctx) return; if(document.hidden) ctx.suspend().catch(()=>{}); else ctx.resume().catch(()=>{}); });
-  return {play,startMusic,stopMusic,state:()=>ctx?ctx.state+(musicTimer?' / 音樂播放中':''):'未啟動'};
+  return {play,startMusic,stopMusic,state:()=>ctx?ctx.state+(musicOn?' / 音樂播放中':''):'未啟動'};
 })();
 
 /* ===================== 存檔 ===================== */
@@ -1180,7 +1194,7 @@ boardEl.addEventListener('pointerdown',e=>{
     d.timer=setTimeout(()=>{ if(drag===d&&!d.moved){ drag=null; lastTap=null; if(navigator.vibrate) try{navigator.vibrate(20);}catch(_){}
       if(save.pen==='cat') toggleX(d.start); else placeCat(d.start);} },450);
   }
-  boardEl.setPointerCapture(e.pointerId);
+  try{ boardEl.setPointerCapture(e.pointerId); }catch(_){}
 });
 boardEl.addEventListener('pointercancel',()=>{ if(drag) clearTimeout(drag.timer); drag=null; });
 boardEl.addEventListener('pointermove',e=>{
