@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#1b1733">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Huninn&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Huninn&family=Noto+Color+Emoji&display=swap">
 <style>
   /* 版面：單欄 App（最寬 520px）置中；夜晚屋頂主題。首頁選模式 → 全螢幕遊戲 → 暫停叫出設定 */
   :root{
@@ -304,6 +304,102 @@
   @media (min-width:700px){ .moon{width:90px;height:90px} }
   @media (max-height:640px){ .logo{width:84px;height:84px} .logo svg{width:60px;height:60px} .hero h1{font-size:36px} .tool .knob{width:52px;height:52px} }
   /* ---------- 手機橫拿：遊戲左右三欄、首頁左右兩欄 ---------- */
+  /* ---------- 星星、商店、狗狗小窩 ---------- */
+  .starpill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px 6px 9px;border-radius:99px;background:rgba(255,215,110,.14);
+    border:1px solid rgba(255,215,110,.35);color:var(--butter);font-family:var(--num);font-weight:600;font-size:17px;white-space:nowrap}
+  .starpill svg{width:20px;height:20px}
+  .starpill.bump{animation:bump .4s}
+  @keyframes bump{40%{transform:scale(1.18)}}
+  .winstars{display:flex;justify-content:center;align-items:center;gap:4px;margin:8px 0 2px}
+  .winstars svg{width:34px;height:34px}
+  .winstars svg.off{opacity:.22;filter:grayscale(1)}
+  .winstars small{margin-left:8px;font-size:14px;color:var(--butter)}
+  #room{gap:8px}
+  .rtop{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px}
+  .rtop h2{margin:0;font-size:20px;font-weight:400;letter-spacing:.08em;text-align:center}
+  .rbtns{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}
+  .rbtns .b3d{font-size:16px;padding:10px 12px;border-radius:16px}
+  .rbtns .b3d .ic{width:20px;height:20px}
+  .stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative}
+  .scene{position:relative;height:100%;max-width:100%;aspect-ratio:3/4;border-radius:22px;overflow:hidden;container-type:size;touch-action:none;
+    box-shadow:0 0 0 4px var(--frame),0 0 0 6px rgba(255,255,255,.08),0 22px 44px rgba(0,0,0,.5)}
+  .scene>svg.bg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .pi{position:absolute;transform:translate(-50%,-100%);line-height:1;cursor:grab;touch-action:none}
+  .pi>.in{transform:scale(var(--s,1)) scaleX(var(--fl,1));transform-origin:50% 100%;transition:transform .15s}
+  .emo-f,.pi.emo>.in,.tray>button .e,.sitem .pv{font-family:"Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif}
+  .pi.emo>.in{font-size:17cqw;filter:drop-shadow(0 .6cqw 0 rgba(0,0,0,.18))}
+  .pi.dog>.in svg{width:24cqw;height:auto;display:block;filter:drop-shadow(0 .8cqw 0 rgba(0,0,0,.2))}
+  .pi.dog>.in{animation:dogidle 2.6s ease-in-out infinite}
+  .pi.dog:nth-child(2n)>.in{animation-delay:-1.3s}
+  @keyframes dogidle{0%,100%{rotate:0deg}50%{rotate:3deg}}
+  .pi.sel>.in{outline:2px dashed rgba(255,255,255,.9);outline-offset:4px;border-radius:12px;animation:none}
+  .pi.dragging{cursor:grabbing}
+  .seltools{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);display:flex;gap:8px;padding:6px;border-radius:18px;
+    background:rgba(27,23,51,.86);border:1px solid var(--glass-line);z-index:5000;box-shadow:0 10px 24px rgba(0,0,0,.4)}
+  .seltools button{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:var(--glass);font-size:22px;color:var(--ink)}
+  .seltools button.del{color:var(--rose)}
+  .seltools .ic{width:22px;height:22px}
+  .scene .empty{position:absolute;left:8%;right:8%;top:40%;text-align:center;color:#2b2140;background:rgba(255,255,255,.75);padding:12px;border-radius:16px;font-size:14px;line-height:1.6;pointer-events:none}
+  .rtabs{flex:none;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px}
+  .rtabs::-webkit-scrollbar{display:none}
+  .rtabs button{flex:none;padding:7px 13px;border-radius:99px;background:var(--glass);border:1px solid var(--glass-line);font-size:14px;color:var(--ink-dim)}
+  .rtabs button.on{background:var(--butter);color:var(--btn-ink);border-color:transparent}
+  .tray{flex:none;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:4px 2px 6px;min-height:84px}
+  .tray::-webkit-scrollbar{display:none}
+  .tray>button{flex:none;width:72px;height:76px;border-radius:16px;background:linear-gradient(180deg,var(--card-hi),var(--card));border:1px solid var(--glass-line);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;color:var(--ink-dim);position:relative;box-shadow:0 3px 0 #1a1533}
+  .tray>button .e{font-size:32px;line-height:1}
+  .tray>button svg.dg{width:46px;height:46px}
+  .tray>button.on{border-color:var(--mint);box-shadow:0 0 0 2px var(--mint),0 3px 0 #1a1533}
+  .tray>button.on::after{content:"✓";position:absolute;top:3px;right:6px;color:var(--mint);font-size:13px}
+  .tray>button.locked{opacity:.55}
+  .tray>button.locked .ic{width:22px;height:22px}
+  .tray>button.more{color:var(--butter)}
+  .tray>button .mini{width:46px;height:40px;border-radius:8px;overflow:hidden}
+  .tray>button .mini svg{width:100%;height:100%;display:block}
+  /* 商店 */
+  #shopSheet .sheet,#dressSheet .sheet{display:flex;flex-direction:column}
+  .shopbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .shopbar .t2{font-size:12px;color:var(--ink-dim);line-height:1.5}
+  .shopgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;overflow-y:auto;min-height:0;padding:2px 2px 6px}
+  .sitem{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px 8px;border-radius:16px;background:rgba(0,0,0,.18);border:1px solid var(--glass-line);min-width:0}
+  .sitem .pv{width:64px;height:64px;display:grid;place-items:center;font-size:40px;line-height:1}
+  .sitem .pv svg{width:64px;height:64px}
+  .sitem .pv.sc{width:72px;height:60px;border-radius:10px;overflow:hidden}
+  .sitem .pv.sc svg{width:100%;height:100%}
+  .sitem .nm{font-size:13px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .sitem .buy{margin-top:2px;width:100%;padding:6px 4px;border-radius:12px;font-family:var(--num);font-weight:600;font-size:14px;
+    background:var(--butter);color:var(--btn-ink);box-shadow:0 3px 0 var(--butter-d);display:flex;align-items:center;justify-content:center;gap:4px}
+  .sitem .buy svg{width:15px;height:15px}
+  .sitem .buy:active{transform:translateY(2px);box-shadow:0 1px 0 var(--butter-d)}
+  .sitem .buy.poor{background:#4a416f;color:var(--ink-dim);box-shadow:0 3px 0 #2a2350}
+  .sitem .buy.own{background:transparent;color:var(--mint);box-shadow:none;font-family:var(--font);font-weight:400}
+  .sitem.shake{animation:shake .4s}
+  .toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:200;padding:10px 18px;border-radius:99px;
+    background:#fff6ea;color:#2b1e16;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.4);animation:rise .3s;max-width:calc(100% - 32px);text-align:center}
+  /* 打扮 */
+  .dresspick{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 8px}
+  .dresspick::-webkit-scrollbar{display:none}
+  .dresspick button{flex:none;width:54px;height:54px;border-radius:16px;background:var(--glass);border:1px solid var(--glass-line);display:grid;place-items:center}
+  .dresspick button svg{width:44px;height:44px}
+  .dresspick button.on{border-color:var(--butter);box-shadow:0 0 0 2px var(--butter)}
+  .dressprev{display:grid;place-items:center;height:150px;margin:2px 0 6px;border-radius:20px;background:radial-gradient(circle at 50% 60%,#4b3e86,#2a2350 70%)}
+  .dressprev svg{height:140px;width:auto}
+  .dressbody{overflow-y:auto;min-height:0}
+  .dgroup{font-size:13px;color:var(--ink-dim);margin:10px 2px 6px}
+  .dopts{display:flex;flex-wrap:wrap;gap:8px}
+  .dopts button{width:56px;height:56px;border-radius:15px;background:rgba(0,0,0,.2);border:1px solid var(--glass-line);display:grid;place-items:center;font-size:12px;color:var(--ink-dim)}
+  .dopts button svg{width:48px;height:48px}
+  .dopts button.on{border-color:var(--butter);box-shadow:0 0 0 2px var(--butter);color:var(--ink)}
+  .dopts .sw2{width:30px;height:30px;border-radius:50%;border:3px solid rgba(0,0,0,.25)}
+  .dopts button.txt{width:auto;padding:0 14px;font-size:14px}
+  @media (orientation:landscape) and (max-height:560px){
+    #room{display:grid;max-width:none;column-gap:18px;row-gap:8px;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto 1fr;
+      grid-template-areas:"stage top" "stage btns" "stage tabs" "stage tray"}
+    #room .rtop{grid-area:top} #room .rbtns{grid-area:btns} #room .rtabs{grid-area:tabs;flex-wrap:wrap;overflow:visible}
+    #room .stage{grid-area:stage;height:calc(100dvh - 30px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));aspect-ratio:3/4}
+    #room .tray{grid-area:tray;flex-wrap:wrap;align-content:flex-start;overflow-y:auto;overflow-x:hidden}
+  }
   @media (orientation:landscape) and (max-height:560px){
     #game{display:grid;max-width:none;column-gap:20px;align-items:center;padding-block:max(8px,env(safe-area-inset-top,0px)) max(8px,env(safe-area-inset-bottom,0px));
       grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-rows:auto auto 1fr auto;
@@ -318,7 +414,7 @@
     .tool{flex-direction:row;gap:12px}
     .tool .knob{width:52px;height:52px;border-radius:18px}
     #home{display:grid;max-width:880px;grid-template-columns:1fr 1fr;column-gap:28px;row-gap:10px;align-content:center;padding-top:max(56px,env(safe-area-inset-top,0px))}
-    #home .hero{grid-column:1;grid-row:1 / span 5;margin:0}
+    #home .hero{grid-column:1;grid-row:1 / span 6;margin:0}
     #home>button:not(.acct),#home .homebar{grid-column:2}
     #home .tile{padding:10px 14px} #home .tile .bub{width:40px;height:40px}
     #home .b3d{padding:12px 18px;font-size:18px}
@@ -357,6 +453,11 @@
     <span class="txt"><div class="t1">自由練習</div><div class="t2">選大小和難度，或輸入題號</div></span>
     <span class="chev" data-ic="chev"></span>
   </button>
+  <button class="tile" id="btnRoom" style="--c:var(--rose)">
+    <span class="bub" data-ic="home"></span>
+    <span class="txt"><div class="t1">狗狗小窩</div><div class="t2" id="roomSub">商店、打扮、布置小窩</div></span>
+    <span class="chev" data-ic="chev"></span>
+  </button>
   <div class="homebar">
     <button class="hb" id="hbRank"><span class="ibtn" data-ic="podium"></span>排行榜</button>
     <button class="hb" id="hbStats"><span class="ibtn" data-ic="trophy"></span>紀錄</button>
@@ -387,6 +488,57 @@
     <button class="tool mint" id="btnClear"><span class="knob" data-ic="eraser"></span>清除叉叉</button>
   </div>
 </main>
+
+<!-- ===================== 狗狗小窩 ===================== -->
+<main class="screen" id="room" hidden>
+  <div class="rtop">
+    <button class="ibtn" id="roomBack" aria-label="回主選單" data-ic="home"></button>
+    <h2>狗狗小窩</h2>
+    <span class="starpill" id="roomStars"></span>
+  </div>
+  <div class="rbtns">
+    <button class="b3d butter" id="roomShop"><span data-ic="bag"></span>商店</button>
+    <button class="b3d mint" id="roomDress"><span data-ic="brush"></span>打扮狗狗</button>
+    <button class="b3d ghost" id="roomHelp" aria-label="小窩說明"><span data-ic="help"></span></button>
+  </div>
+  <div class="stage" id="stage"><div class="scene" id="scene"></div></div>
+  <div class="rtabs" id="roomTabs">
+    <button data-t="dog">狗狗</button><button data-t="furn">家具</button><button data-t="plant">花木造景</button><button data-t="toy">玩具</button><button data-t="scene">場景</button>
+  </div>
+  <div class="tray" id="tray"></div>
+</main>
+
+<div class="backdrop" id="shopSheet" hidden>
+  <div class="sheet" role="dialog" aria-labelledby="shopTitle">
+    <div class="shead"><h2 id="shopTitle">商店</h2><button class="ibtn" id="shopClose" aria-label="關閉" data-ic="close"></button></div>
+    <div class="shopbar"><span class="starpill" id="shopStars"></span><span class="t2">過關拿星星：沒放錯、沒用提示 3 顆，<br>錯或提示 1–2 次 2 顆，更多 1 顆。</span></div>
+    <div class="rtabs" id="shopTabs" style="margin-bottom:10px">
+      <button data-t="acc">配件</button><button data-t="fur">毛色</button><button data-t="breed">品種</button><button data-t="furn">家具</button><button data-t="plant">花木造景</button><button data-t="toy">玩具</button><button data-t="scene">場景</button>
+    </div>
+    <div class="shopgrid" id="shopGrid"></div>
+  </div>
+</div>
+
+<div class="backdrop" id="dressSheet" hidden>
+  <div class="sheet" role="dialog" aria-labelledby="dressTitle">
+    <div class="shead"><h2 id="dressTitle">打扮狗狗</h2><button class="ibtn" id="dressClose" aria-label="關閉" data-ic="close"></button></div>
+    <div class="dresspick" id="dressPick"></div>
+    <div class="dressprev" id="dressPrev"></div>
+    <div class="dressbody" id="dressBody"></div>
+  </div>
+</div>
+
+<div class="backdrop" id="roomHelpSheet" hidden>
+  <div class="sheet rules" role="dialog" aria-labelledby="roomHelpTitle">
+    <div class="shead"><h2 id="roomHelpTitle">小窩怎麼玩</h2><button class="ibtn" id="roomHelpClose" aria-label="關閉" data-ic="close"></button></div>
+    <p><span class="sic" style="--c:var(--butter)" data-ic="star"></span><span>過關可以拿<b>星星</b>，最多 3 顆。同一關重玩拿到更多星，只補差額。</span></p>
+    <p><span class="sic" style="--c:var(--peach)" data-ic="bag"></span><span>到<b>商店</b>用星星買配件、毛色、狗的品種、家具、花草和場景。</span></p>
+    <p><span class="sic" style="--c:var(--mint)" data-ic="hand"></span><span>下方選一個東西，點一下就放進小窩。<b>按住拖曳</b>移動位置；點一下選取後，可以<b>放大、縮小、翻面、收起來</b>。</span></p>
+    <p><span class="sic" style="--c:var(--lav)" data-ic="lock"></span><span>一開始只能放 1 隻狗，<b>每過 10 關多 1 隻</b>，最多 10 隻。每隻狗都能分開打扮。</span></p>
+    <p><span class="sic" style="--c:var(--rose)" data-ic="home"></span><span>每個<b>場景</b>（室內、戶外）的擺設都會分開記住。登入帳號後，電腦和手機會同步。</span></p>
+    <div class="sbtns"><button class="b3d" id="roomHelpOk">知道了</button></div>
+  </div>
+</div>
 
 <!-- ===================== 彈出面板 ===================== -->
 <div class="backdrop" id="pauseSheet" hidden>
@@ -495,6 +647,7 @@
     <div class="badge" id="winCat"></div>
     <h2 id="winTitle">全部就位！</h2>
     <div class="sub" id="winSub"></div>
+    <div class="winstars" id="winStars"></div>
     <div class="chips" id="winChips"></div>
     <div id="winBest"></div>
     <div class="winscore" id="winScore"></div>
@@ -534,6 +687,13 @@
 <script>
 /* ===================== 圖示與狗 ===================== */
 const ICON={
+  bag:'<path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/>',
+  brush:'<path d="M14.5 4.5l5 5-8 8-5-5z"/><path d="M6.5 12.5c-2 .5-3 2-3 4 0 1.5-.5 2.5-1.5 3 3 .5 6 0 7.5-2.5"/>',
+  star:'<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/>',
+  plus:'<path d="M12 5v14M5 12h14"/><circle cx="12" cy="12" r="0" />',
+  minus:'<path d="M5 12h14"/>',
+  flip:'<path d="M12 3v18"/><path d="M8 7L3 12l5 5z"/><path d="M16 7l5 5-5 5z" fill="currentColor"/>',
+  trash:'<path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>',
   pause:'<path d="M9 5v14M15 5v14"/>',
   music:'<path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>',
   sound:'<path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>',
@@ -911,9 +1071,366 @@ $('logo').innerHTML=catSVG(0,'');
 $('icDaily').innerHTML=ic('calendar'); $('icFree').innerHTML=ic('grid'); $('playIcon').innerHTML=ic('play');
 $('winCat').innerHTML=catSVG(0,''); $('loseCat').innerHTML=catSVG(3,'');
 
-function showScreen(name){ $('home').hidden=name!=='home'; $('game').hidden=name!=='game'; $('roofs').style.display=name==='home'?'':'none'; document.querySelector('.moon').style.display=name==='home'?'':'none'; }
+function showScreen(name){ $('home').hidden=name!=='home'; $('game').hidden=name!=='game'; $('room').hidden=name!=='room'; $('roofs').style.display=name==='home'?'':'none'; document.querySelector('.moon').style.display=name==='home'?'':'none'; }
 function openSheet(id){ document.querySelectorAll('.backdrop').forEach(b=>b.hidden=true); $(id).hidden=false; Sound.play('open'); }
 function closeSheet(id){ $(id).hidden=true; }
+
+/* ===================== 星星、商店、打扮、狗狗小窩 ===================== */
+const STAR_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z" fill="#ffd76e" stroke="#b07a1c" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+// 毛色：[名稱, 臉, 耳朵/斑點, 嘴巴周圍, 價格]
+const FURS=[['焦糖','#e8b77a','#a86a3a','#fff3e0',0],['奶油白','#f7f0e4','#c9a27a','#ffffff',0],['巧克力','#9a6644','#5e3b26','#ecd2b4',0],
+  ['炭黑','#4a4658','#2a2734','#d9d2e3',12],['蜂蜜','#d9a066','#7a4a2a','#f6e1c4',12],['銀灰','#c4bfcf','#77728a','#f3eff8',12],
+  ['柴犬紅','#e3924f','#b8612a','#fff1de',18],['金黃','#f3cd6a','#c99a2e','#fff6d8',18],['雪白','#ffffff','#2b2734','#ffffff',18],
+  ['草莓粉','#f7b6c8','#d9779a','#fff0f5',28],['薄荷綠','#a8e6cf','#5fb89a','#effcf6',28],['天空藍','#a9cdf5','#5f8fd0','#eef6ff',28],['薰衣草','#cdb8f5','#8d6fd6','#f5f0ff',28]];
+// 品種：耳朵形狀與花紋
+const BREEDS=[{id:'mix',n:'米克斯',p:0,ear:'flop'},{id:'shiba',n:'柴犬',p:25,ear:'point',pat:'shiba'},{id:'corgi',n:'柯基',p:25,ear:'big',pat:'blaze'},
+  {id:'beagle',n:'米格魯',p:30,ear:'long',pat:'blaze'},{id:'pug',n:'巴哥',p:30,ear:'fold',pat:'pug'},{id:'husky',n:'哈士奇',p:35,ear:'point',pat:'husky'},
+  {id:'poodle',n:'貴賓',p:35,ear:'fluffy',pat:'poodle'},{id:'dalmatian',n:'大麥町',p:35,ear:'flop',pat:'spots'}];
+const ACC=[
+  {id:'bow',slot:'head',n:'蝴蝶結',p:10},{id:'party',slot:'head',n:'派對帽',p:15},{id:'beanie',slot:'head',n:'毛線帽',p:15},
+  {id:'flower',slot:'head',n:'花圈',p:20},{id:'chef',slot:'head',n:'廚師帽',p:20},{id:'hardhat',slot:'head',n:'安全帽',p:20},
+  {id:'viking',slot:'head',n:'維京頭盔',p:30},{id:'crown',slot:'head',n:'皇冠',p:40},{id:'space',slot:'head',n:'太空頭盔',p:50},
+  {id:'hoop',slot:'ear',n:'金耳環',p:10},{id:'pearl',slot:'ear',n:'珍珠耳環',p:15},{id:'stare',slot:'ear',n:'星星耳環',p:20},
+  {id:'bandana',slot:'neck',n:'紅領巾',p:10},{id:'bell',slot:'neck',n:'鈴鐺項圈',p:15},{id:'bowtie',slot:'neck',n:'領結',p:15},{id:'scarf',slot:'neck',n:'條紋圍巾',p:20},
+  {id:'glasses',slot:'face',n:'圓眼鏡',p:15},{id:'shades',slot:'face',n:'墨鏡',p:20},{id:'hearts',slot:'face',n:'愛心眼鏡',p:25},{id:'monocle',slot:'face',n:'單片眼鏡',p:25}];
+const SLOTS=[['head','頭上'],['ear','耳朵'],['neck','脖子'],['face','臉上']];
+const DECO=[
+  {id:'chair',e:'🪑',n:'椅子',c:'furn',p:0},{id:'sofa',e:'🛋️',n:'沙發',c:'furn',p:15},{id:'bed',e:'🛏️',n:'床',c:'furn',p:15},{id:'lamp',e:'🪔',n:'油燈',c:'furn',p:8},
+  {id:'tv',e:'📺',n:'電視',c:'furn',p:15},{id:'clock',e:'🕰️',n:'時鐘',c:'furn',p:10},{id:'pic',e:'🖼️',n:'掛畫',c:'furn',p:10},{id:'mirror',e:'🪞',n:'鏡子',c:'furn',p:10},
+  {id:'piano',e:'🎹',n:'鋼琴',c:'furn',p:25},{id:'books',e:'📚',n:'書',c:'furn',p:6},{id:'basket',e:'🧺',n:'籃子',c:'furn',p:6},{id:'house',e:'🏠',n:'狗屋',c:'furn',p:30},
+  {id:'tent',e:'⛺',n:'帳篷',c:'furn',p:25},{id:'fire',e:'🔥',n:'營火',c:'furn',p:12},
+  {id:'pot',e:'🪴',n:'盆栽',c:'plant',p:0},{id:'tulip',e:'🌷',n:'鬱金香',c:'plant',p:5},{id:'sun',e:'🌻',n:'向日葵',c:'plant',p:5},{id:'sakura',e:'🌸',n:'櫻花',c:'plant',p:6},
+  {id:'rose',e:'🌹',n:'玫瑰',c:'plant',p:6},{id:'tree',e:'🌳',n:'大樹',c:'plant',p:15},{id:'pine',e:'🌲',n:'松樹',c:'plant',p:15},{id:'palm',e:'🌴',n:'椰子樹',c:'plant',p:18},
+  {id:'cactus',e:'🌵',n:'仙人掌',c:'plant',p:8},{id:'mush',e:'🍄',n:'蘑菇',c:'plant',p:8},{id:'rock',e:'🪨',n:'石頭',c:'plant',p:5},{id:'fount',e:'⛲',n:'噴水池',c:'plant',p:30},
+  {id:'snowman',e:'⛄',n:'雪人',c:'plant',p:15},{id:'xmas',e:'🎄',n:'聖誕樹',c:'plant',p:20},
+  {id:'bone',e:'🦴',n:'骨頭',c:'toy',p:0},{id:'ball',e:'⚽',n:'足球',c:'toy',p:0},{id:'tennis',e:'🎾',n:'網球',c:'toy',p:4},{id:'bowl',e:'🥣',n:'飯碗',c:'toy',p:4},
+  {id:'teddy',e:'🧸',n:'玩偶',c:'toy',p:10},{id:'yarn',e:'🧶',n:'毛線球',c:'toy',p:6},{id:'balloon',e:'🎈',n:'氣球',c:'toy',p:6},{id:'gift',e:'🎁',n:'禮物',c:'toy',p:8},
+  {id:'duck',e:'🦆',n:'小鴨',c:'toy',p:8},{id:'kite',e:'🪁',n:'風箏',c:'toy',p:10},{id:'cake',e:'🎂',n:'蛋糕',c:'toy',p:12}];
+const SCENES=[{id:'living',n:'溫馨客廳',p:0,inside:true},{id:'garden',n:'花園草地',p:0},{id:'bedroom',n:'夢幻臥室',p:40,inside:true},
+  {id:'beach',n:'陽光海灘',p:50},{id:'snow',n:'下雪森林',p:50},{id:'camp',n:'星空露營',p:60}];
+const MAX_DOGS=10, ROOM_MAX=40;
+
+/* ----- 存檔欄位（舊存檔沒有就補上） ----- */
+function shopData(){
+  const s=save.shop||(save.shop={});
+  s.owned=s.owned||{}; s.dogs=s.dogs||[]; s.room=s.room||{}; s.scene=s.scene||'living'; s.t=s.t||0;
+  save.stars=save.stars||{};
+  return s;
+}
+const priceOf=id=>{ const [t,k]=id.split(':');
+  if(t==='a') return (ACC.find(x=>x.id===k)||{}).p; if(t==='f') return (FURS[+k]||[])[4]; if(t==='b') return (BREEDS.find(x=>x.id===k)||{}).p;
+  if(t==='d') return (DECO.find(x=>x.id===k)||{}).p; if(t==='s') return (SCENES.find(x=>x.id===k)||{}).p; };
+const owns=id=>priceOf(id)===0||shopData().owned[id]!=null;
+function starsEarned(){
+  const st=shopData()&&save.stars; let t=0;
+  for(const k in st) t+=st[k];
+  for(let k=1;k<save.level;k++) if(st['L'+k]==null) t+=2;   // 有星星系統以前過的關，每關算 2 顆
+  return t;
+}
+const starsSpent=()=>{ const o=shopData().owned; let t=0; for(const k in o) t+=o[k]||0; return t; };
+const starBalance=()=>Math.max(0,starsEarned()-starsSpent());
+const dogSlots=()=>Math.min(MAX_DOGS,1+Math.floor(Math.max(0,save.level-1)/10));
+function dogCfg(i){ const s=shopData(); while(s.dogs.length<=i) s.dogs.push({b:'mix',f:s.dogs.length%3}); return s.dogs[i]; }
+function touchShop(){ shopData().t=Date.now(); persist(); pushProg(); }
+const starPill=n=>`${STAR_SVG}<span>${n}</span>`;
+function starsFor(m,h){ const k=m+h; return k===0?3:k<=2?2:1; }
+function starKey(){ return mode.type==='level'?'L'+mode.level:mode.type==='daily'?'D'+mode.date:'C'+mode.code; }
+// 過關時呼叫：回傳 {got 這次幾顆, gain 實際加了幾顆}
+function awardStars(){   // 要在關卡進度 +1 之前呼叫
+  shopData(); const key=starKey(), got=starsFor(mistakes,hintsUsed), st=save.stars, before=starsEarned();
+  let cur=st[key]; if(cur==null&&mode.type==='level'&&mode.level<save.level) cur=2;
+  st[key]=Math.max(got,cur||0);
+  return {got,gain:Math.max(0,starsEarned()-before)};
+}
+
+/* ----- 畫狗：頭（可選全身）＋品種＋毛色＋配件 ----- */
+const SK='#2b2140';
+function earsSVG(type,ear,muz){
+  const st=`stroke="${SK}" stroke-width="4.5" stroke-linejoin="round"`;
+  if(type==='point') return `<path d="M21 46 L25 12 L47 27 Z" fill="${ear}" ${st}/><path d="M79 46 L75 12 L53 27 Z" fill="${ear}" ${st}/>
+    <path d="M27 36 L28.5 20 L39 28 Z" fill="#f7a8b8" opacity=".8"/><path d="M73 36 L71.5 20 L61 28 Z" fill="#f7a8b8" opacity=".8"/>`;
+  if(type==='big') return `<path d="M19 48 L15 4 L48 25 Z" fill="${ear}" ${st}/><path d="M81 48 L85 4 L52 25 Z" fill="${ear}" ${st}/>
+    <path d="M25 38 L23 15 L39 27 Z" fill="#f7a8b8" opacity=".8"/><path d="M75 38 L77 15 L61 27 Z" fill="#f7a8b8" opacity=".8"/>`;
+  if(type==='long') return `<ellipse cx="17" cy="60" rx="12" ry="28" transform="rotate(12 17 60)" fill="${ear}" ${st}/><ellipse cx="83" cy="60" rx="12" ry="28" transform="rotate(-12 83 60)" fill="${ear}" ${st}/>`;
+  if(type==='fold') return `<path d="M22 28 Q8 30 14 46 L33 34 Z" fill="${ear}" ${st}/><path d="M78 28 Q92 30 86 46 L67 34 Z" fill="${ear}" ${st}/>`;
+  if(type==='fluffy') return [[16,50,11],[13,63,11],[18,75,10],[84,50,11],[87,63,11],[82,75,10]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${ear}" ${st}/>`).join('')
+    +[[16,50,11],[13,63,11],[18,75,10],[84,50,11],[87,63,11],[82,75,10]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r-2.2}" fill="${ear}"/>`).join('');
+  return `<ellipse cx="19" cy="47" rx="12" ry="23" transform="rotate(20 19 47)" fill="${ear}" ${st}/><ellipse cx="81" cy="47" rx="12" ry="23" transform="rotate(-20 81 47)" fill="${ear}" ${st}/>`;
+}
+const EAR_AT={flop:[12,66],long:[9,84],point:[17,42],big:[15,44],fold:[13,46],fluffy:[9,80]};
+function accSVG(id,ex){
+  const st=`stroke="${SK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
+  switch(id){
+    case 'bow': return `<g transform="translate(70 25) rotate(18)"><path d="M0 0 L-15 -10 L-15 10 Z M0 0 L15 -10 L15 10 Z" fill="#ff7da7" ${st}/><circle r="5" fill="#ffa9c6" ${st}/></g>`;
+    case 'party': return `<g transform="rotate(-14 50 24)"><path d="M35 27 L50 -9 L65 27 Z" fill="#8fd3ff" ${st}/><path d="M40 16 L59 14 M44 5 L56 4" stroke="#ff7d8e" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="-10" r="5.5" fill="#ffd76e" ${st}/></g>`;
+    case 'beanie': return `<path d="M20 37 Q22 6 50 5 Q78 6 80 37 Z" fill="#ff7d8e" ${st}/><path d="M33 12 L33 34 M50 7 L50 34 M67 12 L67 34" stroke="#e05a6e" stroke-width="3"/><rect x="17" y="31" width="66" height="11" rx="5.5" fill="#ffe0e5" ${st}/><circle cx="50" cy="3" r="7" fill="#fff" ${st}/>`;
+    case 'flower': return [[24,34,'#ff9fc0'],[35,25,'#ffd76e'],[50,21,'#bba8ff'],[65,25,'#86dfc6'],[76,34,'#ff9fc0']].map(([x,y,c])=>
+      `<g transform="translate(${x} ${y})">${[0,72,144,216,288].map(a=>`<circle cx="${(5*Math.cos(a*Math.PI/180)).toFixed(1)}" cy="${(5*Math.sin(a*Math.PI/180)).toFixed(1)}" r="4.2" fill="${c}" stroke="${SK}" stroke-width="1.6"/>`).join('')}<circle r="3" fill="#fff6c4" stroke="${SK}" stroke-width="1.4"/></g>`).join('')
+      +`<path d="M28 30 Q50 18 72 30" fill="none" stroke="#5fb87a" stroke-width="2.5"/>`;
+    case 'chef': return `<path d="M30 30 Q14 22 24 8 Q30 -4 42 2 Q50 -8 58 2 Q70 -4 76 8 Q86 22 70 30 Z" fill="#fff" ${st}/><rect x="29" y="25" width="42" height="11" rx="3" fill="#f3eee6" ${st}/>`;
+    case 'hardhat': return `<path d="M20 37 Q20 7 50 7 Q80 7 80 37 Z" fill="#ffd23f" ${st}/><path d="M50 7 L50 34" stroke="#e0a800" stroke-width="5"/><rect x="11" y="33" width="78" height="8" rx="4" fill="#ffc21a" ${st}/>`;
+    case 'viking': return `<path d="M24 34 Q12 22 14 4 Q22 18 32 22" fill="#fff3d6" ${st}/><path d="M76 34 Q88 22 86 4 Q78 18 68 22" fill="#fff3d6" ${st}/>
+      <path d="M21 38 Q21 8 50 8 Q79 8 79 38 Z" fill="#a9b3c6" ${st}/><rect x="18" y="32" width="64" height="9" rx="4" fill="#c99a4a" ${st}/><circle cx="32" cy="36.5" r="1.8" fill="${SK}"/><circle cx="50" cy="36.5" r="1.8" fill="${SK}"/><circle cx="68" cy="36.5" r="1.8" fill="${SK}"/><path d="M50 8 L50 32" stroke="#8a93a8" stroke-width="3"/>`;
+    case 'crown': return `<path d="M30 31 L27 10 L39 19 L50 5 L61 19 L73 10 L70 31 Z" fill="#ffd76e" ${st}/><circle cx="50" cy="23" r="3.5" fill="#ff7d8e" ${st}/><circle cx="38" cy="26" r="2.6" fill="#86dfc6"/><circle cx="62" cy="26" r="2.6" fill="#8fd3ff"/>`;
+    case 'space': return `<circle cx="50" cy="52" r="49" fill="rgba(190,225,255,.22)" stroke="#e6f3ff" stroke-width="3.5"/><path d="M20 30 Q28 14 46 9" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".8"/><rect x="34" y="95" width="32" height="9" rx="4" fill="#d8dde8" ${st}/>`;
+    case 'hoop': return `<circle cx="${ex[0]}" cy="${ex[1]+6}" r="6" fill="none" stroke="#ffc83a" stroke-width="3"/>`;
+    case 'pearl': return `<path d="M${ex[0]} ${ex[1]} v5" stroke="#d8c7a0" stroke-width="2"/><circle cx="${ex[0]}" cy="${ex[1]+9}" r="4.5" fill="#fffaf0" stroke="${SK}" stroke-width="1.8"/>`;
+    case 'stare': return `<path d="M${ex[0]} ${ex[1]} v4" stroke="#ffc83a" stroke-width="2"/><path transform="translate(${ex[0]} ${ex[1]+10}) scale(.55)" d="M0 -11 L3.2 -3.5 L11 -3.4 L4.8 1.6 L7 9.5 L0 5 L-7 9.5 L-4.8 1.6 L-11 -3.4 L-3.2 -3.5 Z" fill="#ffd76e" stroke="${SK}" stroke-width="2.6" stroke-linejoin="round"/>`;
+    case 'bandana': return `<path d="M27 80 Q50 92 73 80 L52 104 Q50 106 48 104 Z" fill="#ff6b6b" ${st}/><circle cx="44" cy="90" r="1.8" fill="#fff"/><circle cx="56" cy="90" r="1.8" fill="#fff"/><circle cx="50" cy="97" r="1.8" fill="#fff"/>`;
+    case 'bell': return `<path d="M25 81 Q50 95 75 81" fill="none" stroke="${SK}" stroke-width="10" stroke-linecap="round"/><path d="M25 81 Q50 95 75 81" fill="none" stroke="#e04a5f" stroke-width="5.5" stroke-linecap="round"/><circle cx="50" cy="94" r="6.5" fill="#ffd23f" ${st}/><path d="M46 95 h8" stroke="${SK}" stroke-width="2"/>`;
+    case 'bowtie': return `<path d="M50 90 L36 82 L36 98 Z M50 90 L64 82 L64 98 Z" fill="#6d5df5" ${st}/><rect x="45.5" y="85.5" width="9" height="9" rx="3" fill="#9f93ff" ${st}/>`;
+    case 'scarf': return `<path d="M24 80 Q50 96 76 80 L77 89 Q50 104 23 89 Z" fill="#86dfc6" ${st}/><path d="M36 86 l-1 9 M50 90 v9 M64 86 l1 9" stroke="#ff7d8e" stroke-width="4"/><path d="M62 92 L70 112 L80 108 L72 90" fill="#86dfc6" ${st}/>`;
+    case 'glasses': return `<circle cx="37" cy="48" r="10" fill="rgba(255,255,255,.18)" stroke="${SK}" stroke-width="3"/><circle cx="63" cy="48" r="10" fill="rgba(255,255,255,.18)" stroke="${SK}" stroke-width="3"/><path d="M47 47 Q50 44 53 47" fill="none" stroke="${SK}" stroke-width="3"/>`;
+    case 'shades': return `<path d="M24 41 H48 Q48 56 37 56 Q25 56 24 41 Z M52 41 H76 Q75 56 63 56 Q52 56 52 41 Z" fill="#2b2140" ${st}/><path d="M48 43 H52" stroke="${SK}" stroke-width="3"/><path d="M28 44 l6 0 M56 44 l6 0" stroke="#8a7fb8" stroke-width="2.5" stroke-linecap="round"/>`;
+    case 'hearts': return ['37','63'].map(x=>`<path transform="translate(${x} 49)" d="M0 8 C-14 -1 -9 -12 0 -5 C9 -12 14 -1 0 8 Z" fill="#ff7da7" stroke="${SK}" stroke-width="2.6" stroke-linejoin="round" opacity=".95"/>`).join('')+`<path d="M46 45 H54" stroke="${SK}" stroke-width="2.6"/>`;
+    case 'monocle': return `<circle cx="63" cy="48" r="10" fill="rgba(255,255,255,.2)" stroke="#d9a520" stroke-width="3"/><path d="M71 54 Q76 66 70 78" fill="none" stroke="#d9a520" stroke-width="1.8" stroke-dasharray="2 2"/>`;
+  }
+  return '';
+}
+function dogSVG(cfg,o={}){
+  cfg=cfg||{}; const F=FURS[cfg.f]||FURS[0], B=BREEDS.find(x=>x.id===cfg.b)||BREEDS[0];
+  const fur=F[1], ear=F[2], muz=F[3], dark=cfg.f===3, pat=B.pat;
+  const top=o.full?'-10 -14 120 160':'-8 -14 116 122';
+  let body='';
+  if(o.full) body=`<path d="M78 112 Q98 104 94 86" fill="none" stroke="${SK}" stroke-width="10" stroke-linecap="round"/><path d="M78 112 Q98 104 94 86" fill="none" stroke="${ear}" stroke-width="5" stroke-linecap="round"/>
+    <ellipse cx="50" cy="114" rx="29" ry="27" fill="${fur}" stroke="${SK}" stroke-width="4.5"/><ellipse cx="50" cy="120" rx="15" ry="17" fill="${muz}"/>
+    ${pat==='spots'?`<circle cx="30" cy="110" r="4" fill="${ear}"/><circle cx="68" cy="122" r="3.5" fill="${ear}"/><circle cx="62" cy="102" r="3" fill="${ear}"/>`:''}
+    <ellipse cx="37" cy="139" rx="9" ry="6" fill="${fur}" stroke="${SK}" stroke-width="4"/><ellipse cx="63" cy="139" rx="9" ry="6" fill="${fur}" stroke="${SK}" stroke-width="4"/>`;
+  let face='';
+  if(pat==='shiba') face=`<ellipse cx="50" cy="67" rx="25" ry="16" fill="${muz}"/><ellipse cx="36" cy="38" rx="4" ry="2.6" fill="${muz}"/><ellipse cx="64" cy="38" rx="4" ry="2.6" fill="${muz}"/>`;
+  else if(pat==='husky') face=`<path d="M19 56 Q26 40 38 40 Q46 40 50 30 Q54 40 62 40 Q74 40 81 56 Q80 84 50 85 Q20 84 19 56 Z" fill="${muz}"/>`;
+  else if(pat==='blaze') face=`<path d="M46 22 Q50 20 54 22 L56 54 Q50 58 44 54 Z" fill="${muz}"/>`;
+  else if(pat==='spots') face=`<circle cx="30" cy="44" r="4" fill="${ear}"/><circle cx="68" cy="34" r="3.2" fill="${ear}"/><circle cx="72" cy="58" r="3.6" fill="${ear}"/><circle cx="45" cy="30" r="2.6" fill="${ear}"/>`;
+  else if(pat==='poodle') face=[[50,22,13],[37,25,10],[63,25,10]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${ear}" stroke="${SK}" stroke-width="4"/>`).join('')+[[50,22,10.5],[37,25,7.5],[63,25,7.5]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${ear}"/>`).join('');
+  const muzzle=pat==='pug'?`<ellipse cx="50" cy="68" rx="19" ry="14" fill="${ear}"/><path d="M40 33 Q50 29 60 33 M43 38 Q50 35 57 38" fill="none" stroke="${ear}" stroke-width="2.4" stroke-linecap="round"/>`
+    :pat==='husky'?'':`<ellipse cx="50" cy="69" rx="18" ry="13" fill="${muz}"/>`;
+  const eye=pat==='husky'?'#5fb6e8':SK;
+  const a=cfg, ex=EAR_AT[B.ear]||EAR_AT.flop;
+  const onTopHead=a.head&&a.head!=='space'?accSVG(a.head):'';
+  return `<svg class="${o.cls||'dg'}" viewBox="${top}" aria-label="狗">${body}
+    ${earsSVG(B.ear,ear,muz)}
+    <ellipse cx="50" cy="53" rx="33" ry="32" fill="${fur}" stroke="${SK}" stroke-width="4.5"/>
+    ${pat==='poodle'?'':face}${pat==='poodle'?face:''}
+    ${!pat&&cfg.f===1?`<ellipse cx="62" cy="45" rx="11" ry="10" fill="${ear}" opacity=".85"/>`:''}
+    ${muzzle}
+    <ellipse cx="38" cy="48" rx="4.8" ry="5.6" fill="${eye}"/><ellipse cx="62" cy="48" rx="4.8" ry="5.6" fill="${eye}"/>
+    ${pat==='husky'?`<ellipse cx="38" cy="48.5" rx="2" ry="2.6" fill="${SK}"/><ellipse cx="62" cy="48.5" rx="2" ry="2.6" fill="${SK}"/>`:''}
+    <circle cx="39.8" cy="46" r="1.8" fill="#fff"/><circle cx="63.8" cy="46" r="1.8" fill="#fff"/>
+    <ellipse cx="50" cy="62" rx="7" ry="5" fill="${SK}"/><ellipse cx="48" cy="60.5" rx="2.2" ry="1.3" fill="#fff" opacity=".6"/>
+    <path d="M50 67 v3.5 M50 70.5 Q44.5 76.5 39.5 72 M50 70.5 Q55.5 76.5 60.5 72" fill="none" stroke="${SK}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M46 74 Q50 84 54 74 Z" fill="#ff8fa3" stroke="${SK}" stroke-width="2" stroke-linejoin="round"/>
+    <ellipse cx="29" cy="62" rx="5" ry="3" fill="#f7a8b8" opacity="${dark?.5:.75}"/><ellipse cx="71" cy="62" rx="5" ry="3" fill="#f7a8b8" opacity="${dark?.5:.75}"/>
+    ${a.neck?accSVG(a.neck):''}${a.ear?accSVG(a.ear,ex):''}${a.face?accSVG(a.face):''}${onTopHead}${a.head==='space'?accSVG('space'):''}
+  </svg>`;
+}
+
+/* ----- 場景背景（直式 300×400） ----- */
+function sceneSVG(id){
+  const W='<svg class="bg" viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">';
+  switch(id){
+    case 'living': return W+`<defs><linearGradient id="lw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7c4"/><stop offset="1" stop-color="#f6cf9c"/></linearGradient></defs>
+      <rect width="300" height="400" fill="url(#lw)"/><g fill="#f9dcb0" opacity=".7">${Array.from({length:8},(_,i)=>`<rect x="${i*40+14}" y="0" width="12" height="250"/>`).join('')}</g>
+      <rect x="92" y="44" width="116" height="104" rx="10" fill="#2b2a5c" stroke="#fff4e0" stroke-width="8"/><path d="M150 44v104M92 96h116" stroke="#fff4e0" stroke-width="6"/>
+      <circle cx="182" cy="70" r="11" fill="#fff3c4"/><circle cx="118" cy="66" r="1.6" fill="#fff"/><circle cx="130" cy="120" r="1.4" fill="#fff"/><circle cx="190" cy="124" r="1.6" fill="#fff"/>
+      <rect x="0" y="236" width="300" height="16" fill="#fff3e0"/><rect x="0" y="250" width="300" height="150" fill="#cf9461"/>
+      <g stroke="#b97c4b" stroke-width="2">${[278,306,334,362,390].map(y=>`<path d="M0 ${y}H300"/>`).join('')}${[[40,250,278],[160,278,306],[90,306,334],[220,334,362],[130,362,390]].map(([x,a,b])=>`<path d="M${x} ${a}V${b}M${x+120} ${a}V${b}"/>`).join('')}</g>
+      <ellipse cx="150" cy="330" rx="110" ry="36" fill="#ff9e8a" opacity=".55"/></svg>`;
+    case 'bedroom': return W+`<rect width="300" height="400" fill="#d9ccf7"/><g fill="#efe7ff">${Array.from({length:40},(_,i)=>`<circle cx="${(i%8)*40+(Math.floor(i/8)%2?20:0)+10}" cy="${Math.floor(i/8)*48+20}" r="5"/>`).join('')}</g>
+      <path d="M30 40 Q60 20 90 40 Q120 60 150 40" fill="none" stroke="#ffd76e" stroke-width="3"/><g fill="#ffd76e">${[[40,38],[70,32],[100,44],[130,46]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="4"/>`).join('')}</g>
+      <rect x="196" y="56" width="74" height="90" rx="37" fill="#8fb8ff" stroke="#fff" stroke-width="7"/><circle cx="222" cy="86" r="9" fill="#fff6c4"/>
+      <rect x="0" y="244" width="300" height="10" fill="#fff"/><rect x="0" y="254" width="300" height="146" fill="#f6b8c8"/>
+      <ellipse cx="150" cy="326" rx="120" ry="40" fill="#fff" opacity=".45"/><ellipse cx="150" cy="326" rx="96" ry="30" fill="#ffd6e2" opacity=".7"/></svg>`;
+    case 'garden': return W+`<defs><linearGradient id="gs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd2ff"/><stop offset="1" stop-color="#d8f1ff"/></linearGradient></defs>
+      <rect width="300" height="400" fill="url(#gs)"/><circle cx="240" cy="62" r="26" fill="#fff1a0"/><circle cx="240" cy="62" r="38" fill="#fff1a0" opacity=".35"/>
+      <g fill="#fff">${[[60,70],[150,46]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="30" ry="12"/><ellipse cx="${x+18}" cy="${y-8}" rx="18" ry="12"/>`).join('')}</g>
+      <path d="M0 200 Q70 150 150 190 Q220 160 300 196 V260 H0 Z" fill="#9edb8c"/><rect x="0" y="236" width="300" height="164" fill="#7cc96b"/>
+      <g fill="#fffaf0" stroke="#d9c9a8" stroke-width="2">${Array.from({length:11},(_,i)=>`<path d="M${i*28+4} 244 V212 l7 -8 l7 8 V244 Z"/>`).join('')}<rect x="0" y="220" width="300" height="6"/><rect x="0" y="234" width="300" height="6"/></g>
+      <g fill="#6ab95b">${Array.from({length:22},(_,i)=>`<path d="M${(i*53)%300} ${270+((i*37)%120)} l3 -8 l3 8 Z"/>`).join('')}</g></svg>`;
+    case 'beach': return W+`<defs><linearGradient id="bs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fd0ff"/><stop offset="1" stop-color="#e2f6ff"/></linearGradient></defs>
+      <rect width="300" height="400" fill="url(#bs)"/><circle cx="70" cy="70" r="28" fill="#fff3a6"/><rect x="0" y="176" width="300" height="80" fill="#3fb3dd"/>
+      <g fill="none" stroke="#b9ecff" stroke-width="3" stroke-linecap="round">${[190,210,232].map((y,k)=>`<path d="M${10+k*30} ${y} q12 -6 24 0 M${150+k*20} ${y+6} q12 -6 24 0"/>`).join('')}</g>
+      <path d="M0 250 Q75 236 150 248 Q225 260 300 246 V400 H0 Z" fill="#f6dc9f"/><path d="M0 250 Q75 236 150 248 Q225 260 300 246" fill="none" stroke="#fff" stroke-width="6" opacity=".8"/>
+      <g fill="#e8c784">${Array.from({length:18},(_,i)=>`<circle cx="${(i*67)%300}" cy="${280+((i*29)%110)}" r="2"/>`).join('')}</g></svg>`;
+    case 'snow': return W+`<rect width="300" height="400" fill="#cfe2f4"/><path d="M0 190 L60 110 L110 170 L170 90 L240 170 L300 120 V260 H0 Z" fill="#e9f2fb"/>
+      <path d="M60 110 L76 132 L66 130 L54 140 Z M170 90 L190 118 L176 114 L160 126 Z" fill="#fff"/>
+      <g fill="#5d8a7a">${[[30,236],[80,226],[250,232],[280,240]].map(([x,y])=>`<path d="M${x} ${y-56} L${x+16} ${y-22} H${x+8} L${x+22} ${y} H${x-22} L${x-8} ${y-22} H${x-16} Z"/>`).join('')}</g>
+      <rect x="0" y="236" width="300" height="164" fill="#f7fbff"/><path d="M0 236 Q150 220 300 236" fill="#f7fbff"/>
+      <g fill="#fff">${Array.from({length:40},(_,i)=>`<circle cx="${(i*73)%300}" cy="${(i*47)%380}" r="${1.5+(i%3)}"/>`).join('')}</g></svg>`;
+    case 'camp': return W+`<rect width="300" height="400" fill="#1d2552"/><g fill="#fff">${Array.from({length:44},(_,i)=>`<circle cx="${(i*71)%300}" cy="${(i*37)%200}" r="${.8+(i%3)*.5}"/>`).join('')}</g>
+      <circle cx="232" cy="64" r="22" fill="#fff3c4"/><circle cx="242" cy="58" r="20" fill="#1d2552"/>
+      <path d="M0 220 L40 170 L70 210 L110 160 L150 214 L190 166 L230 212 L270 172 L300 206 V260 H0 Z" fill="#203a3a"/>
+      <rect x="0" y="240" width="300" height="160" fill="#2f5a3c"/><path d="M0 240 Q150 226 300 240" fill="#2f5a3c"/>
+      <ellipse cx="150" cy="330" rx="130" ry="50" fill="#ffb15a" opacity=".12"/>
+      <g fill="#3d7049">${Array.from({length:18},(_,i)=>`<path d="M${(i*53)%300} ${270+((i*37)%120)} l3 -8 l3 8 Z"/>`).join('')}</g></svg>`;
+  }
+  return W+'</svg>';
+}
+
+/* ----- 小提示 ----- */
+let toastT=0;
+function toast(msg){ let t=document.querySelector('.toast'); if(!t){ t=document.createElement('div'); t.className='toast'; document.body.appendChild(t); }
+  t.textContent=msg; t.style.animation='none'; void t.offsetWidth; t.style.animation=''; clearTimeout(toastT); toastT=setTimeout(()=>t.remove(),2200); }
+function refreshStars(){ const n=starBalance(); ['roomStars','shopStars'].forEach(id=>{ const el=$(id); if(el) el.innerHTML=starPill(n); }); }
+
+/* ----- 商店 ----- */
+let shopTab='acc', dressDog=0;
+function shopItems(t){
+  const d=dogCfg(dressDog);
+  if(t==='acc') return ACC.map(a=>({id:'a:'+a.id,n:a.n,p:a.p,pv:dogSVG({...d,head:'',ear:'',neck:'',face:'',[a.slot]:a.id})}));
+  if(t==='fur') return FURS.map((f,k)=>({id:'f:'+k,n:f[0],p:f[4],pv:dogSVG({b:d.b,f:k})}));
+  if(t==='breed') return BREEDS.map(b=>({id:'b:'+b.id,n:b.n,p:b.p,pv:dogSVG({b:b.id,f:d.f})}));
+  if(t==='scene') return SCENES.map(s=>({id:'s:'+s.id,n:s.n+(s.inside?'（室內）':'（戶外）'),p:s.p,pv:sceneSVG(s.id),sc:1}));
+  return DECO.filter(x=>x.c===t).map(x=>({id:'d:'+x.id,n:x.n,p:x.p,pv:x.e}));
+}
+function renderShop(){
+  refreshStars();
+  $('shopTabs').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.t===shopTab));
+  const bal=starBalance();
+  $('shopGrid').innerHTML=shopItems(shopTab).map(it=>{
+    const own=owns(it.id);
+    const btn=own?`<span class="buy own">${it.p===0?'免費':'已擁有'}</span>`:`<button class="buy${bal<it.p?' poor':''}" data-id="${it.id}">${STAR_SVG}${it.p}</button>`;
+    return `<div class="sitem" data-id="${it.id}"><div class="pv${it.sc?' sc':''}">${it.pv}</div><div class="nm">${it.n}</div>${btn}</div>`;
+  }).join('');
+  $('shopGrid').querySelectorAll('button.buy').forEach(b=>b.onclick=()=>buyItem(b.dataset.id,b.closest('.sitem')));
+}
+function buyItem(id,card){
+  const p=priceOf(id);
+  if(owns(id)) return;
+  if(starBalance()<p){ Sound.play('wrong'); card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+    toast(`還差 ${p-starBalance()} 顆星星，去過關拿星星吧！`); return; }
+  shopData().owned[id]=p; touchShop(); Sound.play('hint');
+  const [t,k]=id.split(':');
+  if(t==='a'){ const a=ACC.find(x=>x.id===k); dogCfg(dressDog)[a.slot]=k; touchShop(); toast(`買到${a.n}了！已經幫第 ${dressDog+1} 隻狗戴上`); }
+  else if(t==='f'){ dogCfg(dressDog).f=+k; touchShop(); toast(`買到${FURS[+k][0]}毛色！已經換給第 ${dressDog+1} 隻狗`); }
+  else if(t==='b'){ dogCfg(dressDog).b=k; touchShop(); toast(`買到${BREEDS.find(x=>x.id===k).n}！第 ${dressDog+1} 隻狗變身了`); }
+  else if(t==='s'){ shopData().scene=k; touchShop(); toast('買到新場景！小窩已經換過去了'); }
+  else toast('買到了！在小窩下方就可以擺出來');
+  renderShop(); renderRoom(); refreshHome();
+}
+function openShop(tab){ if(tab) shopTab=tab; renderShop(); openSheet('shopSheet'); }
+$('shopTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{ shopTab=b.dataset.t; renderShop(); Sound.play('click'); $('shopGrid').scrollTop=0; });
+$('shopClose').onclick=()=>{ closeSheet('shopSheet'); Sound.play('shut'); };
+
+/* ----- 打扮 ----- */
+function renderDress(){
+  const n=dogSlots(); if(dressDog>=n) dressDog=0;
+  $('dressPick').innerHTML=Array.from({length:MAX_DOGS},(_,i)=>i<n?`<button data-i="${i}" class="${i===dressDog?'on':''}" aria-label="第 ${i+1} 隻狗">${dogSVG(dogCfg(i))}</button>`
+    :`<button disabled aria-label="過第 ${i*10} 關解鎖" title="過第 ${i*10} 關解鎖" style="opacity:.45">${ic('lock')}</button>`).join('');
+  $('dressPick').querySelectorAll('button[data-i]').forEach(b=>b.onclick=()=>{ dressDog=+b.dataset.i; renderDress(); Sound.play('tap'); });
+  const d=dogCfg(dressDog);
+  $('dressPrev').innerHTML=dogSVG(d,{full:true});
+  let h=`<div class="dgroup">品種</div><div class="dopts">${BREEDS.filter(b=>owns('b:'+b.id)).map(b=>`<button data-k="b" data-v="${b.id}" class="txt${d.b===b.id?' on':''}">${b.n}</button>`).join('')}</div>`;
+  h+=`<div class="dgroup">毛色</div><div class="dopts">${FURS.map((f,k)=>owns('f:'+k)?`<button data-k="f" data-v="${k}" class="${d.f===k?'on':''}" aria-label="${f[0]}" title="${f[0]}"><span class="sw2" style="background:linear-gradient(135deg,${f[1]} 55%,${f[2]} 55%)"></span></button>`:'').join('')}</div>`;
+  for(const [slot,label] of SLOTS){
+    const mine=ACC.filter(a=>a.slot===slot&&owns('a:'+a.id));
+    h+=`<div class="dgroup">${label}</div><div class="dopts"><button data-k="${slot}" data-v="" class="txt${!d[slot]?' on':''}">不戴</button>`
+      +mine.map(a=>`<button data-k="${slot}" data-v="${a.id}" class="${d[slot]===a.id?'on':''}" title="${a.n}" aria-label="${a.n}">${dogSVG({b:d.b,f:d.f,[slot]:a.id})}</button>`).join('')+`</div>`;
+  }
+  h+=`<div class="sbtns"><button class="b3d butter" id="dressShop">${ic('bag')}去商店買更多</button></div>`;
+  $('dressBody').innerHTML=h;
+  $('dressBody').querySelectorAll('.dopts button').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.k, v=b.dataset.v; d[k]=k==='f'?+v:v; touchShop(); Sound.play('tap'); renderDress(); renderRoom(); refreshHome(); });
+  $('dressShop').onclick=()=>{ closeSheet('dressSheet'); openShop('acc'); };
+}
+function openDress(i){ if(i!=null) dressDog=i; renderDress(); openSheet('dressSheet'); }
+$('dressClose').onclick=()=>{ closeSheet('dressSheet'); Sound.play('shut'); };
+
+/* ----- 狗狗小窩 ----- */
+let roomTab='dog', selIdx=-1;
+const roomList=()=>{ const s=shopData(); return s.room[s.scene]||(s.room[s.scene]=[]); };
+function piHTML(it){
+  if(it.k.startsWith('dog:')) return dogSVG(dogCfg(+it.k.slice(4)),{full:true});
+  const d=DECO.find(x=>x.id===it.k.slice(2)); return d?d.e:'';
+}
+function renderRoom(){
+  if($('room').hidden) return;
+  refreshStars();
+  const s=shopData(); if(!owns('s:'+s.scene)) s.scene='living';
+  const list=roomList(), n=dogSlots();
+  // 鎖住的狗（理論上不會發生）先拿掉
+  for(let i=list.length-1;i>=0;i--) if(list[i].k.startsWith('dog:')&&+list[i].k.slice(4)>=n) list.splice(i,1);
+  if(selIdx>=list.length) selIdx=-1;
+  let h=sceneSVG(s.scene);
+  list.forEach((it,i)=>{ const dog=it.k.startsWith('dog:');
+    h+=`<div class="pi ${dog?'dog':'emo'}${i===selIdx?' sel':''}" data-i="${i}" style="left:${it.x}%;top:${it.y}%;z-index:${Math.round(it.y*10)+(i===selIdx?1000:0)};--s:${it.s||1};--fl:${it.fl||1}"><div class="in">${piHTML(it)}</div></div>`; });
+  if(!list.length) h+=`<div class="empty">小窩空空的～<br>從下方選狗狗、家具或花草，點一下就會放進來</div>`;
+  if(selIdx>=0) h+=`<div class="seltools"><button data-a="minus" aria-label="縮小">${ic('minus')}</button><button data-a="plus" aria-label="放大">${ic('plus')}</button><button data-a="flip" aria-label="翻面">${ic('flip')}</button>${list[selIdx].k.startsWith('dog:')?`<button data-a="dress" aria-label="打扮">${ic('brush')}</button>`:''}<button data-a="del" class="del" aria-label="收起來">${ic('trash')}</button></div>`;
+  $('scene').innerHTML=h;
+  $('scene').querySelectorAll('.seltools button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); selAction(b.dataset.a); });
+  renderTray();
+}
+function renderTray(){
+  $('roomTabs').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.t===roomTab));
+  const s=shopData(), list=roomList(); let h='';
+  if(roomTab==='dog'){
+    const n=dogSlots();
+    for(let i=0;i<MAX_DOGS;i++){
+      if(i<n){ const on=list.some(it=>it.k==='dog:'+i); h+=`<button data-dog="${i}" class="${on?'on':''}">${dogSVG(dogCfg(i))}第 ${i+1} 隻</button>`; }
+      else h+=`<button class="locked" disabled>${ic('lock')}過第 ${i*10} 關</button>`;
+    }
+  } else if(roomTab==='scene'){
+    h=SCENES.filter(x=>owns('s:'+x.id)).map(x=>`<button data-scene="${x.id}" class="${s.scene===x.id?'on':''}"><span class="mini">${sceneSVG(x.id)}</span>${x.n}</button>`).join('');
+    h+=`<button class="more" data-shop="scene">${ic('bag')}買場景</button>`;
+  } else {
+    h=DECO.filter(x=>x.c===roomTab&&owns('d:'+x.id)).map(x=>`<button data-deco="${x.id}"><span class="e">${x.e}</span>${x.n}</button>`).join('');
+    h+=`<button class="more" data-shop="${roomTab}">${ic('bag')}買更多</button>`;
+  }
+  $('tray').innerHTML=h;
+  $('tray').querySelectorAll('button[data-dog]').forEach(b=>b.onclick=()=>{
+    const k='dog:'+b.dataset.dog, j=list.findIndex(it=>it.k===k);
+    if(j>=0){ selIdx=j; } else { list.push({k,x:30+Math.random()*40,y:70+Math.random()*16,s:1,fl:1}); selIdx=list.length-1; saveRoom(); }
+    Sound.play('cat'); renderRoom(); });
+  $('tray').querySelectorAll('button[data-deco]').forEach(b=>b.onclick=()=>{
+    if(list.length>=ROOM_MAX){ toast(`一個場景最多放 ${ROOM_MAX} 樣東西`); return; }
+    list.push({k:'d:'+b.dataset.deco,x:25+Math.random()*50,y:62+Math.random()*24,s:1,fl:1}); selIdx=list.length-1; saveRoom(); Sound.play('tap'); renderRoom(); });
+  $('tray').querySelectorAll('button[data-scene]').forEach(b=>b.onclick=()=>{ s.scene=b.dataset.scene; selIdx=-1; saveRoom(); Sound.play('click'); renderRoom(); });
+  $('tray').querySelectorAll('button[data-shop]').forEach(b=>b.onclick=()=>openShop(b.dataset.shop));
+}
+let roomSaveT=0;
+function saveRoom(){ shopData().t=Date.now(); persist(); clearTimeout(roomSaveT); roomSaveT=setTimeout(()=>pushProg(),1500); }
+function selAction(a){
+  const list=roomList(), it=list[selIdx]; if(!it) return;
+  if(a==='plus') it.s=Math.min(2.6,+((it.s||1)+.2).toFixed(2));
+  else if(a==='minus') it.s=Math.max(.4,+((it.s||1)-.2).toFixed(2));
+  else if(a==='flip') it.fl=(it.fl||1)*-1;
+  else if(a==='dress'){ openDress(+it.k.slice(4)); return; }
+  else if(a==='del'){ list.splice(selIdx,1); selIdx=-1; Sound.play('shut'); }
+  if(a!=='del') Sound.play('tick');
+  saveRoom(); renderRoom();
+}
+// 拖曳擺放
+let rdrag=null;
+$('scene').addEventListener('pointerdown',e=>{
+  if(e.target.closest('.seltools')) return;
+  const p=e.target.closest('.pi');
+  if(!p){ if(selIdx>=0){ selIdx=-1; renderRoom(); } return; }
+  e.preventDefault();
+  const i=+p.dataset.i, it=roomList()[i], r=$('scene').getBoundingClientRect();
+  if(selIdx!==i){ selIdx=i; renderRoom(); }
+  const el=$('scene').querySelector(`.pi[data-i="${i}"]`);
+  rdrag={i,el,r,dx:e.clientX-(r.left+it.x/100*r.width),dy:e.clientY-(r.top+it.y/100*r.height),moved:false,id:e.pointerId};
+  try{ $('scene').setPointerCapture(e.pointerId); }catch(_){}
+});
+$('scene').addEventListener('pointermove',e=>{
+  if(!rdrag||e.pointerId!==rdrag.id) return;
+  const {r,el}=rdrag, it=roomList()[rdrag.i]; if(!it) return;
+  const x=Math.max(2,Math.min(98,(e.clientX-rdrag.dx-r.left)/r.width*100)), y=Math.max(10,Math.min(100,(e.clientY-rdrag.dy-r.top)/r.height*100));
+  if(!rdrag.moved&&Math.hypot(x-it.x,y-it.y)<.8) return;
+  rdrag.moved=true; it.x=+x.toFixed(1); it.y=+y.toFixed(1);
+  el.style.left=it.x+'%'; el.style.top=it.y+'%'; el.style.zIndex=Math.round(it.y*10)+1000; el.classList.add('dragging');
+});
+const endDrag=e=>{ if(!rdrag||e.pointerId!==rdrag.id) return; const m=rdrag.moved; rdrag=null; if(m){ saveRoom(); renderRoom(); } };
+$('scene').addEventListener('pointerup',endDrag); $('scene').addEventListener('pointercancel',endDrag);
+
+function openRoom(){ selIdx=-1; showScreen('room'); renderRoom(); Sound.play('open'); }
+$('roomBack').onclick=()=>{ showScreen('home'); refreshHome(); Sound.play('shut'); };
+$('roomShop').onclick=()=>openShop();
+$('roomDress').onclick=()=>openDress();
+$('roomHelp').onclick=()=>openSheet('roomHelpSheet');
+$('roomHelpClose').onclick=$('roomHelpOk').onclick=()=>{ closeSheet('roomHelpSheet'); Sound.play('shut'); };
+$('roomTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{ roomTab=b.dataset.t; Sound.play('click'); renderTray(); $('tray').scrollLeft=0; });
+$('btnRoom').onclick=openRoom;
+
 const anySheetOpen=()=>[...document.querySelectorAll('.backdrop')].some(b=>!b.hidden);
 
 /* ===================== 難度評分（模擬人類推理） ===================== */
@@ -1169,6 +1686,7 @@ function win(){
   const isBest=prev==null||elapsed<prev;
   if(isBest) save.best[key]=elapsed;
   save.wins=(save.wins||0)+1;
+  const starRes=awardStars();
   let trophy=0;
   if(mode.type==='level'){
     save.levels=save.levels||{};
@@ -1190,11 +1708,12 @@ function win(){
       const wr=$('winRank'); if(wr) wr.onclick=()=>{ $('rankSheet').dataset.back='winSheet'; openRank(mode.type==='daily'?'daily':'code',mode.code); };
       const wl=$('winLogin'); if(wl) wl.onclick=openAcct;
     });
-    $('winCat').innerHTML=trophy?TROPHY_SVG:catSVG(0,'');
+    $('winCat').innerHTML=trophy?TROPHY_SVG:dogSVG(dogCfg(0),{cls:''});
     $('winCat').classList.toggle('gold',!!trophy);
     $('winTitle').textContent=trophy?`獲得第 ${trophy} 座獎杯！`:'全部就位！';
     $('winSub').textContent=trophy?`第 ${trophy} 章（第 ${mode.level-CHAPTER+1}–${mode.level} 關）全部完成`:
       mode.type==='level'?`第 ${mode.level} 關完成`:mode.type==='daily'?'今天的每日挑戰完成了':`${P.n}×${P.n} ${DIFF_NAME[mode.diff]} 完成`;
+    $('winStars').innerHTML=[1,2,3].map(k=>STAR_SVG.replace('<svg',`<svg class="${k<=starRes.got?'':'off'}"`)).join('')+`<small>${starRes.gain?`+${starRes.gain} 顆星星`:'這關的星星已經拿過了'}</small>`;
     $('winChips').innerHTML=`<span>${ic('clock')}${fmt(elapsed)}</span><span>${ic('heart')}錯 ${mistakes}</span><span>${ic('bulb')}提示 ${hintsUsed}</span>`;
     $('winBest').innerHTML=isBest?'<span class="newbest">新紀錄！</span>':`<div class="sub" style="margin-top:10px">最佳紀錄 ${fmt(prev)}</div>`;
     $('btnNext').innerHTML=ic('play')+(mode.type==='level'?`下一關（第 ${mode.level+1} 關）`:mode.type==='daily'?'去關卡模式':'再來一題');
@@ -1248,6 +1767,8 @@ function refreshHome(){
   $('dailySub').textContent=`${+d.slice(5,7)}/${+d.slice(8)} · 8×8 普通`+(done?` · ${fmt(save.daily[d])}`:'');
   $('dailyDone').hidden=!done;
   const cleared=Math.min(lvl-1,MAX_LEVEL);
+  $('roomSub').innerHTML=`⭐ ${starBalance()} 顆星星 · 可放 ${dogSlots()} 隻狗`;
+  $('logo').innerHTML=dogSVG(dogCfg(0),{cls:''});
   $('levelsSub').textContent=lvl>MAX_LEVEL?`🏆 5 / 5 全破！之後是隨機 10×10`:`🏆 ${trophyCount()} / 5 · 已過 ${cleared} / ${MAX_LEVEL} 關`;
 }
 function renderLevels(){
@@ -1448,18 +1969,24 @@ async function doRegister(nick,pw){
   Online.me=me; renderAcct();
 }
 // 進度同步：登入後把「這台裝置」和「雲端」的進度合併（關卡取較遠、時間取較快），兩邊都存成合併後的結果
-function progOf(s){ return {level:s.level||1,levels:s.levels||{},best:s.best||{},daily:s.daily||{},wins:s.wins||0}; }
+function progOf(s){ const sh=s.shop||{}; return {level:s.level||1,levels:s.levels||{},best:s.best||{},daily:s.daily||{},wins:s.wins||0,stars:s.stars||{},
+  shop:{owned:sh.owned||{},dogs:sh.dogs||[],room:sh.room||{},scene:sh.scene||'living',t:sh.t||0}}; }
+function mergeShop(a,b){   // 買過的東西兩邊合在一起；狗狗打扮和小窩擺設用比較新的那一邊
+  const nw=(b.t||0)>(a.t||0)?b:a;
+  return {owned:{...(b.owned||{}),...(a.owned||{})},dogs:nw.dogs||[],room:nw.room||{},scene:nw.scene||'living',t:nw.t||0};
+}
 function mergeProg(a,b){
+  const maxMap=(x,y)=>{ const o={...x}; for(const k in y){ const v=y[k]; if(typeof v==='number'&&(o[k]==null||v>o[k])) o[k]=v; } return o; };
   const minMap=(x,y)=>{ const o={...x}; for(const k in y){ const v=y[k]; if(typeof v==='number'&&(o[k]==null||v<o[k])) o[k]=v; } return o; };
   return {level:Math.max(a.level||1,b.level||1),levels:minMap(a.levels||{},b.levels||{}),best:minMap(a.best||{},b.best||{}),
-    daily:minMap(a.daily||{},b.daily||{}),wins:Math.max(a.wins||0,b.wins||0)};
+    daily:minMap(a.daily||{},b.daily||{}),wins:Math.max(a.wins||0,b.wins||0),stars:maxMap(a.stars||{},b.stars||{}),shop:mergeShop(a.shop||{},b.shop||{})};
 }
 async function syncProg(){
   const me=Online.me; if(!me||!Online.user) return;
   const local=progOf(save), merged=mergeProg(local,me.prog||{});
   const changedLocal=JSON.stringify(merged)!==JSON.stringify(local);
   Object.assign(save,merged); persist();
-  if(changedLocal&&typeof refreshHome==='function') refreshHome();
+  if(changedLocal&&typeof refreshHome==='function'){ refreshHome(); renderRoom(); }
   if(JSON.stringify(merged)!==JSON.stringify(me.prog||null)) await pushProg(true);
 }
 let progTimer=0;
