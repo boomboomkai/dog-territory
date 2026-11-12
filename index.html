@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Huninn&family=Noto+Color+Emoji&display=swap">
 <style>
-  /* 版面：單欄 App（最寬 520px）置中；夜晚屋頂主題。首頁選模式 → 全螢幕遊戲 → 暫停叫出設定 */
+  /* 版面：單欄 App（最寬 520px）置中；夜晚後院主題（狗屋、柵欄、草地）。首頁選模式 → 全螢幕遊戲 → 暫停叫出設定 */
   :root{
     --night:#1b1733; --night-hi:#2b2350; --card:#2a2350; --card-hi:#372e66;
     --ink:#fff6ea; --ink-dim:#bfb3dd; --frame:#241c3f;
@@ -119,7 +119,19 @@
   .cell::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 55%);pointer-events:none}
   @media (hover:hover){ .cell:hover::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.3)} }
   .cell .xm{width:38%;height:38%;stroke:rgba(36,28,63,.55);stroke-width:2.2;stroke-linecap:round;animation:xin .12s ease-out}
-  .cell svg.cat{width:84%;height:84%;animation:pop .3s ease-out;filter:drop-shadow(0 2px 0 rgba(36,28,63,.35));position:relative}
+  svg .eyes{transform:translate(calc(var(--ex,0)*1px),calc(var(--ey,0)*1px));transition:transform .2s ease-out}
+  svg .snout{transform:translate(calc(var(--ex,0)*.45px),calc(var(--ey,0)*.35px));transition:transform .26s ease-out}
+  svg .blink{transform-box:fill-box;transform-origin:50% 50%;animation:blink 4.4s infinite;animation-delay:var(--bd,0s)}
+  @keyframes blink{0%,93%,100%{transform:scaleY(1)}96.5%{transform:scaleY(.08)}}
+  @keyframes headidle{0%{transform:rotate(-6deg)}35%{transform:rotate(2deg) translateY(-3%)}70%{transform:rotate(7deg)}100%{transform:rotate(-2deg) translateY(-2%)}}
+  .logo svg{animation:headidle 5s ease-in-out infinite alternate}
+  .woof{position:fixed;z-index:70;pointer-events:none;transform:translate(-50%,-100%);padding:3px 10px;border-radius:99px;background:#fff;color:#2b2140;
+    font-size:15px;white-space:nowrap;box-shadow:0 4px 0 rgba(36,28,63,.35);animation:woof .9s ease-out forwards}
+  .woof::after{content:"";position:absolute;left:50%;top:100%;margin-left:-5px;border:5px solid transparent;border-top-color:#fff}
+  @keyframes woof{0%{opacity:0;transform:translate(-50%,-60%) scale(.4)}18%{opacity:1;transform:translate(-50%,-110%) scale(1.15)}30%{transform:translate(-50%,-105%) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-150%) scale(1)}}
+  .cell svg.cat.yap{animation:yap .28s ease-in-out 2}
+  @keyframes yap{50%{transform:translateY(-14%) scale(1.12)}}
+  .cell svg.cat{width:84%;height:84%;animation:pop .3s ease-out,headidle var(--hd,3.4s) ease-in-out .3s infinite alternate;filter:drop-shadow(0 2px 0 rgba(36,28,63,.35));position:relative}
   .cell.wrong{animation:shake .4s}
   .cell.wrong::after{content:"";position:absolute;inset:0;background:rgba(255,80,100,.6);animation:fade 1s forwards}
   .cell.hint{z-index:2}
@@ -267,6 +279,23 @@
   .form .casenote b{color:var(--butter)}
   .me-card{display:flex;align-items:center;gap:14px;padding:14px;border-radius:18px;background:var(--glass);border:1px solid var(--glass-line);margin-bottom:6px}
   .me-card .acct-av{width:56px;height:56px} .me-card .acct-av svg{width:52px;height:52px}
+  .fcode{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-radius:16px;background:rgba(255,215,110,.1);border:1px dashed rgba(255,215,110,.45);margin:10px 0 4px}
+  .fcode .lb{font-size:12px;color:var(--ink-dim)} .fcode .cd{font-family:var(--num);font-weight:600;font-size:24px;letter-spacing:.14em;color:var(--butter)}
+  .fcode button{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:12px;background:var(--glass);border:1px solid var(--glass-line);font-size:13px}
+  .fcode button .ic{width:16px;height:16px}
+  .fadd{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:10px}
+  .fadd input{min-width:0;padding:12px 14px;border-radius:14px;border:2px solid var(--glass-line);background:rgba(0,0,0,.25);color:var(--ink);font:inherit;font-family:var(--num);font-size:18px;letter-spacing:.12em;text-transform:uppercase}
+  .fadd input:focus{outline:none;border-color:var(--butter)}
+  .fadd .b3d{font-size:16px;padding:10px 16px;border-radius:14px}
+  .flist{display:grid;gap:8px;margin-top:8px}
+  .frow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:16px;background:rgba(0,0,0,.18);border:1px solid var(--glass-line)}
+  .frow .acct-av{width:44px;height:44px} .frow .acct-av svg{width:40px;height:40px}
+  .frow .inf{flex:1;min-width:0} .frow .nm{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .frow .sc{font-size:12px;color:var(--ink-dim)}
+  .frow .go{padding:8px 12px;border-radius:12px;background:var(--mint);color:var(--btn-ink);font-size:14px;box-shadow:0 3px 0 var(--mint-d);white-space:nowrap}
+  .frow .go:active{transform:translateY(2px);box-shadow:0 1px 0 var(--mint-d)}
+  .frow .rm{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;color:var(--ink-dim)} .frow .rm .ic{width:16px;height:16px}
+  #room.visiting .rbtns,#room.visiting .rtabs,#room.visiting #roomStars{display:none}
+  .visitbar{font-size:13px;color:var(--butter);text-align:center;padding:2px 0}
   .me-card .nm{font-size:22px} .me-card .sc{font-size:13px;color:var(--ink-dim);margin-top:2px}
   .me-card .sc b{font-family:var(--num);color:var(--butter);font-size:16px}
   .rk{display:flex;align-items:center;gap:12px;padding:10px 6px;border-bottom:1px solid rgba(255,255,255,.07);font-size:16px}
@@ -299,6 +328,9 @@
   .chips span{display:flex;align-items:center;gap:6px;background:var(--glass);border:1px solid var(--glass-line);border-radius:99px;padding:6px 12px;font-family:var(--num);font-size:15px}
   .chips .ic{width:16px;height:16px;color:var(--butter)}
   .newbest{display:inline-block;margin-top:10px;background:var(--butter);color:var(--btn-ink);padding:4px 12px;border-radius:99px;font-size:14px}
+  .sky::after{content:"";position:absolute;inset:0;opacity:.06;background-size:260px 230px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 260 230'%3E%3Cg fill='%23fff'%3E%3Cg transform='translate(40 50) rotate(-20)'%3E%3Cellipse cx='0' cy='6' rx='8' ry='6.5'/%3E%3Ccircle cx='-9' cy='-4' r='3.4'/%3E%3Ccircle cx='-3' cy='-9' r='3.4'/%3E%3Ccircle cx='4' cy='-9' r='3.4'/%3E%3Ccircle cx='10' cy='-4' r='3.4'/%3E%3C/g%3E%3Cg transform='translate(180 150) rotate(25) scale(.8)'%3E%3Cellipse cx='0' cy='6' rx='8' ry='6.5'/%3E%3Ccircle cx='-9' cy='-4' r='3.4'/%3E%3Ccircle cx='-3' cy='-9' r='3.4'/%3E%3Ccircle cx='4' cy='-9' r='3.4'/%3E%3Ccircle cx='10' cy='-4' r='3.4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+  .roofs .wag{transform-box:fill-box;transform-origin:100% 100%;animation:wag .35s ease-in-out infinite alternate}
+  @keyframes wag{from{transform:rotate(-14deg)}to{transform:rotate(16deg)}}
   .paw{position:fixed;top:-40px;z-index:60;pointer-events:none;animation:fall linear forwards}
   .paw svg{width:100%;height:100%}
   @keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
@@ -327,13 +359,42 @@
     box-shadow:0 0 0 4px var(--frame),0 0 0 6px rgba(255,255,255,.08),0 22px 44px rgba(0,0,0,.5)}
   .scene>svg.bg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   .pi{position:absolute;transform:translate(-50%,-100%);line-height:1;cursor:grab;touch-action:none}
-  .pi>.in{transform:scale(var(--s,1)) scaleX(var(--fl,1));transform-origin:50% 100%;transition:transform .15s}
+  .pi>.in{transform-origin:50% 100%;position:relative}
   .emo-f,.pi.emo>.in,.tray>button .e,.sitem .pv{font-family:"Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif}
   .pi.emo>.in{font-size:17cqw;filter:drop-shadow(0 .6cqw 0 rgba(0,0,0,.18))}
-  .pi.dog>.in svg{width:24cqw;height:auto;display:block;filter:drop-shadow(0 .8cqw 0 rgba(0,0,0,.2))}
-  .pi.dog>.in{animation:dogidle 2.6s ease-in-out infinite}
-  .pi.dog:nth-child(2n)>.in{animation-delay:-1.3s}
-  @keyframes dogidle{0%,100%{rotate:0deg}50%{rotate:3deg}}
+  .pi>.in{transform:translateY(calc(var(--lift,0)*-1cqw)) scale(var(--s,1)) scaleX(var(--fl,1));transition:transform .28s cubic-bezier(.3,1.4,.5,1)}
+  .pi.dog>.in svg{height:auto;display:block;filter:drop-shadow(0 .8cqw 0 rgba(0,0,0,.2))}
+  .pi.dog .pose.sit svg{width:24cqw} .pi.dog .pose.stand svg{width:31cqw}
+  .pi.dog .pose.sit{display:none} .pi.dog.sitting .pose.sit{display:block} .pi.dog.sitting .pose.stand{display:none}
+  .pi.dog .bub{position:absolute;left:50%;bottom:98%;transform:translateX(-50%) scaleX(var(--fl,1));background:#fff;color:#2b2140;border-radius:99px;
+    padding:.8cqw 2.4cqw;font-size:3.8cqw;white-space:nowrap;box-shadow:0 .6cqw 0 rgba(36,28,63,.3);font-family:var(--font);pointer-events:none}
+  svg.walk .leg{transform-box:fill-box;transform-origin:50% 8%}
+  svg.walk .tail{transform-box:fill-box;transform-origin:100% 100%;animation:wag .3s ease-in-out infinite alternate}
+  svg.walk .hd{transform-box:fill-box;transform-origin:25% 85%}
+  svg.walk .pee-drops{display:none}
+  .st-walk svg.walk .leg.a,.st-held svg.walk .leg.a{animation:legA .3s ease-in-out infinite alternate}
+  .st-walk svg.walk .leg.b,.st-held svg.walk .leg.b{animation:legB .3s ease-in-out infinite alternate}
+  .st-held svg.walk .leg{animation-duration:.14s}
+  @keyframes legA{from{transform:rotate(26deg)}to{transform:rotate(-26deg)}}
+  @keyframes legB{from{transform:rotate(-26deg)}to{transform:rotate(26deg)}}
+  .st-walk .pose.stand{animation:trot .3s ease-in-out infinite alternate}
+  @keyframes trot{to{transform:translateY(-3%)}}
+  .st-play .pose.stand,.st-bark .pose.stand{animation:hop .26s ease-in-out infinite alternate}
+  @keyframes hop{to{transform:translateY(-12%)}}
+  .st-pee svg.walk .leg.hind{transform:rotate(68deg)}
+  .st-pee svg.walk .pee-drops{display:block}
+  .st-pee svg.walk .pee-drops circle{animation:drip .55s linear infinite}
+  .st-pee svg.walk .pee-drops circle:nth-child(2){animation-delay:.18s} .st-pee svg.walk .pee-drops circle:nth-child(3){animation-delay:.36s}
+  @keyframes drip{from{transform:translate(0,0);opacity:1}to{transform:translate(-20px,24px);opacity:0}}
+  .st-eat svg.walk .hd,.st-sniff svg.walk .hd{animation:nod .4s ease-in-out infinite alternate}
+  @keyframes nod{from{transform:rotate(10deg) translateY(4px)}to{transform:rotate(24deg) translateY(10px)}}
+  .st-sleep .blink{animation:none!important;transform:scaleY(.1)}
+  .st-sleep .pose.sit{animation:snooze 2.4s ease-in-out infinite alternate}
+  @keyframes snooze{to{transform:scale(1.03,.97)}}
+  .pi.emo.boing>.in{animation:boing .3s ease-in-out infinite alternate}
+  @keyframes boing{from{translate:0 0;rotate:-8deg}to{translate:0 -22%;rotate:10deg}}
+  .pi.emo.nom>.in{animation:nom .22s ease-in-out infinite alternate}
+  @keyframes nom{to{rotate:6deg;translate:1% 0}}
   .pi.sel>.in{outline:2px dashed rgba(255,255,255,.9);outline-offset:4px;border-radius:12px;animation:none}
   .pi.dragging{cursor:grabbing}
   .seltools{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);display:flex;gap:8px;padding:6px;border-radius:18px;
@@ -495,7 +556,7 @@
 <main class="screen" id="room" hidden>
   <div class="rtop">
     <button class="ibtn" id="roomBack" aria-label="回主選單" data-ic="home"></button>
-    <h2>狗狗小窩</h2>
+    <h2 id="roomTitle">狗狗小窩</h2>
     <span class="starpill" id="roomStars"></span>
   </div>
   <div class="rbtns">
@@ -503,6 +564,7 @@
     <button class="b3d mint" id="roomDress"><span data-ic="brush"></span>打扮狗狗</button>
     <button class="b3d ghost" id="roomHelp" aria-label="小窩說明"><span data-ic="help"></span></button>
   </div>
+  <div class="visitbar" id="visitBar" hidden></div>
   <div class="stage" id="stage"><div class="scene" id="scene"></div></div>
   <div class="rtabs" id="roomTabs">
     <button data-t="dog">狗狗</button><button data-t="furn">家具</button><button data-t="plant">花木造景</button><button data-t="toy">玩具</button><button data-t="scene">場景</button>
@@ -536,6 +598,7 @@
     <p><span class="sic" style="--c:var(--butter)" data-ic="star"></span><span>過關可以拿<b>星星</b>，最多 3 顆。同一關重玩拿到更多星，只補差額。</span></p>
     <p><span class="sic" style="--c:var(--peach)" data-ic="bag"></span><span>到<b>商店</b>用星星買配件、毛色、狗的品種、家具、花草和場景。</span></p>
     <p><span class="sic" style="--c:var(--mint)" data-ic="hand"></span><span>下方選一個東西，點一下就放進小窩。<b>按住拖曳</b>移動位置；點一下選取後，可以<b>放大、縮小、翻面、收起來</b>。</span></p>
+    <p><span class="sic" style="--c:var(--peach)" data-ic="heart"></span><span>狗狗會<b>自己到處走</b>，還會跟東西互動：跳上椅子和沙發坐、到床上睡覺、去樹旁尿尿、聞花、玩球、吃骨頭。<b>點一下狗狗</b>牠會汪一聲；選取中的狗會先停下來。</span></p>
     <p><span class="sic" style="--c:var(--lav)" data-ic="lock"></span><span>一開始只能放 1 隻狗，<b>每過 10 關多 1 隻</b>，最多 10 隻。每隻狗都能分開打扮。</span></p>
     <p><span class="sic" style="--c:var(--rose)" data-ic="home"></span><span>每個<b>場景</b>（室內、戶外）的擺設都會分開記住。登入帳號後，電腦和手機會同步。</span></p>
     <div class="sbtns"><button class="b3d" id="roomHelpOk">知道了</button></div>
@@ -673,17 +736,20 @@
 </div>
 
 <svg class="roofs" id="roofs" viewBox="0 0 400 90" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+  <path d="M0 60 Q70 38 140 56 Q210 72 280 50 Q345 34 400 52 V90 H0Z" fill="#1d1842"/>
   <g fill="#161230">
-    <path d="M0 60 L30 40 L60 60 V90 H0Z"/><rect x="40" y="30" width="8" height="20"/>
-    <path d="M55 70 L100 45 L145 70 V90 H55Z"/>
-    <path d="M140 55 H215 V90 H140Z"/><path d="M135 55 L177 32 L220 55Z"/>
-    <path d="M215 72 L255 50 L295 72 V90 H215Z"/><rect x="265" y="44" width="9" height="18"/>
-    <path d="M290 58 L340 36 L400 58 V90 H290Z"/>
-    <ellipse cx="177" cy="33" rx="8" ry="5.5"/><circle cx="173" cy="22" r="6.5"/><ellipse cx="168" cy="21" rx="3" ry="6.5" transform="rotate(15 168 21)"/>
-    <ellipse cx="166" cy="25" rx="5.5" ry="3.6"/><rect x="170" y="27" width="5" height="9" rx="2"/>
-    <path d="M184 31 q8-3 7-11" stroke="#161230" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <rect x="25" y="40" width="7" height="34"/><circle cx="28" cy="29" r="16"/><circle cx="15" cy="38" r="11"/><circle cx="42" cy="38" r="11"/>
+    <path d="M0 72 Q100 62 200 70 Q300 78 400 66 V90 H0Z"/>
+    <path d="M64 70 V54 l3.5 -4 l3.5 4 V70 Z"/><path d="M74 70 V54 l3.5 -4 l3.5 4 V70 Z"/><path d="M84 70 V54 l3.5 -4 l3.5 4 V70 Z"/><path d="M94 70 V54 l3.5 -4 l3.5 4 V70 Z"/><path d="M104 70 V54 l3.5 -4 l3.5 4 V70 Z"/><path d="M114 70 V54 l3.5 -4 l3.5 4 V70 Z"/><path d="M124 70 V54 l3.5 -4 l3.5 4 V70 Z"/><path d="M134 70 V54 l3.5 -4 l3.5 4 V70 Z"/><path d="M144 70 V54 l3.5 -4 l3.5 4 V70 Z"/><rect x="62" y="57" width="90" height="2.6"/><rect x="62" y="64" width="90" height="2.6"/>
+    <path d="M12 74 l2 -6 l2 6 Z"/><path d="M52 72 l2 -6 l2 6 Z"/><path d="M158 70 l2 -6 l2 6 Z"/><path d="M196 72 l2 -6 l2 6 Z"/><path d="M262 72 l2 -6 l2 6 Z"/><path d="M352 69 l2 -6 l2 6 Z"/><path d="M384 68 l2 -6 l2 6 Z"/>
+    <path d="M288 72 V46 H332 V72 Z"/><path d="M280 49 L310 26 L340 49 L336 53 L310 33 L284 53 Z"/>
+    <path d="M228 73 Q223 58 231 51 Q240 46 245 55 L249 73 Z"/><circle cx="240" cy="44" r="7.5"/><ellipse cx="248.5" cy="46.5" rx="5.5" ry="3.8"/>
+    <ellipse cx="235.5" cy="46" rx="3.2" ry="6.5" transform="rotate(14 235.5 46)"/><rect x="241" y="60" width="4.5" height="13" rx="2"/>
+    <path class="wag" d="M229 71 q-9 -2 -9 -12" stroke="#161230" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+    <path d="M262 71 h14 l-2 4 h-10 Z"/>
   </g>
-  <g fill="#ffd76e" opacity=".7"><rect x="160" y="64" width="9" height="10" rx="1"/><rect x="186" y="64" width="9" height="10" rx="1"/><rect x="92" y="66" width="8" height="9" rx="1"/><rect x="330" y="64" width="8" height="9" rx="1"/></g>
+  <path d="M302 72 V58 a8 8 0 0 1 16 0 V72 Z" fill="#ffd76e" opacity=".75"/>
+  <g fill="#ffd76e" opacity=".8" transform="translate(310 43)"><rect x="-5" y="-1.4" width="10" height="2.8" rx="1"/><circle cx="-5" cy="-1.6" r="1.9"/><circle cx="-5" cy="1.6" r="1.9"/><circle cx="5" cy="-1.6" r="1.9"/><circle cx="5" cy="1.6" r="1.9"/></g>
 </svg>
 
 <script>
@@ -743,11 +809,11 @@ function catSVG(kind=0,cls='cat'){   // 函式名沿用，畫的是狗
     <ellipse cx="50" cy="53" rx="33" ry="32" fill="${fur}" stroke="${s}" stroke-width="4.5"/>
     ${patch?`<ellipse cx="62" cy="45" rx="11" ry="10" fill="${ear}" opacity=".85"/>`:''}
     <ellipse cx="50" cy="69" rx="18" ry="13" fill="${muz}"/>
-    <ellipse cx="38" cy="48" rx="4.8" ry="5.6" fill="${s}"/><ellipse cx="62" cy="48" rx="4.8" ry="5.6" fill="${s}"/>
-    <circle cx="39.8" cy="46" r="1.8" fill="#fff"/><circle cx="63.8" cy="46" r="1.8" fill="#fff"/>
-    <ellipse cx="50" cy="62" rx="7" ry="5" fill="${s}"/><ellipse cx="48" cy="60.5" rx="2.2" ry="1.3" fill="#fff" opacity=".6"/>
+    <g class="eyes"><g class="blink"><ellipse cx="38" cy="48" rx="4.8" ry="5.6" fill="${s}"/><ellipse cx="62" cy="48" rx="4.8" ry="5.6" fill="${s}"/>
+    <circle cx="39.8" cy="46" r="1.8" fill="#fff"/><circle cx="63.8" cy="46" r="1.8" fill="#fff"/></g></g>
+    <g class="snout"><ellipse cx="50" cy="62" rx="7" ry="5" fill="${s}"/><ellipse cx="48" cy="60.5" rx="2.2" ry="1.3" fill="#fff" opacity=".6"/>
     <path d="M50 67 v3.5 M50 70.5 Q44.5 76.5 39.5 72 M50 70.5 Q55.5 76.5 60.5 72" fill="none" stroke="${s}" stroke-width="3" stroke-linecap="round"/>
-    <path d="M46 74 Q50 84 54 74 Z" fill="#ff8fa3" stroke="${s}" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M46 74 Q50 84 54 74 Z" fill="#ff8fa3" stroke="${s}" stroke-width="2" stroke-linejoin="round"/></g>
     <ellipse cx="29" cy="62" rx="5" ry="3" fill="#f7a8b8" opacity="${dark?.5:.75}"/><ellipse cx="71" cy="62" rx="5" ry="3" fill="#f7a8b8" opacity="${dark?.5:.75}"/>
   </svg>`;
 }
@@ -990,8 +1056,8 @@ const Sound=(function(){
     node.connect(g); g.connect(dest||sfxBus); o.start(s); o.stop(s+dur+.05);
   }
   // 小狗「汪！」：鋸齒波快速往下滑＋一點氣音
-  function bark(delay=0){
-    if(!ctx) return; const t=ctx.currentTime+delay, k=0.9+Math.random()*0.25;
+  function bark(delay=0,mul=1){
+    if(!ctx) return; const t=ctx.currentTime+delay, k=(0.9+Math.random()*0.25)*mul;
     const o=ctx.createOscillator(); o.type='sawtooth';
     o.frequency.setValueAtTime(380*k,t); o.frequency.linearRampToValueAtTime(560*k,t+.03); o.frequency.exponentialRampToValueAtTime(260*k,t+.16);
     const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.Q.value=2.5;
@@ -1007,10 +1073,11 @@ const Sound=(function(){
   const SFX={
     tap(){ tone({f:900,type:'triangle',dur:.06,vol:.12,slide:600}); },
     tick(){ tone({f:700,type:'triangle',dur:.04,vol:.06}); },
-    cat(){ meow(); tone({f:1568,t:.02,dur:.15,vol:.05}); },
+    cat(){ bark(0,1.05); bark(.17,1.2); },
+    woof(){ bark(0,.95+Math.random()*.4); },
     wrong(){ tone({f:220,type:'square',dur:.28,vol:.09,slide:110,lp:900}); tone({f:233,type:'square',t:.02,dur:.26,vol:.06,slide:116,lp:900}); },
     hint(){ [1319,1568,2093].forEach((f,i)=>tone({f,t:i*.07,dur:.25,vol:.07})); },
-    win(){ [72,76,79,84,79,84,88].forEach((m,i)=>tone({f:mtof(m),type:'triangle',t:i*.11,dur:.35,vol:.14})); bark(.85); bark(1.05); },
+    win(){ [[0,1],[.15,1.2],[.4,.85],[.55,1.3],[.8,1],[.95,1.15],[1.2,.9],[1.35,1.35]].forEach(([t,m])=>bark(t,m)); [79,84,88,91].forEach((m,i)=>tone({f:mtof(m),type:'triangle',t:1.5+i*.09,dur:.4,vol:.1})); },
     lose(){ [67,63,60,55].forEach((m,i)=>tone({f:mtof(m),type:'triangle',t:i*.22,dur:.4,vol:.12})); },
     click(){ tone({f:1200,type:'sine',dur:.05,vol:.06}); },
     open(){ tone({f:660,type:'sine',dur:.09,vol:.07,slide:990}); },
@@ -1077,6 +1144,23 @@ function showScreen(name){ $('home').hidden=name!=='home'; $('game').hidden=name
 function openSheet(id){ document.querySelectorAll('.backdrop').forEach(b=>b.hidden=true); $(id).hidden=false; Sound.play('open'); }
 function closeSheet(id){ $(id).hidden=true; }
 
+/* ===================== 狗狗的眼睛：電腦上盯著滑鼠游標，手機上自己東張西望 ===================== */
+const Gaze={mx:0,my:0,t:-1e9};
+window.addEventListener('pointermove',e=>{ if(e.pointerType==='mouse'){ Gaze.mx=e.clientX; Gaze.my=e.clientY; Gaze.t=performance.now(); } },{passive:true});
+setInterval(()=>{
+  if(document.hidden) return;
+  const now=performance.now(), live=now-Gaze.t<3500;
+  document.querySelectorAll('svg.cat,svg.dg,#logo svg,#winCat svg,#loseCat svg').forEach(el=>{
+    const r=el.getBoundingClientRect(); if(!r.width) return;
+    if(!el._g){ el._g={x:0,y:0,next:0}; el.style.setProperty('--bd',(-Math.random()*4.4).toFixed(2)+'s'); el.style.setProperty('--hd',(2.6+Math.random()*2.2).toFixed(2)+'s'); }
+    let x,y;
+    if(live){ const dx=Gaze.mx-(r.left+r.width/2), dy=Gaze.my-(r.top+r.height*.45), d=Math.hypot(dx,dy)||1, k=Math.min(1,d/90)*3.2; x=dx/d*k; y=dy/d*k*.8; }
+    else{ const g=el._g; if(now>g.next){ const a=Math.random()*6.283, m=Math.random()<.22?0:3.2; g.x=Math.cos(a)*m; g.y=Math.sin(a)*m*.7; g.next=now+600+Math.random()*2400; } x=g.x; y=g.y; }
+    const p=el.closest('.pi'); if(p&&p.dataset.fl==='-1') x=-x;
+    el.style.setProperty('--ex',x.toFixed(2)); el.style.setProperty('--ey',y.toFixed(2));
+  });
+},140);
+
 /* ===================== 星星、商店、打扮、狗狗小窩 ===================== */
 const STAR_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z" fill="#ffd76e" stroke="#b07a1c" stroke-width="1.6" stroke-linejoin="round"/></svg>';
 // 毛色：[名稱, 臉, 耳朵/斑點, 嘴巴周圍, 價格]
@@ -1113,7 +1197,9 @@ const SCENES=[{id:'living',n:'溫馨客廳',p:0,inside:true},{id:'garden',n:'花
 const MAX_DOGS=10, ROOM_MAX=40;
 
 /* ----- 存檔欄位（舊存檔沒有就補上） ----- */
+let visit=null;   // 參觀好友小窩時：{name, level, shop}（只看不改）
 function shopData(){
+  if(visit) return visit.shop;
   const s=save.shop||(save.shop={});
   s.owned=s.owned||{}; s.dogs=s.dogs||[]; s.room=s.room||{}; s.scene=s.scene||'living'; s.t=s.t||0;
   save.stars=save.stars||{};
@@ -1124,16 +1210,16 @@ const priceOf=id=>{ const [t,k]=id.split(':');
   if(t==='d') return (DECO.find(x=>x.id===k)||{}).p; if(t==='s') return (SCENES.find(x=>x.id===k)||{}).p; };
 const owns=id=>priceOf(id)===0||shopData().owned[id]!=null;
 function starsEarned(){
-  const st=shopData()&&save.stars; let t=0;
+  shopData(); const st=save.stars||{}; let t=0;
   for(const k in st) t+=st[k];
   for(let k=1;k<save.level;k++) if(st['L'+k]==null) t+=2;   // 有星星系統以前過的關，每關算 2 顆
   return t;
 }
 const starsSpent=()=>{ const o=shopData().owned; let t=0; for(const k in o) t+=o[k]||0; return t; };
 const starBalance=()=>Math.max(0,starsEarned()-starsSpent());
-const dogSlots=()=>Math.min(MAX_DOGS,1+Math.floor(Math.max(0,save.level-1)/10));
+const dogSlots=()=>Math.min(MAX_DOGS,1+Math.floor(Math.max(0,(visit?visit.level:save.level)-1)/10));
 function dogCfg(i){ const s=shopData(); while(s.dogs.length<=i) s.dogs.push({b:'mix',f:s.dogs.length%3}); return s.dogs[i]; }
-function touchShop(){ shopData().t=Date.now(); persist(); pushProg(); }
+function touchShop(){ if(visit) return; shopData().t=Date.now(); persist(); pushProg(); }
 const starPill=n=>`${STAR_SVG}<span>${n}</span>`;
 function starsFor(m,h){ const k=m+h; return k===0?3:k<=2?2:1; }
 function starKey(){ return mode.type==='level'?'L'+mode.level:mode.type==='daily'?'D'+mode.date:'C'+mode.code; }
@@ -1209,20 +1295,38 @@ function dogSVG(cfg,o={}){
   const eye=pat==='husky'?'#5fb6e8':SK;
   const a=cfg, ex=EAR_AT[B.ear]||EAR_AT.flop;
   const onTopHead=a.head&&a.head!=='space'?accSVG(a.head):'';
-  return `<svg class="${o.cls||'dg'}" viewBox="${top}" aria-label="狗">${body}
-    ${earsSVG(B.ear,ear,muz)}
+  const head=`${earsSVG(B.ear,ear,muz)}
     <ellipse cx="50" cy="53" rx="33" ry="32" fill="${fur}" stroke="${SK}" stroke-width="4.5"/>
     ${pat==='poodle'?'':face}${pat==='poodle'?face:''}
     ${!pat&&cfg.f===1?`<ellipse cx="62" cy="45" rx="11" ry="10" fill="${ear}" opacity=".85"/>`:''}
     ${muzzle}
-    <ellipse cx="38" cy="48" rx="4.8" ry="5.6" fill="${eye}"/><ellipse cx="62" cy="48" rx="4.8" ry="5.6" fill="${eye}"/>
+    <g class="eyes"><g class="blink"><ellipse cx="38" cy="48" rx="4.8" ry="5.6" fill="${eye}"/><ellipse cx="62" cy="48" rx="4.8" ry="5.6" fill="${eye}"/>
     ${pat==='husky'?`<ellipse cx="38" cy="48.5" rx="2" ry="2.6" fill="${SK}"/><ellipse cx="62" cy="48.5" rx="2" ry="2.6" fill="${SK}"/>`:''}
-    <circle cx="39.8" cy="46" r="1.8" fill="#fff"/><circle cx="63.8" cy="46" r="1.8" fill="#fff"/>
-    <ellipse cx="50" cy="62" rx="7" ry="5" fill="${SK}"/><ellipse cx="48" cy="60.5" rx="2.2" ry="1.3" fill="#fff" opacity=".6"/>
+    <circle cx="39.8" cy="46" r="1.8" fill="#fff"/><circle cx="63.8" cy="46" r="1.8" fill="#fff"/></g></g>
+    <g class="snout"><ellipse cx="50" cy="62" rx="7" ry="5" fill="${SK}"/><ellipse cx="48" cy="60.5" rx="2.2" ry="1.3" fill="#fff" opacity=".6"/>
     <path d="M50 67 v3.5 M50 70.5 Q44.5 76.5 39.5 72 M50 70.5 Q55.5 76.5 60.5 72" fill="none" stroke="${SK}" stroke-width="3" stroke-linecap="round"/>
-    <path d="M46 74 Q50 84 54 74 Z" fill="#ff8fa3" stroke="${SK}" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M46 74 Q50 84 54 74 Z" fill="#ff8fa3" stroke="${SK}" stroke-width="2" stroke-linejoin="round"/></g>
     <ellipse cx="29" cy="62" rx="5" ry="3" fill="#f7a8b8" opacity="${dark?.5:.75}"/><ellipse cx="71" cy="62" rx="5" ry="3" fill="#f7a8b8" opacity="${dark?.5:.75}"/>
-    ${a.neck?accSVG(a.neck):''}${a.ear?accSVG(a.ear,ex):''}${a.face?accSVG(a.face):''}${onTopHead}${a.head==='space'?accSVG('space'):''}
+    ${a.neck?accSVG(a.neck):''}${a.ear?accSVG(a.ear,ex):''}${a.face?accSVG(a.face):''}${onTopHead}${a.head==='space'?accSVG('space'):''}`;
+  if(o.head) return head;
+  return `<svg class="${o.cls||'dg'}" viewBox="${top}" aria-label="狗">${body}${head}</svg>`;
+}
+
+// 站著／走路用的身體：側身、四條腿、尾巴，頭沿用同一顆（品種、毛色、配件都一樣）
+function dogWalkSVG(cfg){
+  cfg=cfg||{}; const F=FURS[cfg.f]||FURS[0], B=BREEDS.find(x=>x.id===cfg.b)||BREEDS[0], fur=F[1], ear=F[2], muz=F[3];
+  const st=`stroke="${SK}" stroke-width="4"`;
+  const leg=(x,c,far)=>`<g class="leg ${c}"><rect x="${x}" y="100" width="12" height="33" rx="6" fill="${fur}" ${st}/>${far?`<rect x="${x}" y="100" width="12" height="33" rx="6" fill="#000" opacity=".16"/>`:''}</g>`;
+  return `<svg class="dg walk" viewBox="-18 -6 134 142" aria-label="狗">
+    <g class="tail"><path d="M10 96 Q-10 92 -6 70" fill="none" stroke="${SK}" stroke-width="11" stroke-linecap="round"/><path d="M10 96 Q-10 92 -6 70" fill="none" stroke="${ear}" stroke-width="5.5" stroke-linecap="round"/></g>
+    ${leg(17,'b far',1)}${leg(62,'a far',1)}
+    <ellipse cx="64" cy="90" rx="16" ry="18" fill="${fur}" ${st}/><ellipse cx="42" cy="98" rx="35" ry="19" fill="${fur}" ${st}/>
+    <ellipse cx="64" cy="90" rx="14" ry="16" fill="${fur}"/><ellipse cx="42" cy="98" rx="33" ry="17" fill="${fur}"/>
+    <ellipse cx="44" cy="108" rx="21" ry="7" fill="${muz}" opacity=".9"/>
+    ${B.pat==='spots'?`<circle cx="26" cy="92" r="4.5" fill="${ear}"/><circle cx="44" cy="88" r="3.4" fill="${ear}"/><circle cx="36" cy="102" r="3" fill="${ear}"/>`:''}
+    ${leg(6,'a hind')}${leg(51,'b')}
+    <g class="pee-drops" fill="#ffe26a" stroke="#c9a21a" stroke-width="1"><circle cx="6" cy="112" r="2.6"/><circle cx="6" cy="112" r="2.2"/><circle cx="6" cy="112" r="2.4"/></g>
+    <g class="hd"><g transform="translate(34 10) scale(.8)">${dogSVG(cfg,{head:true})}</g></g>
   </svg>`;
 }
 
@@ -1341,7 +1445,7 @@ $('dressClose').onclick=()=>{ closeSheet('dressSheet'); Sound.play('shut'); };
 let roomTab='dog', selIdx=-1;
 const roomList=()=>{ const s=shopData(); return s.room[s.scene]||(s.room[s.scene]=[]); };
 function piHTML(it){
-  if(it.k.startsWith('dog:')) return dogSVG(dogCfg(+it.k.slice(4)),{full:true});
+  if(it.k.startsWith('dog:')){ const c=dogCfg(+it.k.slice(4)); return `<div class="pose stand">${dogWalkSVG(c)}</div><div class="pose sit">${dogSVG(c,{full:true})}</div><span class="bub" hidden></span>`; }
   const d=DECO.find(x=>x.id===it.k.slice(2)); return d?d.e:'';
 }
 function renderRoom(){
@@ -1353,15 +1457,25 @@ function renderRoom(){
   for(let i=list.length-1;i>=0;i--) if(list[i].k.startsWith('dog:')&&+list[i].k.slice(4)>=n) list.splice(i,1);
   if(selIdx>=list.length) selIdx=-1;
   let h=sceneSVG(s.scene);
-  list.forEach((it,i)=>{ const dog=it.k.startsWith('dog:');
-    h+=`<div class="pi ${dog?'dog':'emo'}${i===selIdx?' sel':''}" data-i="${i}" style="left:${it.x}%;top:${it.y}%;z-index:${Math.round(it.y*10)+(i===selIdx?1000:0)};--s:${it.s||1};--fl:${it.fl||1}"><div class="in">${piHTML(it)}</div></div>`; });
-  if(!list.length) h+=`<div class="empty">小窩空空的～<br>從下方選狗狗、家具或花草，點一下就會放進來</div>`;
-  if(selIdx>=0) h+=`<div class="seltools"><button data-a="minus" aria-label="縮小">${ic('minus')}</button><button data-a="plus" aria-label="放大">${ic('plus')}</button><button data-a="flip" aria-label="翻面">${ic('flip')}</button>${list[selIdx].k.startsWith('dog:')?`<button data-a="dress" aria-label="打扮">${ic('brush')}</button>`:''}<button data-a="del" class="del" aria-label="收起來">${ic('trash')}</button></div>`;
+  list.forEach((it,i)=>{ const dog=it.k.startsWith('dog:'), r=dog?dogRT(it):null, x=dog?r.x:it.x, y=dog?r.y:it.y, fl=dog?r.dir:(it.fl||1);
+    h+=`<div class="pi ${dog?'dog':'emo'}${i===selIdx?' sel':''}" data-i="${i}" data-fl="${fl}" style="left:${x}%;top:${y}%;z-index:${Math.round(y*10)+(i===selIdx?1000:0)};--s:${it.s||1};--fl:${fl}"><div class="in">${piHTML(it)}</div></div>`; });
+  if(!list.length) h+=visit?`<div class="empty">這個場景還空空的～</div>`:`<div class="empty">小窩空空的～<br>從下方選狗狗、家具或花草，點一下就會放進來</div>`;
+  $('room').classList.toggle('visiting',!!visit); $('roomTitle').textContent=visit?visit.name+' 的小窩':'狗狗小窩';
+  $('visitBar').hidden=!visit; if(visit) $('visitBar').textContent='參觀中：只能看，不能移動東西。點狗狗牠會汪一聲';
+  if(selIdx>=0) h+=`<div class="seltools"><button data-a="minus" aria-label="縮小">${ic('minus')}</button><button data-a="plus" aria-label="放大">${ic('plus')}</button>${list[selIdx].k.startsWith('dog:')?`<button data-a="dress" aria-label="打扮">${ic('brush')}</button>`:`<button data-a="flip" aria-label="翻面">${ic('flip')}</button>`}<button data-a="del" class="del" aria-label="收起來">${ic('trash')}</button></div>`;
   $('scene').innerHTML=h;
   $('scene').querySelectorAll('.seltools button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); selAction(b.dataset.a); });
+  roomEls=list.map((_,i)=>$('scene').querySelector(`.pi[data-i="${i}"]`));
+  paintRoom();
   renderTray();
 }
 function renderTray(){
+  if(visit){   // 參觀時下方只列出好友有布置的場景
+    const sh=visit.shop, list=SCENES.filter(x=>x.id===sh.scene||(sh.room[x.id]||[]).length);
+    $('tray').innerHTML=list.map(x=>`<button data-scene="${x.id}" class="${sh.scene===x.id?'on':''}"><span class="mini">${sceneSVG(x.id)}</span>${x.n}</button>`).join('');
+    $('tray').querySelectorAll('button[data-scene]').forEach(b=>b.onclick=()=>{ sh.scene=b.dataset.scene; Sound.play('click'); renderRoom(); });
+    return;
+  }
   $('roomTabs').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.t===roomTab));
   const s=shopData(), list=roomList(); let h='';
   if(roomTab==='dog'){
@@ -1381,7 +1495,7 @@ function renderTray(){
   $('tray').querySelectorAll('button[data-dog]').forEach(b=>b.onclick=()=>{
     const k='dog:'+b.dataset.dog, j=list.findIndex(it=>it.k===k);
     if(j>=0){ selIdx=j; } else { list.push({k,x:30+Math.random()*40,y:70+Math.random()*16,s:1,fl:1}); selIdx=list.length-1; saveRoom(); }
-    Sound.play('cat'); renderRoom(); });
+    Sound.play('woof'); renderRoom(); });
   $('tray').querySelectorAll('button[data-deco]').forEach(b=>b.onclick=()=>{
     if(list.length>=ROOM_MAX){ toast(`一個場景最多放 ${ROOM_MAX} 樣東西`); return; }
     list.push({k:'d:'+b.dataset.deco,x:25+Math.random()*50,y:62+Math.random()*24,s:1,fl:1}); selIdx=list.length-1; saveRoom(); Sound.play('tap'); renderRoom(); });
@@ -1389,7 +1503,7 @@ function renderTray(){
   $('tray').querySelectorAll('button[data-shop]').forEach(b=>b.onclick=()=>openShop(b.dataset.shop));
 }
 let roomSaveT=0;
-function saveRoom(){ shopData().t=Date.now(); persist(); clearTimeout(roomSaveT); roomSaveT=setTimeout(()=>pushProg(),1500); }
+function saveRoom(){ if(visit) return; shopData().t=Date.now(); persist(); clearTimeout(roomSaveT); roomSaveT=setTimeout(()=>pushProg(),1500); }
 function selAction(a){
   const list=roomList(), it=list[selIdx]; if(!it) return;
   if(a==='plus') it.s=Math.min(2.6,+((it.s||1)+.2).toFixed(2));
@@ -1403,6 +1517,7 @@ function selAction(a){
 // 拖曳擺放
 let rdrag=null;
 $('scene').addEventListener('pointerdown',e=>{
+  if(visit){ const d=e.target.closest('.pi.dog'); if(d){ const r=dogRT(roomList()[+d.dataset.i]); r.bub='汪！'; r.bubT=1; Sound.play('woof'); } return; }
   if(e.target.closest('.seltools')) return;
   const p=e.target.closest('.pi');
   if(!p){ if(selIdx>=0){ selIdx=-1; renderRoom(); } return; }
@@ -1410,7 +1525,9 @@ $('scene').addEventListener('pointerdown',e=>{
   const i=+p.dataset.i, it=roomList()[i], r=$('scene').getBoundingClientRect();
   if(selIdx!==i){ selIdx=i; renderRoom(); }
   const el=$('scene').querySelector(`.pi[data-i="${i}"]`);
-  rdrag={i,el,r,dx:e.clientX-(r.left+it.x/100*r.width),dy:e.clientY-(r.top+it.y/100*r.height),moved:false,id:e.pointerId};
+  const dogR=it.k.startsWith('dog:')?dogRT(it):null;
+  if(dogR){ leaveSeat(dogR); dogR.tg=null; dogR.st='held'; it.x=+dogR.x.toFixed(1); it.y=+dogR.y.toFixed(1); }
+  rdrag={i,el,r,dx:e.clientX-(r.left+it.x/100*r.width),dy:e.clientY-(r.top+it.y/100*r.height),moved:false,id:e.pointerId,dogR};
   try{ $('scene').setPointerCapture(e.pointerId); }catch(_){}
 });
 $('scene').addEventListener('pointermove',e=>{
@@ -1419,19 +1536,104 @@ $('scene').addEventListener('pointermove',e=>{
   const x=Math.max(2,Math.min(98,(e.clientX-rdrag.dx-r.left)/r.width*100)), y=Math.max(10,Math.min(100,(e.clientY-rdrag.dy-r.top)/r.height*100));
   if(!rdrag.moved&&Math.hypot(x-it.x,y-it.y)<.8) return;
   rdrag.moved=true; it.x=+x.toFixed(1); it.y=+y.toFixed(1);
+  if(rdrag.dogR){ rdrag.dogR.x=it.x; rdrag.dogR.y=it.y; }
   el.style.left=it.x+'%'; el.style.top=it.y+'%'; el.style.zIndex=Math.round(it.y*10)+1000; el.classList.add('dragging');
 });
-const endDrag=e=>{ if(!rdrag||e.pointerId!==rdrag.id) return; const m=rdrag.moved; rdrag=null; if(m){ saveRoom(); renderRoom(); } };
+const endDrag=e=>{ if(!rdrag||e.pointerId!==rdrag.id) return; const m=rdrag.moved, d=rdrag.dogR; rdrag=null;
+  if(d){ d.st='idle'; d.t=1.2; if(!m){ d.bub='汪！'; d.bubT=1; Sound.play('woof'); } }
+  if(m){ saveRoom(); renderRoom(); } };
 $('scene').addEventListener('pointerup',endDrag); $('scene').addEventListener('pointercancel',endDrag);
 
-function openRoom(){ selIdx=-1; showScreen('room'); renderRoom(); Sound.play('open'); }
-$('roomBack').onclick=()=>{ showScreen('home'); refreshHome(); Sound.play('shut'); };
+/* 狗狗的行為：idle 發呆 → walk 走路 → 到了之後做一件事（坐、睡、尿尿、吃、玩、聞…）→ 再回到 idle */
+const RT=new WeakMap(), OCC=new WeakMap(); let roomEls=[], roomRAF=0, roomLast=0;
+const FLOOR_TOP=64, rnd=(a,b)=>a+Math.random()*(b-a), clampX=x=>Math.max(6,Math.min(94,x)), clampY=y=>Math.max(FLOOR_TOP,Math.min(99,y));
+// 每樣東西可以怎麼互動：[動作, 坐上去時要抬高多少（佔物件高度的比例）]
+const ACT={chair:['seat',.4],sofa:['seat',.3],bed:['nap',.32],basket:['nap',.14],house:['guard'],tent:['guard'],
+  tree:['pee'],pine:['pee'],palm:['pee'],pot:['pee'],xmas:['pee'],rock:['pee'],snowman:['pee'],mush:['pee'],cactus:['sniff'],
+  tulip:['sniff'],sun:['sniff'],sakura:['sniff'],rose:['sniff'],gift:['sniff'],
+  ball:['play'],tennis:['play'],balloon:['play'],yarn:['play'],duck:['play'],kite:['play'],teddy:['play'],
+  bone:['eat'],bowl:['eat'],cake:['eat'],fount:['drink'],
+  tv:['watch'],pic:['watch'],mirror:['watch'],clock:['watch'],books:['watch'],lamp:['watch'],fire:['warm'],piano:['music']};
+function dogRT(it){ let r=RT.get(it); if(!r){ r={x:it.x,y:clampY(it.y),dir:Math.random()<.5?1:-1,st:'idle',t:rnd(.4,2.5),tg:null,on:null,item:null,lift:0,bub:'',bubT:0,after:''}; RT.set(it,r); } return r; }
+function leaveSeat(r){ if(r.on){ OCC.delete(r.on); r.on=null; r.y=clampY(r.y+1.5); } r.lift=0; r.item=null; r.bub=''; r.after=''; }
+function arriveDog(it,r,list){
+  const tg=r.tg; r.tg=null;
+  if(!tg.it){ r.st='idle'; r.t=rnd(.8,2.6); return; }
+  if(!list.includes(tg.it)){ OCC.delete(tg.it); r.st='idle'; r.t=1; return; }
+  const id=tg.it.k.slice(2), s=tg.it.s||1; if(tg.dir) r.dir=tg.dir; r.item=tg.it;
+  switch(tg.kind){
+    case 'seat': r.on=tg.it; r.lift=17*s*ACT[id][1]; r.st='sit'; r.t=rnd(5,9); break;
+    case 'nap': r.on=tg.it; r.lift=17*s*ACT[id][1]; r.st='sleep'; r.bub='Zzz'; r.t=rnd(7,11); break;
+    case 'guard': r.st='sit'; r.t=rnd(4,7); break;
+    case 'pee': r.st='pee'; r.t=2.6; r.after='呼～'; break;
+    case 'sniff': r.st='sniff'; r.bub='嗅嗅'; r.t=2.2; r.after='♥'; break;
+    case 'play': r.st='play'; r.bub='汪！'; r.t=3; break;
+    case 'eat': r.st='eat'; r.t=3; r.after='好吃！'; break;
+    case 'drink': r.st='eat'; r.t=2.6; r.after='咕嚕～'; break;
+    case 'warm': r.st='sit'; r.bub='好暖～'; r.t=rnd(4,6); break;
+    case 'music': r.st='sit'; r.bub='♪ ♫'; r.t=rnd(4,6); break;
+    default: r.st='sit'; r.bub='…'; r.t=rnd(3.5,6);
+  }
+}
+function stepDog(it,r,dt,list,selected){
+  if(r.bubT>0){ r.bubT-=dt; if(r.bubT<=0) r.bub=''; }
+  if(r.st==='held') return;
+  if(r.on){ if(!list.includes(r.on)){ leaveSeat(r); r.st='idle'; r.t=1; return; } r.x=r.on.x; r.y=r.on.y+.1; }
+  if(selected){ if(r.st==='walk'){ if(r.tg&&r.tg.it) OCC.delete(r.tg.it); r.tg=null; r.st='idle'; r.t=1; } return; }
+  if(r.st==='walk'){
+    const dx=r.tg.x-r.x, dy=r.tg.y-r.y, d=Math.hypot(dx,dy), sp=12*dt;
+    if(Math.abs(dx)>.4) r.dir=dx>0?1:-1;
+    if(d<=sp){ r.x=r.tg.x; r.y=r.tg.y; arriveDog(it,r,list); } else { r.x+=dx/d*sp; r.y+=dy/d*sp; }
+    return;
+  }
+  r.t-=dt; if(r.t>0) return;
+  if(r.st!=='idle'){   // 事情做完了
+    const after=r.after; leaveSeat(r); r.st='idle'; r.t=rnd(.6,2.2);
+    if(after){ r.bub=after; r.bubT=1.3; }
+    return;
+  }
+  const things=list.filter(o=>!o.k.startsWith('dog:')&&ACT[o.k.slice(2)]&&!OCC.get(o));
+  const roll=Math.random();
+  if(things.length&&roll<.62){
+    const o=things[Math.floor(Math.random()*things.length)], kind=ACT[o.k.slice(2)][0], sc=o.s||1, sd=o.x<16?1:o.x>84?-1:(Math.random()<.5?-1:1);
+    if(kind==='seat'||kind==='nap'){ OCC.set(o,it); r.tg={x:o.x,y:clampY(o.y+.6),it:o,kind}; }
+    else if(kind==='pee') r.tg={x:clampX(o.x+sd*(5+3*sc)),y:clampY(o.y+1.2),dir:sd,it:o,kind};   // 屁股對著樹
+    else r.tg={x:clampX(o.x+sd*(8+3*sc)),y:clampY(o.y+1),dir:-sd,it:o,kind};                      // 臉對著東西
+  }
+  else if(roll>.9){ r.st='bark'; r.bub='汪！'; r.t=.9; return; }
+  else r.tg={x:rnd(8,92),y:rnd(FLOOR_TOP+2,97)};
+  r.st='walk';
+}
+function paintRoom(){
+  const list=roomList(), busy=new Map();
+  list.forEach((it,i)=>{
+    if(!it.k.startsWith('dog:')) return; const el=roomEls[i]; if(!el) return;
+    const r=dogRT(it), sel=i===selIdx, sitting=r.st==='sit'||r.st==='sleep';
+    el.style.left=r.x.toFixed(2)+'%'; el.style.top=r.y.toFixed(2)+'%'; el.style.zIndex=Math.round(r.y*10)+(sel||r.st==='held'?1000:0);
+    if(el._dir!==r.dir){ el._dir=r.dir; el.style.setProperty('--fl',r.dir); el.dataset.fl=r.dir; }
+    if(el._lift!==r.lift){ el._lift=r.lift; el.style.setProperty('--lift',r.lift.toFixed(2)); }
+    const cls='pi dog st-'+r.st+(sitting?' sitting':'')+(sel?' sel':'');
+    if(el._cls!==cls){ el._cls=cls; el.className=cls; }
+    if(el._bub!==r.bub){ el._bub=r.bub; const b=el.querySelector('.bub'); if(b){ b.textContent=r.bub; b.hidden=!r.bub; } }
+    if(r.item&&(r.st==='play'||r.st==='eat')) busy.set(r.item,r.st==='play'?'boing':'nom');
+  });
+  list.forEach((it,i)=>{ if(it.k.startsWith('dog:')) return; const el=roomEls[i]; if(!el) return; const b=busy.get(it)||'';
+    if(el._b!==b){ el._b=b; el.classList.toggle('boing',b==='boing'); el.classList.toggle('nom',b==='nom'); } });
+}
+function roomLoop(ts){
+  if($('room').hidden){ roomRAF=0; return; }
+  const dt=Math.min(.1,(ts-roomLast)/1000||0); roomLast=ts;
+  if(!document.hidden){ const list=roomList(); list.forEach((it,i)=>{ if(it.k.startsWith('dog:')) stepDog(it,dogRT(it),dt,list,i===selIdx); }); paintRoom(); }
+  roomRAF=requestAnimationFrame(roomLoop);
+}
+function openRoom(){ selIdx=-1; showScreen('room'); renderRoom(); Sound.play('open'); if(!roomRAF){ roomLast=performance.now(); roomRAF=requestAnimationFrame(roomLoop); } }
+$('roomBack').onclick=()=>{ const was=visit; visit=null; showScreen('home'); refreshHome(); Sound.play('shut'); if(was) openAcct(); };
 $('roomShop').onclick=()=>openShop();
 $('roomDress').onclick=()=>openDress();
 $('roomHelp').onclick=()=>openSheet('roomHelpSheet');
 $('roomHelpClose').onclick=$('roomHelpOk').onclick=()=>{ closeSheet('roomHelpSheet'); Sound.play('shut'); };
 $('roomTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{ roomTab=b.dataset.t; Sound.play('click'); renderTray(); $('tray').scrollLeft=0; });
-$('btnRoom').onclick=openRoom;
+$('btnRoom').onclick=()=>{ visit=null; openRoom(); };
 
 const anySheetOpen=()=>[...document.querySelectorAll('.backdrop')].some(b=>!b.hidden);
 
@@ -1644,7 +1846,7 @@ function placeCat(i){
   if(P.sol[r]===c){
     cats.add(i); marks[i]=0; drawCell(i);
     if(save.auto) autoMark(i);
-    if(cats.size===n) win(); else Sound.play('cat');
+    if(cats.size===n) win(); else { Sound.play('cat'); woofFx(el); }
   }else{
     hearts--; mistakes++; renderHearts(hearts);
     if(hearts>0) Sound.play('wrong');
@@ -1676,10 +1878,19 @@ function renderPen(){
   $('penLabel').textContent=cat?'點一下：放狗':'點一下：打叉';
 }
 
+const BONE='<svg viewBox="0 0 24 24"><g fill="currentColor" transform="rotate(-35 12 12)"><rect x="6" y="10" width="12" height="4" rx="1"/><circle cx="6" cy="9.4" r="2.9"/><circle cx="6" cy="14.6" r="2.9"/><circle cx="18" cy="9.4" r="2.9"/><circle cx="18" cy="14.6" r="2.9"/></g></svg>';
+// 狗狗頭上冒出「汪！」
+function woofFx(el,text){
+  if(!el) return; const r=el.getBoundingClientRect(); if(!r.width) return;
+  const w=document.createElement('div'); w.className='woof'; w.textContent=text||'汪！';
+  w.style.left=(r.left+r.width/2)+'px'; w.style.top=(r.top+r.height*.12)+'px';
+  document.body.appendChild(w); setTimeout(()=>w.remove(),950);
+  const sv=el.querySelector('svg.cat'); if(sv){ sv.classList.remove('yap'); void sv.offsetWidth; sv.classList.add('yap'); setTimeout(()=>sv.classList.remove('yap'),600); }
+}
 function pawRain(){
   const colors=['#ffd76e','#ffa47e','#86dfc6','#bba8ff','#ffb1bb'];
   for(let k=0;k<22;k++){
-    const p=document.createElement('div'); p.className='paw'; p.innerHTML=PAW;
+    const p=document.createElement('div'); p.className='paw'; p.innerHTML=k%3===0?BONE:PAW;
     const s=16+Math.random()*22; p.style.width=p.style.height=s+'px';
     p.style.left=Math.random()*100+'vw'; p.style.color=colors[k%colors.length];
     p.style.animationDuration=(2.2+Math.random()*2)+'s'; p.style.animationDelay=(Math.random()*.8)+'s';
@@ -1689,6 +1900,7 @@ function pawRain(){
 function win(){
   finished=true; elapsed=performance.now()-startT; tick();
   boardEl.classList.add('done'); Sound.play('win'); pawRain();
+  [...cats].sort(()=>Math.random()-.5).forEach((ci,k)=>setTimeout(()=>woofFx(cellEl(ci),k%3===2?'汪汪！':'汪！'),k*150));
   const key=mode.type==='daily'?'daily':`size${P.n}`;
   const prev=save.best[key];
   const isBest=prev==null||elapsed<prev;
@@ -1962,6 +2174,7 @@ Online.init=function(){
           catch(e){ Online.me={name:u.displayName||'玩家',total:0,solved:0,best:{}}; }
           Online.me.best=Online.me.best||{};
           await syncProg();
+          ensureFriendCode();
         }
         renderAcct();
       });
@@ -1974,7 +2187,7 @@ async function doRegister(nick,pw){
   const {A,F}=Online; nick=nick.trim();
   const cred=await A.createUserWithEmailAndPassword(Online.auth,nickEmail(nick),pw);
   await A.updateProfile(cred.user,{displayName:nick});
-  const me={name:nick,total:0,solved:0,best:{},prog:progOf(save)};
+  const me={name:nick,total:0,solved:0,best:{},prog:progOf(save),fcode:friendCode(cred.user.uid),friends:[]};
   await F.setDoc(F.doc(Online.db,'players',cred.user.uid),{...me,updated:F.serverTimestamp()},{merge:true});
   Online.me=me; renderAcct();
 }
@@ -2028,12 +2241,73 @@ async function submitRun(r){
   return {status:'ok',total:me.total,improved:r.score>prev,prev};
 }
 
+/* ----- 好友 ----- */
+const FC_ABC='23456789ABCDEFGHJKLMNPQRSTUVWXYZ';   // 不用 0 O 1 I，避免看錯
+function friendCode(uid){ let h=hashStr('fc'+uid), c=''; for(let i=0;i<6;i++){ c+=FC_ABC[h&31]; h>>>=5; if(i===2) h^=hashStr(uid+'x')<<3>>>0; } return c; }
+const MAX_FRIENDS=30;
+// 好友的資料是別人寫的，拿來顯示前先整理乾淨（只留看得懂的欄位和數字）
+function cleanShop(sh){
+  sh=sh&&typeof sh==='object'?sh:{}; const num=(v,d,a,b)=>{ v=Number(v); return isFinite(v)?Math.max(a,Math.min(b,v)):d; }, str=v=>typeof v==='string'?v.slice(0,12):'';
+  const room={}, src=sh.room&&typeof sh.room==='object'?sh.room:{};
+  for(const sc of SCENES){ const arr=Array.isArray(src[sc.id])?src[sc.id]:[];
+    room[sc.id]=arr.slice(0,ROOM_MAX+MAX_DOGS).filter(it=>it&&typeof it.k==='string'&&/^(dog:\d|d:[a-z]{1,10})$/.test(it.k))
+      .map(it=>({k:it.k,x:num(it.x,50,0,100),y:num(it.y,80,0,100),s:num(it.s,1,.4,2.6),fl:it.fl===-1?-1:1})); }
+  const dogs=(Array.isArray(sh.dogs)?sh.dogs:[]).slice(0,MAX_DOGS).map(d=>{ d=d&&typeof d==='object'?d:{}; return {b:str(d.b)||'mix',f:num(d.f,0,0,FURS.length-1)|0,head:str(d.head),ear:str(d.ear),neck:str(d.neck),face:str(d.face)}; });
+  const scene=SCENES.some(x=>x.id===sh.scene)?sh.scene:'living', owned={};
+  SCENES.forEach(x=>owned['s:'+x.id]=1);
+  return {owned,dogs,room,scene,t:0};
+}
+const Friends={cache:new Map(),msg:''};
+async function ensureFriendCode(){
+  const me=Online.me, u=Online.user; if(!me||!u) return;
+  const code=friendCode(u.uid);
+  if(me.fcode===code) return;
+  me.fcode=code;
+  try{ await Online.F.setDoc(Online.F.doc(Online.db,'players',u.uid),{name:me.name,total:me.total||0,fcode:code},{merge:true}); }catch(e){}
+}
+async function saveFriends(){ const me=Online.me; await Online.F.setDoc(Online.F.doc(Online.db,'players',Online.user.uid),{name:me.name,total:me.total||0,friends:me.friends},{merge:true}); }
+async function addFriend(raw){
+  const {F}=Online, me=Online.me, code=String(raw||'').toUpperCase().replace(/[^0-9A-Z]/g,'');
+  if(code.length!==6) throw new Error('好友代碼是 6 個字（英文和數字）');
+  if(code===friendCode(Online.user.uid)) throw new Error('這是你自己的代碼喔');
+  me.friends=Array.isArray(me.friends)?me.friends:[];
+  if(me.friends.length>=MAX_FRIENDS) throw new Error(`好友最多 ${MAX_FRIENDS} 位`);
+  const snap=await F.getDocs(F.query(F.collection(Online.db,'players'),F.where('fcode','==',code),F.limit(3)));
+  let hit=null; snap.forEach(d=>{ if(!hit&&d.id!==Online.user.uid) hit=d; });
+  if(!hit) throw new Error('找不到這個代碼。請對方先登入並打開一次遊戲，再確認代碼有沒有打錯');
+  if(me.friends.includes(hit.id)) throw new Error('你們已經是好友了');
+  me.friends.push(hit.id); Friends.cache.set(hit.id,hit.data());
+  await saveFriends();
+  return hit.data().name||'好友';
+}
+async function removeFriend(uid){ const me=Online.me; me.friends=(me.friends||[]).filter(x=>x!==uid); await saveFriends(); }
+async function loadFriends(){
+  const me=Online.me, ids=Array.isArray(me.friends)?me.friends:[];
+  await Promise.all(ids.map(async id=>{ try{ const d=await Online.F.getDoc(Online.F.doc(Online.db,'players',id)); if(d.exists()) Friends.cache.set(id,d.data()); }catch(e){} }));
+}
+function friendRows(){
+  const ids=Array.isArray(Online.me.friends)?Online.me.friends:[];
+  if(!ids.length) return '<div class="rank-empty" style="padding:14px 0">還沒有好友。把你的代碼傳給朋友，或輸入朋友的代碼。</div>';
+  return '<div class="flist">'+ids.map(id=>{ const d=Friends.cache.get(id), pr=d&&d.prog||{}, sh=cleanShop(pr.shop);
+    return `<div class="frow"><span class="acct-av">${d?dogSVG(sh.dogs[0]||{b:'mix',f:0},{cls:''}):ic('user')}</span>
+      <div class="inf"><div class="nm">${d?esc(d.name||'玩家'):'讀取中…'}</div><div class="sc">${d?`第 ${Math.max(1,pr.level|0||1)} 關 · 總分 ${d.total|0}`:''}</div></div>
+      <button class="go" data-go="${esc(id)}">去小窩</button><button class="rm" data-rm="${esc(id)}" aria-label="刪除好友">${ic('close')}</button></div>`; }).join('')+'</div>';
+}
+async function visitFriend(uid){
+  let d=Friends.cache.get(uid);
+  try{ const sn=await Online.F.getDoc(Online.F.doc(Online.db,'players',uid)); if(sn.exists()){ d=sn.data(); Friends.cache.set(uid,d); } }catch(e){}
+  if(!d){ toast('讀不到好友的資料，請檢查網路'); return; }
+  const pr=d.prog||{};
+  visit={name:String(d.name||'好友').slice(0,10),level:Math.max(1,pr.level|0||1),shop:cleanShop(pr.shop)};
+  closeSheet('acctSheet'); roomTab='scene'; openRoom();
+}
+
 /* ----- 帳號按鈕與面板 ----- */
 function renderAcct(){
   const btn=$('acctBtn'); if(!btn) return;
   const inUser=Online.user&&Online.me;
   btn.classList.toggle('in',!!inUser);
-  $('acctAv').innerHTML=inUser?catSVG(hashStr(Online.me.name)%DOGS.length,''):ic('user');
+  $('acctAv').innerHTML=inUser?dogSVG((save.shop&&save.shop.dogs&&save.shop.dogs[0])||{b:'mix',f:0},{cls:''}):ic('user');
   $('acctName').textContent=inUser?Online.me.name:(Online.failed?'離線':'登入');
   if(!$('acctSheet').hidden) renderAcctSheet();
 }
@@ -2047,11 +2321,28 @@ function renderAcctSheet(mode){
   if(Online.user&&Online.me){
     const me=Online.me;
     $('acctTitle').textContent='我的帳號';
-    body.innerHTML=`<div class="me-card"><span class="acct-av">${catSVG(hashStr(me.name)%DOGS.length,'')}</span>
+    const fc=friendCode(Online.user.uid);
+    body.innerHTML=`<div class="me-card"><span class="acct-av">${dogSVG((save.shop&&save.shop.dogs&&save.shop.dogs[0])||{b:'mix',f:0},{cls:''})}</span>
       <div><div class="nm">${esc(me.name)}</div><div class="sc">總分 <b>${me.total||0}</b> · 上榜題數 ${me.solved||0}</div></div></div>
+      <div class="fcode"><div><div class="lb">我的好友代碼</div><div class="cd">${fc}</div></div><button id="fcCopy">${ic('copy')}複製</button></div>
+      <div class="fadd"><input id="fcIn" maxlength="8" placeholder="輸入好友的代碼" autocomplete="off" autocapitalize="characters" aria-label="好友代碼"><button class="b3d mint" id="fcAdd">加好友</button></div>
+      <div class="codeerr" id="fcErr">${esc(Friends.msg)}</div>
+      <div class="dgroup" style="margin-top:6px">好友（${(me.friends||[]).length}）</div>
+      <div id="fcList">${friendRows()}</div>
       <div class="sbtns"><button class="b3d butter" id="acctRank">${ic('podium')}看排行榜</button></div>
       <div class="sbtns"><button class="b3d ghost" id="acctOut">登出</button></div>`;
     $('acctRank').onclick=()=>openRank('total');
+    Friends.msg='';
+    const wire=()=>{ $('fcList').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>visitFriend(b.dataset.go));
+      $('fcList').querySelectorAll('[data-rm]').forEach(b=>b.onclick=async()=>{ const d=Friends.cache.get(b.dataset.rm); if(!confirm(`要把「${d&&d.name||'這位好友'}」從好友移除嗎？`)) return; try{ await removeFriend(b.dataset.rm); }catch(e){} renderAcctSheet(); }); };
+    wire();
+    $('fcCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(fc); toast('已複製好友代碼 '+fc); }catch(e){ toast('複製失敗，請手動抄下代碼 '+fc); } Sound.play('click'); };
+    const doAdd=async()=>{ const err=$('fcErr'), btn=$('fcAdd'); err.textContent=''; btn.disabled=true;
+      try{ const nm=await addFriend($('fcIn').value); Sound.play('hint'); toast(`已經加「${nm}」為好友`); renderAcctSheet(); }
+      catch(x){ err.textContent=x&&x.message&&!x.code?x.message:'加好友失敗，請檢查網路後再試'; Sound.play('wrong'); btn.disabled=false; } };
+    $('fcAdd').onclick=doAdd; $('fcIn').addEventListener('keydown',e=>{ if(e.key==='Enter') doAdd(); });
+    if(!Friends.loaded||Friends.loaded!==Online.user.uid+(me.friends||[]).join()){ Friends.loaded=Online.user.uid+(me.friends||[]).join();
+      loadFriends().then(()=>{ const l=$('fcList'); if(l&&Online.me){ l.innerHTML=friendRows(); wire(); } }); }
     $('acctOut').onclick=async()=>{ await doLogout(); Sound.play('click'); };
     return;
   }
