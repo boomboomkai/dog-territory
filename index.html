@@ -1524,7 +1524,13 @@ const MAX_LEVEL=100, CHAPTER=20;
 const SIZE_RUNS=[[1,8,5],[9,24,6],[25,42,7],[43,62,8],[63,82,9],[83,100,10]];
 function levelSize(k){ for(const [a,b,n] of SIZE_RUNS) if(k>=a&&k<=b) return n; return 10; }
 function levelTier(k){ for(const [a,b] of SIZE_RUNS) if(k>=a&&k<=b){ const p=(k-a)/(b-a+1); return p<.4?1:p<.8?2:3; } return 2; }
-function levelCode(k){ return codeOf(levelSize(k),levelTier(k),hashStr('lv'+k)%10000); }
+// 每一關的題號：用關卡編號算出來；如果和前面的關卡撞號，就往後找一個沒用過的號碼（保證 100 關都不一樣）
+const LEVEL_CODES=(()=>{ const used=new Set(), out=[null];
+  for(let k=1;k<=MAX_LEVEL;k++){ let num=hashStr('lv'+k)%10000, c;
+    while(used.has(c=codeOf(levelSize(k),levelTier(k),num))) num=(num+1)%10000;
+    used.add(c); out.push(c); }
+  return out; })();
+function levelCode(k){ return LEVEL_CODES[k]||codeOf(levelSize(k),levelTier(k),hashStr('lv'+k)%10000); }
 const trophyCount=()=>Math.floor(Math.min(save.level-1,MAX_LEVEL)/CHAPTER);
 
 function startGame(m){
