@@ -1174,7 +1174,7 @@ function win(){
     if(mode.level===save.level){ save.level++; if(mode.level<=MAX_LEVEL&&mode.level%CHAPTER===0) trophy=mode.level/CHAPTER; }
   }
   if(mode.type==='daily'&&(save.daily[mode.date]==null||elapsed<save.daily[mode.date])) save.daily[mode.date]=elapsed;
-  persist(); refreshHome();
+  persist(); refreshHome(); pushProg();
   const score=calcScore(P.n,mode.diff,elapsed,mistakes,hintsUsed);
   const up=submitRun({code:mode.code,n:P.n,d:mode.diff,ms:Math.round(elapsed),score}).catch(e=>({status:'error',e}));
   setTimeout(()=>{
@@ -1427,6 +1427,7 @@ Online.init=function(){
             Online.me=s.exists()?s.data():{name:u.displayName||'玩家',total:0,solved:0,best:{}}; }
           catch(e){ Online.me={name:u.displayName||'玩家',total:0,solved:0,best:{}}; }
           Online.me.best=Online.me.best||{};
+          await syncProg();
         }
         renderAcct();
       });
@@ -1439,9 +1440,33 @@ async function doRegister(nick,pw){
   const {A,F}=Online; nick=nick.trim();
   const cred=await A.createUserWithEmailAndPassword(Online.auth,nickEmail(nick),pw);
   await A.updateProfile(cred.user,{displayName:nick});
-  const me={name:nick,total:0,solved:0,best:{}};
-  await F.setDoc(F.doc(Online.db,'players',cred.user.uid),{...me,updated:F.serverTimestamp()});
+  const me={name:nick,total:0,solved:0,best:{},prog:progOf(save)};
+  await F.setDoc(F.doc(Online.db,'players',cred.user.uid),{...me,updated:F.serverTimestamp()},{merge:true});
   Online.me=me; renderAcct();
+}
+// 進度同步：登入後把「這台裝置」和「雲端」的進度合併（關卡取較遠、時間取較快），兩邊都存成合併後的結果
+function progOf(s){ return {level:s.level||1,levels:s.levels||{},best:s.best||{},daily:s.daily||{},wins:s.wins||0}; }
+function mergeProg(a,b){
+  const minMap=(x,y)=>{ const o={...x}; for(const k in y){ const v=y[k]; if(typeof v==='number'&&(o[k]==null||v<o[k])) o[k]=v; } return o; };
+  return {level:Math.max(a.level||1,b.level||1),levels:minMap(a.levels||{},b.levels||{}),best:minMap(a.best||{},b.best||{}),
+    daily:minMap(a.daily||{},b.daily||{}),wins:Math.max(a.wins||0,b.wins||0)};
+}
+async function syncProg(){
+  const me=Online.me; if(!me||!Online.user) return;
+  const local=progOf(save), merged=mergeProg(local,me.prog||{});
+  const changedLocal=JSON.stringify(merged)!==JSON.stringify(local);
+  Object.assign(save,merged); persist();
+  if(changedLocal&&typeof refreshHome==='function') refreshHome();
+  if(JSON.stringify(merged)!==JSON.stringify(me.prog||null)) await pushProg(true);
+}
+let progTimer=0;
+function pushProg(now){
+  if(!Online.ready||!Online.user||!Online.me) return Promise.resolve();
+  clearTimeout(progTimer);
+  const go=async()=>{ const me=Online.me; if(!me) return; me.prog=progOf(save);
+    try{ await Online.F.setDoc(Online.F.doc(Online.db,'players',Online.user.uid),{name:me.name,total:me.total||0,prog:me.prog,updated:Online.F.serverTimestamp()},{merge:true}); }catch(e){} };
+  if(now) return go();
+  return new Promise(r=>{ progTimer=setTimeout(()=>go().then(r),800); });
 }
 async function doLogin(nick,pw){ await Online.A.signInWithEmailAndPassword(Online.auth,nickEmail(nick),pw); }
 async function doLogout(){ await Online.A.signOut(Online.auth); }
@@ -1458,7 +1483,7 @@ async function submitRun(r){
   const prev=me.best[r.code]||0;
   if(r.score>prev){
     me.best[r.code]=r.score; me.total=(me.total||0)+r.score-prev; me.solved=Object.keys(me.best).length;
-    await F.setDoc(F.doc(Online.db,'players',uid),{name:me.name,total:me.total,solved:me.solved,best:me.best,updated:F.serverTimestamp()});
+    await F.setDoc(F.doc(Online.db,'players',uid),{name:me.name,total:me.total,solved:me.solved,best:me.best,updated:F.serverTimestamp()},{merge:true});
   }
   return {status:'ok',total:me.total,improved:r.score>prev,prev};
 }
