@@ -261,6 +261,8 @@
     padding:12px 14px;outline:none;user-select:text;-webkit-user-select:text;touch-action:auto}
   .form input:focus{border-color:var(--butter)}
   .form .hint{font-size:12px;color:var(--ink-dim);line-height:1.5}
+  .form .casenote{color:var(--butter);margin-top:-2px}
+  .form .casenote b{color:var(--butter)}
   .me-card{display:flex;align-items:center;gap:14px;padding:14px;border-radius:18px;background:var(--glass);border:1px solid var(--glass-line);margin-bottom:6px}
   .me-card .acct-av{width:56px;height:56px} .me-card .acct-av svg{width:52px;height:52px}
   .me-card .nm{font-size:22px} .me-card .sc{font-size:13px;color:var(--ink-dim);margin-top:2px}
@@ -1403,9 +1405,10 @@ function nickProblem(nick){
   if(/[\s<>"'&]/.test(t)) return '暱稱不能有空白或 < > " \' & 這些符號';
   return '';
 }
+const BADPW='暱稱或密碼不對（密碼的英文大小寫要完全一樣）';
 const AUTH_ERR={
   'auth/email-already-in-use':'這個暱稱已經有人用了，換一個吧',
-  'auth/invalid-credential':'暱稱或密碼不對','auth/wrong-password':'暱稱或密碼不對','auth/user-not-found':'暱稱或密碼不對','auth/invalid-login-credentials':'暱稱或密碼不對',
+  'auth/invalid-credential':BADPW,'auth/wrong-password':BADPW,'auth/user-not-found':BADPW,'auth/invalid-login-credentials':BADPW,
   'auth/weak-password':'密碼至少要 6 個字','auth/too-many-requests':'嘗試太多次了，請等幾分鐘再試',
   'auth/network-request-failed':'連不上網路，請檢查網路後再試'
 };
@@ -1523,6 +1526,7 @@ function renderAcctSheet(mode){
       <label for="fNick">暱稱</label><input id="fNick" name="username" autocomplete="username" maxlength="10" placeholder="最多 10 個字">
       <label for="fPw">密碼</label><input id="fPw" name="password" type="password" autocomplete="${reg?'new-password':'current-password'}" minlength="6" placeholder="至少 6 個字">
       ${reg?'<label for="fPw2">再輸入一次密碼</label><input id="fPw2" type="password" autocomplete="new-password" minlength="6">':''}
+      <div class="hint casenote">⚠️ <b>密碼的英文大小寫有差別</b>（Abc 和 abc 是不同密碼）。暱稱不分大小寫。</div>
       <div class="codeerr" id="fErr"></div>
       <button class="b3d" type="submit" id="fGo">${reg?'註冊並登入':'登入'}</button>
       <div class="hint">${reg?'註冊後，排行榜會顯示你的暱稱。不用填 Email，所以<b>忘記密碼就沒辦法找回</b>，請記好。':'還沒有帳號？點上面的「註冊」。'}</div>
