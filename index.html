@@ -268,7 +268,7 @@
   .acct-av{width:30px;height:30px;border-radius:50%;background:#43397a;display:grid;place-items:center;flex:none;overflow:hidden}
   .acct-av svg{width:28px;height:28px}
   .acct.in{border-color:rgba(134,223,198,.5)}
-  .homebar{gap:18px}
+  .homebar{gap:12px}
   .form{display:grid;gap:12px}
   .form label{font-size:14px;color:var(--ink-dim)}
   .form input{width:100%;font:inherit;font-size:18px;color:var(--ink);background:rgba(0,0,0,.25);border:1px solid var(--glass-line);border-radius:16px;
@@ -294,6 +294,24 @@
   .frow .go{padding:8px 12px;border-radius:12px;background:var(--mint);color:var(--btn-ink);font-size:14px;box-shadow:0 3px 0 var(--mint-d);white-space:nowrap}
   .frow .go:active{transform:translateY(2px);box-shadow:0 1px 0 var(--mint-d)}
   .frow .rm{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;color:var(--ink-dim)} .frow .rm .ic{width:16px;height:16px}
+  .frow .inf{cursor:pointer}
+  .frow .act{padding:8px 11px;border-radius:12px;font-size:14px;white-space:nowrap;background:var(--glass);border:1px solid var(--glass-line)}
+  .frow .act.yes{background:var(--butter);color:var(--btn-ink);border-color:transparent;box-shadow:0 3px 0 var(--butter-d)}
+  .fsec{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-dim);margin:14px 2px 2px}
+  .fsec b{font-family:var(--num);background:var(--glass);border-radius:99px;padding:1px 8px;color:var(--ink)}
+  .fsec.new b{background:var(--rose);color:#fff}
+  .fnote{font-size:13px;line-height:1.6;color:var(--butter);background:rgba(255,215,110,.1);border-radius:14px;padding:10px 12px;margin-top:12px}
+  .hb{position:relative}
+  .hbdot{position:absolute;top:-4px;right:2px;min-width:18px;height:18px;border-radius:99px;background:var(--rose);color:#fff;font-family:var(--num);font-size:12px;font-weight:600;display:grid;place-items:center;padding:0 4px}
+  #friendSheet .sheet,#profSheet .sheet{display:flex;flex-direction:column} #friendBody,#profBody{overflow-y:auto;min-height:0}
+  .rk[data-uid]{cursor:pointer} .rk .acct-av{width:32px;height:32px} .rk .acct-av svg{width:30px;height:30px}
+  .prof{display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:6px}
+  .prof .big{width:150px;height:140px;display:grid;place-items:center;border-radius:24px;background:radial-gradient(circle at 50% 60%,#4b3e86,#2a2350 70%)}
+  .prof .big svg{height:126px;width:auto}
+  .prof .nm{font-size:24px;margin-top:6px} .prof .tag{font-size:13px;color:var(--ink-dim)}
+  .pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0 4px}
+  .pgrid div{background:rgba(0,0,0,.2);border:1px solid var(--glass-line);border-radius:14px;padding:10px 4px;text-align:center}
+  .pgrid b{display:block;font-family:var(--num);font-size:20px;color:var(--butter)} .pgrid span{font-size:12px;color:var(--ink-dim)}
   #room.visiting .rbtns,#room.visiting .rtabs,#room.visiting #roomStars{display:none}
   .visitbar{font-size:13px;color:var(--butter);text-align:center;padding:2px 0}
   .me-card .nm{font-size:22px} .me-card .sc{font-size:13px;color:var(--ink-dim);margin-top:2px}
@@ -360,7 +378,7 @@
   .scene>svg.bg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   .pi{position:absolute;transform:translate(-50%,-100%);line-height:1;cursor:grab;touch-action:none}
   .pi>.in{transform-origin:50% 100%;position:relative}
-  .emo-f,.pi.emo>.in,.tray>button .e,.sitem .pv{font-family:"Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif}
+  .emo-f,.pi.emo>.in,.tray>button .e,.sitem .pv{font-family:"Apple Color Emoji","Noto Color Emoji","Segoe UI Emoji",sans-serif}
   .pi.emo>.in{font-size:17cqw;filter:drop-shadow(0 .6cqw 0 rgba(0,0,0,.18))}
   .pi>.in{transform:translateY(calc(var(--lift,0)*-1cqw)) scale(var(--s,1)) scaleX(var(--fl,1));transition:transform .28s cubic-bezier(.3,1.4,.5,1)}
   .pi.dog>.in svg{height:auto;display:block;filter:drop-shadow(0 .8cqw 0 rgba(0,0,0,.2))}
@@ -523,6 +541,7 @@
   </button>
   <div class="homebar">
     <button class="hb" id="hbRank"><span class="ibtn" data-ic="podium"></span>排行榜</button>
+    <button class="hb" id="hbFriends"><span class="ibtn" data-ic="users"></span>好友<b class="hbdot" id="friendDot" hidden></b></button>
     <button class="hb" id="hbStats"><span class="ibtn" data-ic="trophy"></span>紀錄</button>
     <button class="hb" id="hbRules"><span class="ibtn" data-ic="help"></span>怎麼玩</button>
     <button class="hb" id="hbSettings"><span class="ibtn" data-ic="sliders"></span>設定</button>
@@ -692,6 +711,20 @@
   </div>
 </div>
 
+<div class="backdrop" id="friendSheet" hidden>
+  <div class="sheet" role="dialog" aria-labelledby="friendTitle">
+    <div class="shead"><h2 id="friendTitle">好友</h2><button class="ibtn" id="friendClose" aria-label="關閉" data-ic="close"></button></div>
+    <div id="friendBody"></div>
+  </div>
+</div>
+
+<div class="backdrop" id="profSheet" hidden>
+  <div class="sheet" role="dialog" aria-labelledby="profTitle">
+    <div class="shead"><h2 id="profTitle">玩家資料</h2><button class="ibtn" id="profClose" aria-label="關閉" data-ic="close"></button></div>
+    <div id="profBody"></div>
+  </div>
+</div>
+
 <div class="backdrop" id="rankSheet" hidden>
   <div class="sheet" role="dialog" aria-labelledby="rankTitle">
     <div class="shead"><h2 id="rankTitle">排行榜</h2><button class="ibtn" id="rankClose" aria-label="關閉" data-ic="close"></button></div>
@@ -755,6 +788,7 @@
 <script>
 /* ===================== 圖示與狗 ===================== */
 const ICON={
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.8"/><path d="M17 14.2a5.3 5.3 0 0 1 4.8 5.3"/>',
   bag:'<path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/>',
   brush:'<path d="M14.5 4.5l5 5-8 8-5-5z"/><path d="M6.5 12.5c-2 .5-3 2-3 4 0 1.5-.5 2.5-1.5 3 3 .5 6 0 7.5-2.5"/>',
   star:'<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/>',
@@ -1627,7 +1661,7 @@ function roomLoop(ts){
   roomRAF=requestAnimationFrame(roomLoop);
 }
 function openRoom(){ selIdx=-1; showScreen('room'); renderRoom(); Sound.play('open'); if(!roomRAF){ roomLast=performance.now(); roomRAF=requestAnimationFrame(roomLoop); } }
-$('roomBack').onclick=()=>{ const was=visit; visit=null; showScreen('home'); refreshHome(); Sound.play('shut'); if(was) openAcct(); };
+$('roomBack').onclick=()=>{ const was=visit; visit=null; showScreen('home'); refreshHome(); Sound.play('shut'); if(was) openFriends(); };
 $('roomShop').onclick=()=>openShop();
 $('roomDress').onclick=()=>openDress();
 $('roomHelp').onclick=()=>openSheet('roomHelpSheet');
@@ -2167,14 +2201,14 @@ Online.init=function(){
       Online.A=authM; Online.F=fsM; Online.auth=authM.getAuth(app); Online.db=fsM.getFirestore(app);
       Online.ready=true;
       authM.onAuthStateChanged(Online.auth,async u=>{
-        Online.user=u; Online.me=null;
+        Online.user=u; Online.me=null; Friends.out=new Map(); Friends.inc=new Map(); Friends.ok=false; Friends.err=''; updateFriendBadge();
         if(u){
           try{ const s=await fsM.getDoc(fsM.doc(Online.db,'players',u.uid));
             Online.me=s.exists()?s.data():{name:u.displayName||'玩家',total:0,solved:0,best:{}}; }
           catch(e){ Online.me={name:u.displayName||'玩家',total:0,solved:0,best:{}}; }
           Online.me.best=Online.me.best||{};
           await syncProg();
-          ensureFriendCode();
+          ensureFriendCode(); loadLinks();
         }
         renderAcct();
       });
@@ -2187,7 +2221,7 @@ async function doRegister(nick,pw){
   const {A,F}=Online; nick=nick.trim();
   const cred=await A.createUserWithEmailAndPassword(Online.auth,nickEmail(nick),pw);
   await A.updateProfile(cred.user,{displayName:nick});
-  const me={name:nick,total:0,solved:0,best:{},prog:progOf(save),fcode:friendCode(cred.user.uid),friends:[]};
+  const me={name:nick,total:0,solved:0,best:{},prog:progOf(save),fcode:friendCode(cred.user.uid)};
   await F.setDoc(F.doc(Online.db,'players',cred.user.uid),{...me,updated:F.serverTimestamp()},{merge:true});
   Online.me=me; renderAcct();
 }
@@ -2257,7 +2291,11 @@ function cleanShop(sh){
   SCENES.forEach(x=>owned['s:'+x.id]=1);
   return {owned,dogs,room,scene,t:0};
 }
-const Friends={cache:new Map(),msg:''};
+// 關係存在 links 集合：links/{我_對方} 這筆存在 = 我邀請了對方（或我同意了對方）。兩個方向都有 = 好友。
+const Friends={cache:new Map(),out:new Map(),inc:new Map(),ok:false,err:'',msg:''};
+const linkRef=(a,b)=>Online.F.doc(Online.db,'links',a+'_'+b);
+const relOf=id=>{ const o=Friends.out.has(id), i=Friends.inc.has(id); return o&&i?'friend':o?'sent':i?'incoming':'none'; };
+const friendIds=k=>[...new Set([...Friends.out.keys(),...Friends.inc.keys()])].filter(id=>relOf(id)===k);
 async function ensureFriendCode(){
   const me=Online.me, u=Online.user; if(!me||!u) return;
   const code=friendCode(u.uid);
@@ -2265,41 +2303,168 @@ async function ensureFriendCode(){
   me.fcode=code;
   try{ await Online.F.setDoc(Online.F.doc(Online.db,'players',u.uid),{name:me.name,total:me.total||0,fcode:code},{merge:true}); }catch(e){}
 }
-async function saveFriends(){ const me=Online.me; await Online.F.setDoc(Online.F.doc(Online.db,'players',Online.user.uid),{name:me.name,total:me.total||0,friends:me.friends},{merge:true}); }
-async function addFriend(raw){
-  const {F}=Online, me=Online.me, code=String(raw||'').toUpperCase().replace(/[^0-9A-Z]/g,'');
+async function fetchPlayer(id,force){
+  if(!force&&Friends.cache.has(id)) return Friends.cache.get(id);
+  try{ const d=await Online.F.getDoc(Online.F.doc(Online.db,'players',id)); if(d.exists()) Friends.cache.set(id,d.data()); }catch(e){}
+  return Friends.cache.get(id);
+}
+function updateFriendBadge(){
+  const n=Online.me&&!Online.me.noAdd&&Friends.ok?friendIds('incoming').length:0, el=$('friendDot');
+  if(el){ el.hidden=!n; el.textContent=n; }
+}
+async function loadLinks(){
+  if(!Online.user||!Online.me) return;
+  const {F}=Online, me=Online.user.uid, col=F.collection(Online.db,'links');
+  try{
+    const [o,i]=await Promise.all([F.getDocs(F.query(col,F.where('from','==',me))),F.getDocs(F.query(col,F.where('to','==',me)))]);
+    const out=new Map(), inc=new Map();
+    o.forEach(d=>{ const x=d.data(); if(typeof x.to==='string') out.set(x.to,x); });
+    i.forEach(d=>{ const x=d.data(); if(typeof x.from==='string') inc.set(x.from,x); });
+    Friends.out=out; Friends.inc=inc; Friends.ok=true; Friends.err='';
+    // 舊版的單向好友名單：改成送出邀請
+    const old=Array.isArray(Online.me.friends)?Online.me.friends:[];
+    if(old.length){
+      for(const id of old.slice(0,MAX_FRIENDS)) if(typeof id==='string'&&id!==me&&!out.has(id)){ const data={from:me,to:id,fromName:Online.me.name,at:F.serverTimestamp()}; try{ await F.setDoc(linkRef(me,id),data); out.set(id,data); }catch(e){} }
+      Online.me.friends=[]; try{ await F.setDoc(F.doc(Online.db,'players',me),{name:Online.me.name,total:Online.me.total||0,friends:[]},{merge:true}); }catch(e){}
+    }
+    await Promise.all([...new Set([...out.keys(),...inc.keys()])].map(id=>fetchPlayer(id)));
+  }catch(e){ Friends.ok=false; Friends.err=e&&e.code==='permission-denied'?'rules':'net'; }
+  updateFriendBadge();
+}
+// 邀請對方；如果對方已經先邀請我，這一步就等於「接受」
+async function inviteFriend(uid){
+  const me=Online.user.uid, F=Online.F;
+  if(uid===me) throw new Error('這是你自己喔');
+  const rel=relOf(uid);
+  if(rel==='friend') throw new Error('你們已經是好友了');
+  if(rel==='sent') throw new Error('已經送出邀請了，等對方回應');
+  if(rel==='none'){
+    const p=await fetchPlayer(uid,true);
+    if(!p) throw new Error('找不到這位玩家');
+    if(p.noAdd) throw new Error('這位玩家關閉了加好友功能');
+  }
+  if(Friends.out.size>=MAX_FRIENDS) throw new Error(`好友加上邀請最多 ${MAX_FRIENDS} 位`);
+  const data={from:me,to:uid,fromName:Online.me.name,at:F.serverTimestamp()};
+  await F.setDoc(linkRef(me,uid),data); Friends.out.set(uid,data); updateFriendBadge();
+  return rel==='incoming'?'friend':'sent';
+}
+// 刪除好友／拒絕邀請／取消邀請：兩個方向的紀錄都刪掉
+async function dropFriend(uid){
+  const me=Online.user.uid, F=Online.F, jobs=[];
+  if(Friends.out.has(uid)) jobs.push(F.deleteDoc(linkRef(me,uid)));
+  if(Friends.inc.has(uid)) jobs.push(F.deleteDoc(linkRef(uid,me)));
+  await Promise.all(jobs); Friends.out.delete(uid); Friends.inc.delete(uid); updateFriendBadge();
+}
+async function findByCode(raw){
+  const {F}=Online, code=String(raw||'').toUpperCase().replace(/[^0-9A-Z]/g,'');
   if(code.length!==6) throw new Error('好友代碼是 6 個字（英文和數字）');
   if(code===friendCode(Online.user.uid)) throw new Error('這是你自己的代碼喔');
-  me.friends=Array.isArray(me.friends)?me.friends:[];
-  if(me.friends.length>=MAX_FRIENDS) throw new Error(`好友最多 ${MAX_FRIENDS} 位`);
   const snap=await F.getDocs(F.query(F.collection(Online.db,'players'),F.where('fcode','==',code),F.limit(3)));
   let hit=null; snap.forEach(d=>{ if(!hit&&d.id!==Online.user.uid) hit=d; });
   if(!hit) throw new Error('找不到這個代碼。請對方先登入並打開一次遊戲，再確認代碼有沒有打錯');
-  if(me.friends.includes(hit.id)) throw new Error('你們已經是好友了');
-  me.friends.push(hit.id); Friends.cache.set(hit.id,hit.data());
-  await saveFriends();
-  return hit.data().name||'好友';
+  Friends.cache.set(hit.id,hit.data());
+  return hit.id;
 }
-async function removeFriend(uid){ const me=Online.me; me.friends=(me.friends||[]).filter(x=>x!==uid); await saveFriends(); }
-async function loadFriends(){
-  const me=Online.me, ids=Array.isArray(me.friends)?me.friends:[];
-  await Promise.all(ids.map(async id=>{ try{ const d=await Online.F.getDoc(Online.F.doc(Online.db,'players',id)); if(d.exists()) Friends.cache.set(id,d.data()); }catch(e){} }));
+async function setAllowAdd(on){
+  const me=Online.me; me.noAdd=!on;
+  await Online.F.setDoc(Online.F.doc(Online.db,'players',Online.user.uid),{name:me.name,total:me.total||0,noAdd:!on},{merge:true});
+  updateFriendBadge();
 }
-function friendRows(){
-  const ids=Array.isArray(Online.me.friends)?Online.me.friends:[];
-  if(!ids.length) return '<div class="rank-empty" style="padding:14px 0">還沒有好友。把你的代碼傳給朋友，或輸入朋友的代碼。</div>';
-  return '<div class="flist">'+ids.map(id=>{ const d=Friends.cache.get(id), pr=d&&d.prog||{}, sh=cleanShop(pr.shop);
-    return `<div class="frow"><span class="acct-av">${d?dogSVG(sh.dogs[0]||{b:'mix',f:0},{cls:''}):ic('user')}</span>
-      <div class="inf"><div class="nm">${d?esc(d.name||'玩家'):'讀取中…'}</div><div class="sc">${d?`第 ${Math.max(1,pr.level|0||1)} 關 · 總分 ${d.total|0}`:''}</div></div>
-      <button class="go" data-go="${esc(id)}">去小窩</button><button class="rm" data-rm="${esc(id)}" aria-label="刪除好友">${ic('close')}</button></div>`; }).join('')+'</div>';
+const errText=x=>x&&x.message&&!x.code?x.message:(x&&x.code==='permission-denied'?'好友功能還沒開通（資料庫規則需要更新）':'沒有成功，請檢查網路後再試');
+const playerAv=d=>{ const sh=cleanShop(d&&d.prog&&d.prog.shop); return dogSVG(sh.dogs[0]||{b:'mix',f:0},{cls:''}); };
+function friendRow(id,kind){
+  const d=Friends.cache.get(id), pr=d&&d.prog||{}, nm=d?esc(d.name||'玩家'):esc((Friends.inc.get(id)||{}).fromName||'玩家');
+  const btn=kind==='incoming'?`<button class="act yes" data-ok="${esc(id)}">接受</button><button class="act" data-no="${esc(id)}">拒絕</button>`
+    :kind==='friend'?`<button class="go" data-go="${esc(id)}">去小窩</button><button class="rm" data-rm="${esc(id)}" aria-label="刪除好友">${ic('trash')}</button>`
+    :`<button class="act" data-cancel="${esc(id)}">取消邀請</button>`;
+  return `<div class="frow"><span class="acct-av">${d?playerAv(d):ic('user')}</span>
+    <div class="inf" data-prof="${esc(id)}"><div class="nm">${nm}</div><div class="sc">${d?`第 ${Math.max(1,pr.level|0||1)} 關 · 總分 ${d.total|0}`:''}</div></div>${btn}</div>`;
 }
+function renderFriends(){
+  const body=$('friendBody');
+  if(Online.failed){ body.innerHTML=`<div class="rank-empty">好友功能只在 GitHub 版網頁可以用。<br>請用手機打開：<br><b style="color:var(--butter)">${GH_URL}</b></div>`; return; }
+  if(!Online.ready){ body.innerHTML='<div class="rank-empty">連線中…</div>'; return; }
+  if(!(Online.user&&Online.me)){ body.innerHTML='<div class="rank-empty">登入後就能加好友、去好友的小窩逛逛。</div><div class="sbtns"><button class="b3d" id="frLogin">登入／註冊</button></div>'; $('frLogin').onclick=openAcct; return; }
+  const me=Online.me, fc=friendCode(Online.user.uid);
+  let h=`<div class="fcode" style="margin-top:0"><div><div class="lb">我的好友代碼</div><div class="cd">${fc}</div></div><button id="fcCopy">${ic('copy')}複製</button></div>
+    <div class="fadd"><input id="fcIn" maxlength="8" placeholder="輸入好友的代碼" autocomplete="off" autocapitalize="characters" aria-label="好友代碼"><button class="b3d mint" id="fcAdd">送出邀請</button></div>
+    <div class="codeerr" id="fcErr">${esc(Friends.msg)}</div>
+    <div class="srow" style="--c:var(--mint)"><span class="sic">${ic('users')}</span><label for="swAllow">允許別人加我好友<small>關掉後，別人就不能邀請你，也看不到新的邀請</small></label><input type="checkbox" class="sw" id="swAllow" ${me.noAdd?'':'checked'}></div>`;
+  Friends.msg='';
+  if(Friends.err==='rules') h+='<div class="fnote">好友功能還沒開通：資料庫的規則需要更新一次。更新後重新整理網頁就能用了。</div>';
+  else if(Friends.err==='net') h+='<div class="fnote">讀不到好友資料，請檢查網路後再打開一次。</div>';
+  else if(!Friends.ok) h+='<div class="rank-empty">讀取中…</div>';
+  else{
+    const inc=me.noAdd?[]:friendIds('incoming'), fr=friendIds('friend'), sent=friendIds('sent');
+    if(inc.length) h+=`<div class="fsec new">想加你好友<b>${inc.length}</b></div><div class="flist">${inc.map(id=>friendRow(id,'incoming')).join('')}</div>`;
+    h+=`<div class="fsec">好友<b>${fr.length}</b></div>`+(fr.length?`<div class="flist">${fr.map(id=>friendRow(id,'friend')).join('')}</div>`:'<div class="rank-empty" style="padding:12px 0">還沒有好友。把你的代碼傳給朋友，或到排行榜點別人的頭像邀請。</div>');
+    if(sent.length) h+=`<div class="fsec">等待對方回應<b>${sent.length}</b></div><div class="flist">${sent.map(id=>friendRow(id,'sent')).join('')}</div>`;
+  }
+  body.innerHTML=h;
+  const act=async(fn,okMsg)=>{ try{ const r=await fn(); if(okMsg) toast(typeof okMsg==='function'?okMsg(r):okMsg); Sound.play('hint'); }catch(x){ Friends.msg=errText(x); Sound.play('wrong'); } renderFriends(); };
+  const nameOf=id=>{ const d=Friends.cache.get(id); return d&&d.name||(Friends.inc.get(id)||{}).fromName||'這位玩家'; };
+  body.querySelectorAll('[data-prof]').forEach(b=>b.onclick=()=>openProfile(b.dataset.prof,'friendSheet'));
+  body.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>visitFriend(b.dataset.go));
+  body.querySelectorAll('[data-ok]').forEach(b=>b.onclick=()=>act(()=>inviteFriend(b.dataset.ok),`你和「${nameOf(b.dataset.ok)}」成為好友了！`));
+  body.querySelectorAll('[data-no]').forEach(b=>b.onclick=()=>act(()=>dropFriend(b.dataset.no),'已拒絕邀請'));
+  body.querySelectorAll('[data-cancel]').forEach(b=>b.onclick=()=>act(()=>dropFriend(b.dataset.cancel),'已取消邀請'));
+  body.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{ if(confirm(`要把「${nameOf(b.dataset.rm)}」從好友刪除嗎？\n刪除後，你們就不能互相參觀小窩了。`)) act(()=>dropFriend(b.dataset.rm),'已刪除好友'); });
+  $('fcCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(fc); toast('已複製好友代碼 '+fc); }catch(e){ toast('複製失敗，請手動抄下代碼 '+fc); } Sound.play('click'); };
+  const doAdd=()=>act(async()=>{ const id=await findByCode($('fcIn').value); return [await inviteFriend(id),id]; },([r,id])=>r==='friend'?`你和「${nameOf(id)}」成為好友了！`:`已經向「${nameOf(id)}」送出邀請`);
+  $('fcAdd').onclick=doAdd; $('fcIn').addEventListener('keydown',e=>{ if(e.key==='Enter') doAdd(); });
+  $('swAllow').onchange=e=>act(()=>setAllowAdd(e.target.checked),e.target.checked?'已開啟：別人可以邀請你':'已關閉：別人不能邀請你');
+}
+async function openFriends(){
+  Online.init(); openSheet('friendSheet'); renderFriends();
+  await Online.init(); if($('friendSheet').hidden) return;
+  renderFriends();
+  if(Online.user&&Online.me){ await loadLinks(); if(!$('friendSheet').hidden) renderFriends(); }
+}
+/* ----- 玩家資料卡（從排行榜或好友頁面點頭像打開） ----- */
+let profBack='';
+async function openProfile(uid,back){
+  profBack=back||''; openSheet('profSheet');
+  const body=$('profBody'); body.innerHTML='<div class="rank-empty">載入中…</div>';
+  await Online.init();
+  if(!Online.ready){ body.innerHTML='<div class="rank-empty">連不上網路，請稍後再試。</div>'; return; }
+  const d=await fetchPlayer(uid,true);
+  if(Online.user&&Online.me&&!Friends.ok&&!Friends.err) await loadLinks();
+  if($('profSheet').hidden) return;
+  if(!d){ body.innerHTML='<div class="rank-empty">找不到這位玩家的資料。</div>'; return; }
+  const draw=()=>{
+    const pr=d.prog&&typeof d.prog==='object'?d.prog:{}, sh=cleanShop(pr.shop), lv=Math.max(1,pr.level|0||1), cleared=lv-1;
+    let stars=0; const st=pr.stars&&typeof pr.stars==='object'?pr.stars:{}; for(const k in st) stars+=(st[k]|0); for(let k=1;k<lv&&k<2000;k++) if(st['L'+k]==null) stars+=2;
+    const mine=Online.user&&Online.user.uid===uid, logged=Online.user&&Online.me, rel=logged&&!mine?relOf(uid):'none';
+    const tag=mine?'這是你自己':rel==='friend'?'你們是好友':rel==='sent'?'已送出邀請，等對方回應':rel==='incoming'?'對方想加你好友':'';
+    let btn='';
+    if(mine) btn='';
+    else if(!logged) btn='<div class="sbtns"><button class="b3d" id="pfLogin">登入後才能加好友</button></div>';
+    else if(Friends.err==='rules') btn='<div class="fnote">好友功能還沒開通：資料庫的規則需要更新一次。</div>';
+    else if(rel==='friend') btn=`<div class="sbtns two"><button class="b3d mint" id="pfGo">${ic('home')}去小窩</button><button class="b3d ghost" id="pfDrop">${ic('trash')}刪除好友</button></div>`;
+    else if(rel==='incoming') btn='<div class="sbtns two"><button class="b3d butter" id="pfAdd">接受邀請</button><button class="b3d ghost" id="pfDrop">拒絕</button></div>';
+    else if(rel==='sent') btn='<div class="sbtns"><button class="b3d ghost" id="pfDrop">取消邀請</button></div>';
+    else btn=d.noAdd?'<div class="fnote" style="text-align:center">這位玩家關閉了加好友功能</div>':`<div class="sbtns"><button class="b3d butter" id="pfAdd">${ic('users')}邀請成為好友</button></div>`;
+    body.innerHTML=`<div class="prof"><div class="big">${dogSVG(sh.dogs[0]||{b:'mix',f:0},{full:true})}</div><div class="nm">${esc(d.name||'玩家')}</div><div class="tag">${tag}</div></div>
+      <div class="pgrid"><div><b>${lv}</b><span>目前關卡</span></div><div><b>${Math.min(5,Math.floor(Math.min(cleared,MAX_LEVEL)/CHAPTER))} / 5</b><span>獎杯</span></div><div><b>${stars}</b><span>拿過的星星</span></div>
+        <div><b>${d.total|0}</b><span>排行榜總分</span></div><div><b>${pr.wins|0}</b><span>完成題數</span></div><div><b>${Math.min(MAX_DOGS,1+Math.floor(cleared/10))}</b><span>小窩的狗</span></div></div>
+      <div class="codeerr" id="pfErr"></div>${btn}`;
+    const run=async(fn,msg)=>{ try{ const r=await fn(); toast(typeof msg==='function'?msg(r):msg); Sound.play('hint'); draw(); }catch(x){ $('pfErr').textContent=errText(x); Sound.play('wrong'); } };
+    const nm=d.name||'這位玩家';
+    if($('pfLogin')) $('pfLogin').onclick=openAcct;
+    if($('pfAdd')) $('pfAdd').onclick=()=>run(()=>inviteFriend(uid),r=>r==='friend'?`你和「${nm}」成為好友了！`:`已經向「${nm}」送出邀請`);
+    if($('pfGo')) $('pfGo').onclick=()=>visitFriend(uid);
+    if($('pfDrop')) $('pfDrop').onclick=()=>{ if(rel==='friend'&&!confirm(`要把「${nm}」從好友刪除嗎？`)) return; run(()=>dropFriend(uid),rel==='friend'?'已刪除好友':rel==='incoming'?'已拒絕邀請':'已取消邀請'); };
+  };
+  draw();
+}
+function closeProfile(){ closeSheet('profSheet'); const b=profBack; profBack=''; if(b==='friendSheet'){ openSheet(b); renderFriends(); } else if(b) openSheet(b); else Sound.play('shut'); }
 async function visitFriend(uid){
   let d=Friends.cache.get(uid);
   try{ const sn=await Online.F.getDoc(Online.F.doc(Online.db,'players',uid)); if(sn.exists()){ d=sn.data(); Friends.cache.set(uid,d); } }catch(e){}
   if(!d){ toast('讀不到好友的資料，請檢查網路'); return; }
   const pr=d.prog||{};
   visit={name:String(d.name||'好友').slice(0,10),level:Math.max(1,pr.level|0||1),shop:cleanShop(pr.shop)};
-  closeSheet('acctSheet'); roomTab='scene'; openRoom();
+  closeSheet('acctSheet'); closeSheet('friendSheet'); closeSheet('profSheet'); roomTab='scene'; openRoom();
 }
 
 /* ----- 帳號按鈕與面板 ----- */
@@ -2325,24 +2490,12 @@ function renderAcctSheet(mode){
     body.innerHTML=`<div class="me-card"><span class="acct-av">${dogSVG((save.shop&&save.shop.dogs&&save.shop.dogs[0])||{b:'mix',f:0},{cls:''})}</span>
       <div><div class="nm">${esc(me.name)}</div><div class="sc">總分 <b>${me.total||0}</b> · 上榜題數 ${me.solved||0}</div></div></div>
       <div class="fcode"><div><div class="lb">我的好友代碼</div><div class="cd">${fc}</div></div><button id="fcCopy">${ic('copy')}複製</button></div>
-      <div class="fadd"><input id="fcIn" maxlength="8" placeholder="輸入好友的代碼" autocomplete="off" autocapitalize="characters" aria-label="好友代碼"><button class="b3d mint" id="fcAdd">加好友</button></div>
-      <div class="codeerr" id="fcErr">${esc(Friends.msg)}</div>
-      <div class="dgroup" style="margin-top:6px">好友（${(me.friends||[]).length}）</div>
-      <div id="fcList">${friendRows()}</div>
+      <div class="sbtns"><button class="b3d mint" id="acctFriends">${ic('users')}好友</button></div>
       <div class="sbtns"><button class="b3d butter" id="acctRank">${ic('podium')}看排行榜</button></div>
       <div class="sbtns"><button class="b3d ghost" id="acctOut">登出</button></div>`;
     $('acctRank').onclick=()=>openRank('total');
-    Friends.msg='';
-    const wire=()=>{ $('fcList').querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>visitFriend(b.dataset.go));
-      $('fcList').querySelectorAll('[data-rm]').forEach(b=>b.onclick=async()=>{ const d=Friends.cache.get(b.dataset.rm); if(!confirm(`要把「${d&&d.name||'這位好友'}」從好友移除嗎？`)) return; try{ await removeFriend(b.dataset.rm); }catch(e){} renderAcctSheet(); }); };
-    wire();
+    $('acctFriends').onclick=()=>{ closeSheet('acctSheet'); openFriends(); };
     $('fcCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(fc); toast('已複製好友代碼 '+fc); }catch(e){ toast('複製失敗，請手動抄下代碼 '+fc); } Sound.play('click'); };
-    const doAdd=async()=>{ const err=$('fcErr'), btn=$('fcAdd'); err.textContent=''; btn.disabled=true;
-      try{ const nm=await addFriend($('fcIn').value); Sound.play('hint'); toast(`已經加「${nm}」為好友`); renderAcctSheet(); }
-      catch(x){ err.textContent=x&&x.message&&!x.code?x.message:'加好友失敗，請檢查網路後再試'; Sound.play('wrong'); btn.disabled=false; } };
-    $('fcAdd').onclick=doAdd; $('fcIn').addEventListener('keydown',e=>{ if(e.key==='Enter') doAdd(); });
-    if(!Friends.loaded||Friends.loaded!==Online.user.uid+(me.friends||[]).join()){ Friends.loaded=Online.user.uid+(me.friends||[]).join();
-      loadFriends().then(()=>{ const l=$('fcList'); if(l&&Online.me){ l.innerHTML=friendRows(); wire(); } }); }
     $('acctOut').onclick=async()=>{ await doLogout(); Sound.play('click'); };
     return;
   }
@@ -2399,21 +2552,22 @@ async function renderRank(){
     if(rankTab==='total'){
       const q=F.query(F.collection(Online.db,'players'),F.orderBy('total','desc'),F.limit(50));
       const s=await F.getDocs(q);
-      rows=s.docs.map(d=>({id:d.id,name:d.data().name,val:d.data().total||0,sub:`${d.data().solved||0} 題`})).filter(r=>r.val>0).map(r=>({...r,show:r.val+' 分'}));
+      rows=s.docs.map(d=>({id:d.id,name:d.data().name,val:d.data().total||0,sub:`${d.data().solved||0} 題`,av:playerAv(d.data())})).filter(r=>r.val>0).map(r=>({...r,show:r.val+' 分'}));
       head='每一題取你的最高分，全部加起來';
     }else{
       const code=rankTab==='daily'?todayCode():rankCode;
       const s=await F.getDocs(F.query(F.collection(Online.db,'runs'),F.where('code','==',code)));
       rows=s.docs.map(d=>d.data()).sort((a,b)=>a.bestMs-b.bestMs).slice(0,50)
-        .map(x=>({id:x.uid,name:x.name,show:fmt(x.bestMs),sub:`${x.bestScore} 分`}));
+        .map(x=>({id:x.uid,name:x.name,show:fmt(x.bestMs),sub:`${x.bestScore} 分`,av:dogSVG({b:'mix',f:hashStr(String(x.uid))%3},{cls:''})}));
       head=rankTab==='daily'?`今天的題目（題號 ${fmtCode(code)}），比誰最快`:`題號 ${fmtCode(code)}，比誰最快`;
     }
     if(tok!==rankToken) return;
     const login=myId?'':'<div class="hint" style="text-align:center;margin-top:12px;color:var(--ink-dim);font-size:13px">登入後，你的成績也會上榜。<button id="rankLogin" style="color:var(--butter);text-decoration:underline">登入／註冊</button></div>';
     body.innerHTML=`<div class="lvsec" style="margin-top:0">${head}</div>`+
-      (rows.length?rows.map((r,i)=>`<div class="rk${r.id===myId?' me':''}"><span class="no">${i+1}</span><span class="who">${esc(r.name)}</span><span class="val">${r.show}</span><span class="sub2">${r.sub}</span></div>`).join('')
+      (rows.length?rows.map((r,i)=>`<div class="rk${r.id===myId?' me':''}" data-uid="${esc(r.id)}" role="button" tabindex="0"><span class="no">${i+1}</span><span class="acct-av">${r.av}</span><span class="who">${esc(r.name)}</span><span class="val">${r.show}</span><span class="sub2">${r.sub}</span></div>`).join('')
         :'<div class="rank-empty">還沒有人上榜，快來搶第一！</div>')+login;
     const rl=$('rankLogin'); if(rl) rl.onclick=openAcct;
+    body.querySelectorAll('.rk[data-uid]').forEach(el=>el.onclick=()=>openProfile(el.dataset.uid,'rankSheet'));
   }catch(e){
     if(tok!==rankToken) return;
     body.innerHTML=`<div class="rank-empty">讀不到排行榜（${esc(e.code||'錯誤')}）。<br>如果是第一次使用，可能是資料庫規則還沒設定。</div>`;
@@ -2424,6 +2578,9 @@ const todayCode=()=>codeOf(8,2,hashStr('daily-'+todayStr())%10000);
 $('acctBtn').onclick=openAcct;
 $('acctClose').onclick=()=>{closeSheet('acctSheet');Sound.play('shut');};
 $('hbRank').onclick=()=>openRank('total');
+$('hbFriends').onclick=openFriends;
+$('friendClose').onclick=()=>{closeSheet('friendSheet');Sound.play('shut');};
+$('profClose').onclick=closeProfile;
 function closeRank(){ closeSheet('rankSheet'); const back=$('rankSheet').dataset.back; $('rankSheet').dataset.back=''; if(back) openSheet(back); else Sound.play('shut'); }
 $('rankClose').onclick=closeRank;
 $('acctSheet').addEventListener('click',e=>{ if(e.target===$('acctSheet')){ closeSheet('acctSheet'); Sound.play('shut'); } });
