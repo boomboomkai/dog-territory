@@ -194,6 +194,8 @@
     font-family:var(--num);font-size:19px;font-weight:600;background:linear-gradient(180deg,#43397a,#352c66);border:1px solid var(--glass-line);
     box-shadow:0 4px 0 #1a1533;transition:transform .08s,box-shadow .08s}
   .lv:active{transform:translateY(3px);box-shadow:0 1px 0 #1a1533}
+  .lvst{display:flex;gap:1px;margin-top:1px}
+  .lvst svg{width:12px;height:12px}
   .lv small{font-size:10px;font-weight:500;opacity:.75;font-variant-numeric:tabular-nums}
   .lv.done{background:var(--mint);color:var(--btn-ink);box-shadow:0 4px 0 var(--mint-d),inset 0 2px 0 rgba(255,255,255,.45);border-color:transparent}
   .lv.done:active{box-shadow:0 1px 0 var(--mint-d)}
@@ -1771,6 +1773,7 @@ function refreshHome(){
   $('logo').innerHTML=dogSVG(dogCfg(0),{cls:''});
   $('levelsSub').textContent=lvl>MAX_LEVEL?`🏆 5 / 5 全破！之後是隨機 10×10`:`🏆 ${trophyCount()} / 5 · 已過 ${cleared} / ${MAX_LEVEL} 關`;
 }
+const LVSTAR=on=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z" fill="${on?'#ffc83a':'none'}" stroke="${on?'#9a6410':'rgba(36,28,63,.45)'}" stroke-width="2.2" stroke-linejoin="round"/></svg>`;
 function renderLevels(){
   const lv=save.levels||{}, tc=trophyCount();
   let h=`<div class="shelf">${[1,2,3,4,5].map(t=>`<span class="tro${t<=tc?' got':''}" title="第 ${t} 章">${TROPHY_SVG}<i>${t}</i></span>`).join('')}</div>`;
@@ -1780,7 +1783,8 @@ function renderLevels(){
     h+=`<div class="lvsec"><b>第 ${ch+1} 章</b>第 ${a}–${b} 關 · ${sizes.map(s=>s+'×'+s).join('、')}<span class="chprog${got===CHAPTER?' full':''}">${got===CHAPTER?'🏆 完成':`${got} / ${CHAPTER}`}</span></div><div class="lvgrid">`;
     for(let k=a;k<=b;k++){
       const dot=`<em class="d${levelTier(k)}"></em>`;
-      if(k<save.level) h+=`<button class="lv done" data-k="${k}">${dot}${k}<small>${lv[k]!=null?fmt(lv[k]):'✓'}</small></button>`;
+      if(k<save.level){ const ns=save.stars&&save.stars['L'+k]!=null?save.stars['L'+k]:2;
+        h+=`<button class="lv done" data-k="${k}" aria-label="第 ${k} 關，${ns} 顆星">${dot}${k}<span class="lvst">${[1,2,3].map(j=>LVSTAR(j<=ns)).join('')}</span><small>${lv[k]!=null?fmt(lv[k]):'✓'}</small></button>`; }
       else if(k===save.level) h+=`<button class="lv cur" data-k="${k}" id="lvCur">${dot}${k}<small>開始</small></button>`;
       else h+=`<button class="lv locked" disabled aria-label="第 ${k} 關（未解鎖）">${ic('lock')}</button>`;
     }
