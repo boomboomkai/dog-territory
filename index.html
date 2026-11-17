@@ -375,11 +375,12 @@
   .stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative}
   .scene{position:relative;height:100%;max-width:100%;aspect-ratio:3/4;border-radius:22px;overflow:hidden;container-type:size;touch-action:none;
     box-shadow:0 0 0 4px var(--frame),0 0 0 6px rgba(255,255,255,.08),0 22px 44px rgba(0,0,0,.5)}
-  .scene>svg.bg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .scene>svg.bg,.scene>img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
   .pi{position:absolute;transform:translate(-50%,-100%);line-height:1;cursor:grab;touch-action:none}
   .pi>.in{transform-origin:50% 100%;position:relative}
   .emo-f,.pi.emo>.in,.tray>button .e,.sitem .pv{font-family:"Apple Color Emoji","Noto Color Emoji","Segoe UI Emoji",sans-serif}
-  .pi.emo>.in{font-size:17cqw;filter:drop-shadow(0 .6cqw 0 rgba(0,0,0,.18))}
+  .pi.emo>.in{filter:drop-shadow(0 .6cqw 0 rgba(0,0,0,.18))}
+  .pi.emo>.in img{display:block;width:auto;pointer-events:none;-webkit-user-drag:none}
   .pi>.in{transform:translateY(calc(var(--lift,0)*-1cqw)) scale(var(--s,1)) scaleX(var(--fl,1));transition:transform .28s cubic-bezier(.3,1.4,.5,1)}
   .pi.dog>.in svg{height:auto;display:block;filter:drop-shadow(0 .8cqw 0 rgba(0,0,0,.2))}
   .pi.dog .pose.sit svg{width:24cqw} .pi.dog .pose.stand svg{width:31cqw}
@@ -437,7 +438,8 @@
   .tray>button.locked .ic{width:22px;height:22px}
   .tray>button.more{color:var(--butter)}
   .tray>button .mini{width:46px;height:40px;border-radius:8px;overflow:hidden}
-  .tray>button .mini svg{width:100%;height:100%;display:block}
+  .tray>button .mini svg,.tray>button .mini img{width:100%;height:100%;display:block;object-fit:cover}
+  .tray>button .e img{display:block;height:40px;width:auto;max-width:58px;object-fit:contain}
   /* 商店 */
   #shopSheet .sheet,#dressSheet .sheet{display:flex;flex-direction:column}
   .shopbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
@@ -447,7 +449,8 @@
   .sitem .pv{width:64px;height:64px;display:grid;place-items:center;font-size:40px;line-height:1}
   .sitem .pv svg{width:64px;height:64px}
   .sitem .pv.sc{width:72px;height:60px;border-radius:10px;overflow:hidden}
-  .sitem .pv.sc svg{width:100%;height:100%}
+  .sitem .pv.sc svg,.sitem .pv.sc img{width:100%;height:100%;object-fit:cover}
+  .sitem .pv img.it{max-width:64px;max-height:64px;width:auto;height:auto}
   .sitem .nm{font-size:13px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
   .sitem .buy{margin-top:2px;width:100%;padding:6px 4px;border-radius:12px;font-family:var(--num);font-weight:600;font-size:14px;
     background:var(--butter);color:var(--btn-ink);box-shadow:0 3px 0 var(--butter-d);display:flex;align-items:center;justify-content:center;gap:4px}
@@ -1205,7 +1208,9 @@ const FURS=[['焦糖','#e8b77a','#a86a3a','#fff3e0',0],['奶油白','#f7f0e4','#
 // 品種：耳朵形狀與花紋
 const BREEDS=[{id:'mix',n:'米克斯',p:0,ear:'flop'},{id:'shiba',n:'柴犬',p:25,ear:'point',pat:'shiba'},{id:'corgi',n:'柯基',p:25,ear:'big',pat:'blaze'},
   {id:'beagle',n:'米格魯',p:30,ear:'long',pat:'blaze'},{id:'pug',n:'巴哥',p:30,ear:'fold',pat:'pug'},{id:'husky',n:'哈士奇',p:35,ear:'point',pat:'husky'},
-  {id:'poodle',n:'貴賓',p:35,ear:'fluffy',pat:'poodle'},{id:'dalmatian',n:'大麥町',p:35,ear:'flop',pat:'spots'}];
+  {id:'poodle',n:'貴賓',p:35,ear:'fluffy',pat:'poodle'},{id:'dalmatian',n:'大麥町',p:35,ear:'flop',pat:'spots'},
+  {id:'bichon',n:'比熊',p:40,ear:'cloud',pat:'bichon'},{id:'pom',n:'博美',p:38,ear:'pom'},{id:'frenchie',n:'法鬥',p:35,ear:'bat',pat:'frenchie'},
+  {id:'schnauzer',n:'雪納瑞',p:35,ear:'fold',pat:'schnauzer'},{id:'dachshund',n:'臘腸狗',p:30,ear:'long'},{id:'chihuahua',n:'吉娃娃',p:30,ear:'huge'}];
 const ACC=[
   {id:'bow',slot:'head',n:'蝴蝶結',p:10},{id:'party',slot:'head',n:'派對帽',p:15},{id:'beanie',slot:'head',n:'毛線帽',p:15},
   {id:'flower',slot:'head',n:'花圈',p:20},{id:'chef',slot:'head',n:'廚師帽',p:20},{id:'hardhat',slot:'head',n:'安全帽',p:20},
@@ -1229,6 +1234,10 @@ const DECO=[
 const SCENES=[{id:'living',n:'溫馨客廳',p:0,inside:true},{id:'garden',n:'花園草地',p:0},{id:'bedroom',n:'夢幻臥室',p:40,inside:true},
   {id:'beach',n:'陽光海灘',p:50},{id:'snow',n:'下雪森林',p:50},{id:'camp',n:'星空露營',p:60}];
 const MAX_DOGS=10, ROOM_MAX=40;
+const DH={chair:18,sofa:21,bed:21,lamp:14,tv:17,clock:14,pic:14,mirror:22,piano:23,books:11,basket:13,house:27,tent:27,fire:15,
+  pot:16,tulip:14,sun:16,sakura:30,rose:15,tree:36,pine:34,palm:36,cactus:15,mush:12,rock:12,fount:25,snowman:23,xmas:30,
+  bone:7,ball:10,tennis:8,bowl:9,teddy:14,yarn:10,balloon:22,gift:12,duck:10,kite:22,cake:13};
+const decoImg=(id,cls,h)=>`<img class="${cls||'it'}" src="assets/items/${id}.webp" alt="" draggable="false"${h?` style="height:${h}cqw"`:''}>`;
 
 /* ----- 存檔欄位（舊存檔沒有就補上） ----- */
 let visit=null;   // 參觀好友小窩時：{name, level, shop}（只看不改）
@@ -1267,8 +1276,19 @@ function awardStars(){   // 要在關卡進度 +1 之前呼叫
 
 /* ----- 畫狗：頭（可選全身）＋品種＋毛色＋配件 ----- */
 const SK='#2b2140';
-function earsSVG(type,ear,muz){
+function earsSVG(type,ear,muz,fur){
   const st=`stroke="${SK}" stroke-width="4.5" stroke-linejoin="round"`;
+  const puffs=(pts,c)=>pts.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" ${st}/>`).join('')+pts.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r-2.4}" fill="${c}"/>`).join('');
+  if(type==='cloud'){   // 比熊：整顆頭是一朵棉花雲
+    const pts=[]; for(let k=0;k<12;k++){ const a=k/12*Math.PI*2; pts.push([+(50+Math.cos(a)*35).toFixed(1),+(53+Math.sin(a)*33).toFixed(1),k%2?12:13.5]); }
+    return puffs(pts,fur)+`<ellipse cx="50" cy="53" rx="34" ry="32" fill="${fur}"/>`;
+  }
+  if(type==='pom') return puffs([[17,70,12],[26,85,12.5],[50,91,13],[74,85,12.5],[83,70,12]],fur)
+    +`<path d="M27 40 L30 16 L46 29 Z" fill="${ear}" ${st}/><path d="M73 40 L70 16 L54 29 Z" fill="${ear}" ${st}/><path d="M31 33 L32 22 L40 29 Z" fill="#f7a8b8" opacity=".8"/><path d="M69 33 L68 22 L60 29 Z" fill="#f7a8b8" opacity=".8"/>`;
+  if(type==='bat') return `<path d="M22 44 Q8 4 32 10 Q46 16 45 31 Z" fill="${ear}" ${st}/><path d="M78 44 Q92 4 68 10 Q54 16 55 31 Z" fill="${ear}" ${st}/>
+    <path d="M27 34 Q20 13 33 16 Q40 20 40 29 Z" fill="#f7a8b8" opacity=".8"/><path d="M73 34 Q80 13 67 16 Q60 20 60 29 Z" fill="#f7a8b8" opacity=".8"/>`;
+  if(type==='huge') return `<path d="M24 50 L0 6 L46 25 Z" fill="${ear}" ${st}/><path d="M76 50 L100 6 L54 25 Z" fill="${ear}" ${st}/>
+    <path d="M25 39 L11 16 L38 27 Z" fill="#f7a8b8" opacity=".8"/><path d="M75 39 L89 16 L62 27 Z" fill="#f7a8b8" opacity=".8"/>`;
   if(type==='point') return `<path d="M21 46 L25 12 L47 27 Z" fill="${ear}" ${st}/><path d="M79 46 L75 12 L53 27 Z" fill="${ear}" ${st}/>
     <path d="M27 36 L28.5 20 L39 28 Z" fill="#f7a8b8" opacity=".8"/><path d="M73 36 L71.5 20 L61 28 Z" fill="#f7a8b8" opacity=".8"/>`;
   if(type==='big') return `<path d="M19 48 L15 4 L48 25 Z" fill="${ear}" ${st}/><path d="M81 48 L85 4 L52 25 Z" fill="${ear}" ${st}/>
@@ -1279,7 +1299,7 @@ function earsSVG(type,ear,muz){
     +[[16,50,11],[13,63,11],[18,75,10],[84,50,11],[87,63,11],[82,75,10]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r-2.2}" fill="${ear}"/>`).join('');
   return `<ellipse cx="19" cy="47" rx="12" ry="23" transform="rotate(20 19 47)" fill="${ear}" ${st}/><ellipse cx="81" cy="47" rx="12" ry="23" transform="rotate(-20 81 47)" fill="${ear}" ${st}/>`;
 }
-const EAR_AT={flop:[12,66],long:[9,84],point:[17,42],big:[15,44],fold:[13,46],fluffy:[9,80]};
+const EAR_AT={flop:[12,66],long:[9,84],point:[17,42],big:[15,44],fold:[13,46],fluffy:[9,80],cloud:[9,74],pom:[22,42],bat:[18,42],huge:[17,46]};
 function accSVG(id,ex){
   const st=`stroke="${SK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
   switch(id){
@@ -1309,28 +1329,35 @@ function accSVG(id,ex){
   }
   return '';
 }
+const puffTop=c=>[[38,22,9],[50,18,10],[62,22,9]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`).join('');
 function dogSVG(cfg,o={}){
   cfg=cfg||{}; const F=FURS[cfg.f]||FURS[0], B=BREEDS.find(x=>x.id===cfg.b)||BREEDS[0];
   const fur=F[1], ear=F[2], muz=F[3], dark=cfg.f===3, pat=B.pat;
   const top=o.full?'-10 -14 120 160':'-8 -14 116 122';
   let body='';
-  if(o.full) body=`<path d="M78 112 Q98 104 94 86" fill="none" stroke="${SK}" stroke-width="10" stroke-linecap="round"/><path d="M78 112 Q98 104 94 86" fill="none" stroke="${ear}" stroke-width="5" stroke-linecap="round"/>
-    <ellipse cx="50" cy="114" rx="29" ry="27" fill="${fur}" stroke="${SK}" stroke-width="4.5"/><ellipse cx="50" cy="120" rx="15" ry="17" fill="${muz}"/>
-    ${pat==='spots'?`<circle cx="30" cy="110" r="4" fill="${ear}"/><circle cx="68" cy="122" r="3.5" fill="${ear}"/><circle cx="62" cy="102" r="3" fill="${ear}"/>`:''}
-    <ellipse cx="37" cy="139" rx="9" ry="6" fill="${fur}" stroke="${SK}" stroke-width="4"/><ellipse cx="63" cy="139" rx="9" ry="6" fill="${fur}" stroke="${SK}" stroke-width="4"/>`;
+  if(o.full){ const st=`stroke="${SK}" stroke-width="4.5"`, paw=(x)=>`<rect x="${x}" y="118" width="13" height="20" rx="6.5" fill="${fur}" ${st}/><ellipse cx="${x+6.5}" cy="138" rx="9.5" ry="6" fill="${muz}" ${st}/><path d="M${x+4} 136 v3.6 M${x+9} 136 v3.6" stroke="${SK}" stroke-width="1.7" stroke-linecap="round"/>`;
+    body=`<g transform="translate(-6 0)">${tailSVG(B,fur,ear,muz,80,128,true)}</g>
+    <ellipse cx="27" cy="130" rx="15" ry="11" fill="${fur}" ${st}/><ellipse cx="73" cy="130" rx="15" ry="11" fill="${fur}" ${st}/>
+    <path d="M24 128 C20 98 34 84 50 84 C66 84 80 98 76 128 C70 138 30 138 24 128 Z" fill="${fur}" ${st}/>
+    <path d="M38 96 C44 92 56 92 62 96 C66 110 64 124 50 130 C36 124 34 110 38 96 Z" fill="${muz}"/>
+    ${pat==='spots'?`<circle cx="32" cy="112" r="4" fill="${ear}"/><circle cx="68" cy="118" r="3.5" fill="${ear}"/><circle cx="66" cy="102" r="3" fill="${ear}"/>`:''}
+    ${paw(36)}${paw(51)}`; }
   let face='';
   if(pat==='shiba') face=`<ellipse cx="50" cy="67" rx="25" ry="16" fill="${muz}"/><ellipse cx="36" cy="38" rx="4" ry="2.6" fill="${muz}"/><ellipse cx="64" cy="38" rx="4" ry="2.6" fill="${muz}"/>`;
   else if(pat==='husky') face=`<path d="M19 56 Q26 40 38 40 Q46 40 50 30 Q54 40 62 40 Q74 40 81 56 Q80 84 50 85 Q20 84 19 56 Z" fill="${muz}"/>`;
   else if(pat==='blaze') face=`<path d="M46 22 Q50 20 54 22 L56 54 Q50 58 44 54 Z" fill="${muz}"/>`;
   else if(pat==='spots') face=`<circle cx="30" cy="44" r="4" fill="${ear}"/><circle cx="68" cy="34" r="3.2" fill="${ear}"/><circle cx="72" cy="58" r="3.6" fill="${ear}"/><circle cx="45" cy="30" r="2.6" fill="${ear}"/>`;
+  else if(pat==='bichon') face=puffTop(fur);
+  else if(pat==='frenchie') face=`<path d="M41 32 Q50 28 59 32" fill="none" stroke="${ear}" stroke-width="2.4" stroke-linecap="round"/>`;
+  else if(pat==='schnauzer') face=`<path d="M29 64 Q29 93 50 95 Q71 93 71 64 Q50 57 29 64 Z" fill="${muz}"/><path d="M28 39 L44 43 M72 39 L56 43" stroke="${muz}" stroke-width="5.5" stroke-linecap="round"/>`;
   else if(pat==='poodle') face=[[50,22,13],[37,25,10],[63,25,10]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${ear}" stroke="${SK}" stroke-width="4"/>`).join('')+[[50,22,10.5],[37,25,7.5],[63,25,7.5]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${ear}"/>`).join('');
   const muzzle=pat==='pug'?`<ellipse cx="50" cy="68" rx="19" ry="14" fill="${ear}"/><path d="M40 33 Q50 29 60 33 M43 38 Q50 35 57 38" fill="none" stroke="${ear}" stroke-width="2.4" stroke-linecap="round"/>`
     :pat==='husky'?'':`<ellipse cx="50" cy="69" rx="18" ry="13" fill="${muz}"/>`;
   const eye=pat==='husky'?'#5fb6e8':SK;
   const a=cfg, ex=EAR_AT[B.ear]||EAR_AT.flop;
   const onTopHead=a.head&&a.head!=='space'?accSVG(a.head):'';
-  const head=`${earsSVG(B.ear,ear,muz)}
-    <ellipse cx="50" cy="53" rx="33" ry="32" fill="${fur}" stroke="${SK}" stroke-width="4.5"/>
+  const head=`${earsSVG(B.ear,ear,muz,fur)}
+    <ellipse cx="50" cy="53" rx="33" ry="32" fill="${fur}" ${B.ear==='cloud'?'':`stroke="${SK}" stroke-width="4.5"`}/>
     ${pat==='poodle'?'':face}${pat==='poodle'?face:''}
     ${!pat&&cfg.f===1?`<ellipse cx="62" cy="45" rx="11" ry="10" fill="${ear}" opacity=".85"/>`:''}
     ${muzzle}
@@ -1347,64 +1374,41 @@ function dogSVG(cfg,o={}){
 }
 
 // 站著／走路用的身體：側身、四條腿、尾巴，頭沿用同一顆（品種、毛色、配件都一樣）
+// 尾巴：捲尾（柴犬、博美、哈士奇…）或蓬鬆羽毛尾
+function tailSVG(B,fur,ear,muz,x,y,flip){
+  const c=B.ear==='cloud'?fur:ear, st=`stroke="${SK}" stroke-width="4" stroke-linejoin="round"`, curl=['point','pom','huge','big'].includes(B.ear)||B.pat==='bichon';
+  const tf=flip?` transform="translate(${2*x} 0) scale(-1 1)"`:'';
+  if(curl) return `<g${tf}><path d="M${x} ${y} C${x-20} ${y-2} ${x-22} ${y-26} ${x-8} ${y-30} C${x+4} ${y-32} ${x+8} ${y-20} ${x-2} ${y-16} C${x-8} ${y-14} ${x-6} ${y-6} ${x+4} ${y-4} Z" fill="${c===ear&&B.pat!=='bichon'?fur:c}" ${st}/>
+    <path d="M${x-8} ${y-26} C${x} ${y-28} ${x+3} ${y-21} ${x-3} ${y-18}" fill="none" stroke="${muz}" stroke-width="4" stroke-linecap="round"/></g>`;
+  return `<g${tf}><path d="M${x} ${y} C${x-14} ${y+2} ${x-26} ${y-12} ${x-22} ${y-32} C${x-12} ${y-24} ${x-4} ${y-16} ${x+4} ${y-8} Z" fill="${c}" ${st}/>
+    <path d="M${x-22} ${y-32} C${x-20} ${y-24} ${x-17} ${y-21} ${x-12} ${y-19}" fill="none" stroke="${muz}" stroke-width="4" stroke-linecap="round"/></g>`;
+}
+// 一條腿：短胖的腿＋淺色肉球腳掌（腳趾縫兩條線）
+function legSVG(x,y,h,fur,muz,cls,far){
+  const st=`stroke="${SK}" stroke-width="4"`;
+  return `<g class="leg ${cls}"><rect x="${x}" y="${y}" width="15" height="${h}" rx="7.5" fill="${fur}" ${st}/>
+    <ellipse cx="${x+8}" cy="${y+h}" rx="10.5" ry="6.5" fill="${muz}" ${st}/>
+    <path d="M${x+5} ${y+h-2} v4 M${x+11} ${y+h-2} v4" stroke="${SK}" stroke-width="1.8" stroke-linecap="round"/>
+    ${far?`<rect x="${x-3}" y="${y-2}" width="22" height="${h+11}" rx="9" fill="#1b1733" opacity=".18"/>`:''}</g>`;
+}
 function dogWalkSVG(cfg){
   cfg=cfg||{}; const F=FURS[cfg.f]||FURS[0], B=BREEDS.find(x=>x.id===cfg.b)||BREEDS[0], fur=F[1], ear=F[2], muz=F[3];
   const st=`stroke="${SK}" stroke-width="4"`;
-  const leg=(x,c,far)=>`<g class="leg ${c}"><rect x="${x}" y="100" width="12" height="33" rx="6" fill="${fur}" ${st}/>${far?`<rect x="${x}" y="100" width="12" height="33" rx="6" fill="#000" opacity=".16"/>`:''}</g>`;
-  return `<svg class="dg walk" viewBox="-18 -6 134 142" aria-label="狗">
-    <g class="tail"><path d="M10 96 Q-10 92 -6 70" fill="none" stroke="${SK}" stroke-width="11" stroke-linecap="round"/><path d="M10 96 Q-10 92 -6 70" fill="none" stroke="${ear}" stroke-width="5.5" stroke-linecap="round"/></g>
-    ${leg(17,'b far',1)}${leg(62,'a far',1)}
-    <ellipse cx="64" cy="90" rx="16" ry="18" fill="${fur}" ${st}/><ellipse cx="42" cy="98" rx="35" ry="19" fill="${fur}" ${st}/>
-    <ellipse cx="64" cy="90" rx="14" ry="16" fill="${fur}"/><ellipse cx="42" cy="98" rx="33" ry="17" fill="${fur}"/>
-    <ellipse cx="44" cy="108" rx="21" ry="7" fill="${muz}" opacity=".9"/>
-    ${B.pat==='spots'?`<circle cx="26" cy="92" r="4.5" fill="${ear}"/><circle cx="44" cy="88" r="3.4" fill="${ear}"/><circle cx="36" cy="102" r="3" fill="${ear}"/>`:''}
-    ${leg(6,'a hind')}${leg(51,'b')}
-    <g class="pee-drops" fill="#ffe26a" stroke="#c9a21a" stroke-width="1"><circle cx="6" cy="112" r="2.6"/><circle cx="6" cy="112" r="2.2"/><circle cx="6" cy="112" r="2.4"/></g>
-    <g class="hd"><g transform="translate(34 10) scale(.8)">${dogSVG(cfg,{head:true})}</g></g>
+  return `<svg class="dg walk" viewBox="-20 -12 150 156" aria-label="狗">
+    <g class="tail">${tailSVG(B,fur,ear,muz,18,96)}</g>
+    ${legSVG(18,104,26,fur,muz,'b far',1)}${legSVG(63,104,26,fur,muz,'a far',1)}
+    <path d="M14 98 C12 78 30 72 52 72 C76 72 92 80 92 98 C92 116 76 122 52 122 C30 122 14 116 14 98 Z" fill="${fur}" ${st}/>
+    <path d="M30 112 C40 119 64 119 78 110 C74 116 64 119 52 119 C42 119 34 117 30 112 Z" fill="${muz}"/><path d="M74 80 C86 84 92 92 90 104 C86 112 78 112 74 104 C70 96 70 86 74 80 Z" fill="${muz}"/>
+    ${B.pat==='spots'?`<circle cx="32" cy="90" r="5" fill="${ear}"/><circle cx="50" cy="84" r="3.6" fill="${ear}"/><circle cx="42" cy="104" r="3.2" fill="${ear}"/>`:''}
+    ${B.pat==='bichon'||B.ear==='pom'?[[24,82],[40,76],[58,76],[74,80],[86,92]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="7" fill="${fur}"/>`).join(''):''}
+    ${legSVG(26,108,25,fur,muz,'a hind')}${legSVG(71,108,25,fur,muz,'b')}
+    <g class="pee-drops" fill="#ffe26a" stroke="#c9a21a" stroke-width="1"><circle cx="32" cy="124" r="2.6"/><circle cx="32" cy="124" r="2.2"/><circle cx="32" cy="124" r="2.4"/></g>
+    <g class="hd"><g transform="translate(37 -4) scale(.92)">${dogSVG(cfg,{head:true})}</g></g>
   </svg>`;
 }
 
 /* ----- 場景背景（直式 300×400） ----- */
-function sceneSVG(id){
-  const W='<svg class="bg" viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">';
-  switch(id){
-    case 'living': return W+`<defs><linearGradient id="lw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7c4"/><stop offset="1" stop-color="#f6cf9c"/></linearGradient></defs>
-      <rect width="300" height="400" fill="url(#lw)"/><g fill="#f9dcb0" opacity=".7">${Array.from({length:8},(_,i)=>`<rect x="${i*40+14}" y="0" width="12" height="250"/>`).join('')}</g>
-      <rect x="92" y="44" width="116" height="104" rx="10" fill="#2b2a5c" stroke="#fff4e0" stroke-width="8"/><path d="M150 44v104M92 96h116" stroke="#fff4e0" stroke-width="6"/>
-      <circle cx="182" cy="70" r="11" fill="#fff3c4"/><circle cx="118" cy="66" r="1.6" fill="#fff"/><circle cx="130" cy="120" r="1.4" fill="#fff"/><circle cx="190" cy="124" r="1.6" fill="#fff"/>
-      <rect x="0" y="236" width="300" height="16" fill="#fff3e0"/><rect x="0" y="250" width="300" height="150" fill="#cf9461"/>
-      <g stroke="#b97c4b" stroke-width="2">${[278,306,334,362,390].map(y=>`<path d="M0 ${y}H300"/>`).join('')}${[[40,250,278],[160,278,306],[90,306,334],[220,334,362],[130,362,390]].map(([x,a,b])=>`<path d="M${x} ${a}V${b}M${x+120} ${a}V${b}"/>`).join('')}</g>
-      <ellipse cx="150" cy="330" rx="110" ry="36" fill="#ff9e8a" opacity=".55"/></svg>`;
-    case 'bedroom': return W+`<rect width="300" height="400" fill="#d9ccf7"/><g fill="#efe7ff">${Array.from({length:40},(_,i)=>`<circle cx="${(i%8)*40+(Math.floor(i/8)%2?20:0)+10}" cy="${Math.floor(i/8)*48+20}" r="5"/>`).join('')}</g>
-      <path d="M30 40 Q60 20 90 40 Q120 60 150 40" fill="none" stroke="#ffd76e" stroke-width="3"/><g fill="#ffd76e">${[[40,38],[70,32],[100,44],[130,46]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="4"/>`).join('')}</g>
-      <rect x="196" y="56" width="74" height="90" rx="37" fill="#8fb8ff" stroke="#fff" stroke-width="7"/><circle cx="222" cy="86" r="9" fill="#fff6c4"/>
-      <rect x="0" y="244" width="300" height="10" fill="#fff"/><rect x="0" y="254" width="300" height="146" fill="#f6b8c8"/>
-      <ellipse cx="150" cy="326" rx="120" ry="40" fill="#fff" opacity=".45"/><ellipse cx="150" cy="326" rx="96" ry="30" fill="#ffd6e2" opacity=".7"/></svg>`;
-    case 'garden': return W+`<defs><linearGradient id="gs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd2ff"/><stop offset="1" stop-color="#d8f1ff"/></linearGradient></defs>
-      <rect width="300" height="400" fill="url(#gs)"/><circle cx="240" cy="62" r="26" fill="#fff1a0"/><circle cx="240" cy="62" r="38" fill="#fff1a0" opacity=".35"/>
-      <g fill="#fff">${[[60,70],[150,46]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="30" ry="12"/><ellipse cx="${x+18}" cy="${y-8}" rx="18" ry="12"/>`).join('')}</g>
-      <path d="M0 200 Q70 150 150 190 Q220 160 300 196 V260 H0 Z" fill="#9edb8c"/><rect x="0" y="236" width="300" height="164" fill="#7cc96b"/>
-      <g fill="#fffaf0" stroke="#d9c9a8" stroke-width="2">${Array.from({length:11},(_,i)=>`<path d="M${i*28+4} 244 V212 l7 -8 l7 8 V244 Z"/>`).join('')}<rect x="0" y="220" width="300" height="6"/><rect x="0" y="234" width="300" height="6"/></g>
-      <g fill="#6ab95b">${Array.from({length:22},(_,i)=>`<path d="M${(i*53)%300} ${270+((i*37)%120)} l3 -8 l3 8 Z"/>`).join('')}</g></svg>`;
-    case 'beach': return W+`<defs><linearGradient id="bs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fd0ff"/><stop offset="1" stop-color="#e2f6ff"/></linearGradient></defs>
-      <rect width="300" height="400" fill="url(#bs)"/><circle cx="70" cy="70" r="28" fill="#fff3a6"/><rect x="0" y="176" width="300" height="80" fill="#3fb3dd"/>
-      <g fill="none" stroke="#b9ecff" stroke-width="3" stroke-linecap="round">${[190,210,232].map((y,k)=>`<path d="M${10+k*30} ${y} q12 -6 24 0 M${150+k*20} ${y+6} q12 -6 24 0"/>`).join('')}</g>
-      <path d="M0 250 Q75 236 150 248 Q225 260 300 246 V400 H0 Z" fill="#f6dc9f"/><path d="M0 250 Q75 236 150 248 Q225 260 300 246" fill="none" stroke="#fff" stroke-width="6" opacity=".8"/>
-      <g fill="#e8c784">${Array.from({length:18},(_,i)=>`<circle cx="${(i*67)%300}" cy="${280+((i*29)%110)}" r="2"/>`).join('')}</g></svg>`;
-    case 'snow': return W+`<rect width="300" height="400" fill="#cfe2f4"/><path d="M0 190 L60 110 L110 170 L170 90 L240 170 L300 120 V260 H0 Z" fill="#e9f2fb"/>
-      <path d="M60 110 L76 132 L66 130 L54 140 Z M170 90 L190 118 L176 114 L160 126 Z" fill="#fff"/>
-      <g fill="#5d8a7a">${[[30,236],[80,226],[250,232],[280,240]].map(([x,y])=>`<path d="M${x} ${y-56} L${x+16} ${y-22} H${x+8} L${x+22} ${y} H${x-22} L${x-8} ${y-22} H${x-16} Z"/>`).join('')}</g>
-      <rect x="0" y="236" width="300" height="164" fill="#f7fbff"/><path d="M0 236 Q150 220 300 236" fill="#f7fbff"/>
-      <g fill="#fff">${Array.from({length:40},(_,i)=>`<circle cx="${(i*73)%300}" cy="${(i*47)%380}" r="${1.5+(i%3)}"/>`).join('')}</g></svg>`;
-    case 'camp': return W+`<rect width="300" height="400" fill="#1d2552"/><g fill="#fff">${Array.from({length:44},(_,i)=>`<circle cx="${(i*71)%300}" cy="${(i*37)%200}" r="${.8+(i%3)*.5}"/>`).join('')}</g>
-      <circle cx="232" cy="64" r="22" fill="#fff3c4"/><circle cx="242" cy="58" r="20" fill="#1d2552"/>
-      <path d="M0 220 L40 170 L70 210 L110 160 L150 214 L190 166 L230 212 L270 172 L300 206 V260 H0 Z" fill="#203a3a"/>
-      <rect x="0" y="240" width="300" height="160" fill="#2f5a3c"/><path d="M0 240 Q150 226 300 240" fill="#2f5a3c"/>
-      <ellipse cx="150" cy="330" rx="130" ry="50" fill="#ffb15a" opacity=".12"/>
-      <g fill="#3d7049">${Array.from({length:18},(_,i)=>`<path d="M${(i*53)%300} ${270+((i*37)%120)} l3 -8 l3 8 Z"/>`).join('')}</g></svg>`;
-  }
-  return W+'</svg>';
-}
+function sceneSVG(id){ return `<img class="bg" src="assets/scenes/${SCENES.some(x=>x.id===id)?id:'living'}.webp" alt="" draggable="false">`; }
 
 /* ----- 小提示 ----- */
 let toastT=0;
@@ -1420,7 +1424,7 @@ function shopItems(t){
   if(t==='fur') return FURS.map((f,k)=>({id:'f:'+k,n:f[0],p:f[4],pv:dogSVG({b:d.b,f:k})}));
   if(t==='breed') return BREEDS.map(b=>({id:'b:'+b.id,n:b.n,p:b.p,pv:dogSVG({b:b.id,f:d.f})}));
   if(t==='scene') return SCENES.map(s=>({id:'s:'+s.id,n:s.n+(s.inside?'（室內）':'（戶外）'),p:s.p,pv:sceneSVG(s.id),sc:1}));
-  return DECO.filter(x=>x.c===t).map(x=>({id:'d:'+x.id,n:x.n,p:x.p,pv:x.e}));
+  return DECO.filter(x=>x.c===t).map(x=>({id:'d:'+x.id,n:x.n,p:x.p,pv:decoImg(x.id)}));
 }
 function renderShop(){
   refreshStars();
@@ -1480,7 +1484,7 @@ let roomTab='dog', selIdx=-1;
 const roomList=()=>{ const s=shopData(); return s.room[s.scene]||(s.room[s.scene]=[]); };
 function piHTML(it){
   if(it.k.startsWith('dog:')){ const c=dogCfg(+it.k.slice(4)); return `<div class="pose stand">${dogWalkSVG(c)}</div><div class="pose sit">${dogSVG(c,{full:true})}</div><span class="bub" hidden></span>`; }
-  const d=DECO.find(x=>x.id===it.k.slice(2)); return d?d.e:'';
+  const d=DECO.find(x=>x.id===it.k.slice(2)); return d?decoImg(d.id,'it',DH[d.id]||16):'';
 }
 function renderRoom(){
   if($('room').hidden) return;
@@ -1522,7 +1526,7 @@ function renderTray(){
     h=SCENES.filter(x=>owns('s:'+x.id)).map(x=>`<button data-scene="${x.id}" class="${s.scene===x.id?'on':''}"><span class="mini">${sceneSVG(x.id)}</span>${x.n}</button>`).join('');
     h+=`<button class="more" data-shop="scene">${ic('bag')}買場景</button>`;
   } else {
-    h=DECO.filter(x=>x.c===roomTab&&owns('d:'+x.id)).map(x=>`<button data-deco="${x.id}"><span class="e">${x.e}</span>${x.n}</button>`).join('');
+    h=DECO.filter(x=>x.c===roomTab&&owns('d:'+x.id)).map(x=>`<button data-deco="${x.id}"><span class="e">${decoImg(x.id)}</span>${x.n}</button>`).join('');
     h+=`<button class="more" data-shop="${roomTab}">${ic('bag')}買更多</button>`;
   }
   $('tray').innerHTML=h;
@@ -1582,7 +1586,7 @@ $('scene').addEventListener('pointerup',endDrag); $('scene').addEventListener('p
 const RT=new WeakMap(), OCC=new WeakMap(); let roomEls=[], roomRAF=0, roomLast=0;
 const FLOOR_TOP=64, rnd=(a,b)=>a+Math.random()*(b-a), clampX=x=>Math.max(6,Math.min(94,x)), clampY=y=>Math.max(FLOOR_TOP,Math.min(99,y));
 // 每樣東西可以怎麼互動：[動作, 坐上去時要抬高多少（佔物件高度的比例）]
-const ACT={chair:['seat',.4],sofa:['seat',.3],bed:['nap',.32],basket:['nap',.14],house:['guard'],tent:['guard'],
+const ACT={chair:['seat',.42],sofa:['seat',.4],bed:['nap',.42],basket:['nap',.45],house:['guard'],tent:['guard'],
   tree:['pee'],pine:['pee'],palm:['pee'],pot:['pee'],xmas:['pee'],rock:['pee'],snowman:['pee'],mush:['pee'],cactus:['sniff'],
   tulip:['sniff'],sun:['sniff'],sakura:['sniff'],rose:['sniff'],gift:['sniff'],
   ball:['play'],tennis:['play'],balloon:['play'],yarn:['play'],duck:['play'],kite:['play'],teddy:['play'],
@@ -1596,8 +1600,8 @@ function arriveDog(it,r,list){
   if(!list.includes(tg.it)){ OCC.delete(tg.it); r.st='idle'; r.t=1; return; }
   const id=tg.it.k.slice(2), s=tg.it.s||1; if(tg.dir) r.dir=tg.dir; r.item=tg.it;
   switch(tg.kind){
-    case 'seat': r.on=tg.it; r.lift=17*s*ACT[id][1]; r.st='sit'; r.t=rnd(5,9); break;
-    case 'nap': r.on=tg.it; r.lift=17*s*ACT[id][1]; r.st='sleep'; r.bub='Zzz'; r.t=rnd(7,11); break;
+    case 'seat': r.on=tg.it; r.lift=(DH[id]||17)*s*ACT[id][1]; r.st='sit'; r.t=rnd(5,9); break;
+    case 'nap': r.on=tg.it; r.lift=(DH[id]||17)*s*ACT[id][1]; r.st='sleep'; r.bub='Zzz'; r.t=rnd(7,11); break;
     case 'guard': r.st='sit'; r.t=rnd(4,7); break;
     case 'pee': r.st='pee'; r.t=2.6; r.after='呼～'; break;
     case 'sniff': r.st='sniff'; r.bub='嗅嗅'; r.t=2.2; r.after='♥'; break;
