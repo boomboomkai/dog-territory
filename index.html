@@ -543,6 +543,12 @@
   .sky{background:#1b1733 url("assets/home-bg.webp") center bottom/cover no-repeat}
   .sky::before{opacity:1;animation:none;background:linear-gradient(180deg,rgba(20,14,44,.15),rgba(20,14,44,.35) 55%,rgba(20,14,44,.1))}
   .sky::after,.moon,.roofs{display:none}
+  /* 疊在背景圖上的小按鈕：改成實心黏土色，才看得清楚 */
+  .rtabs{padding:4px 2px 8px}
+  .rtabs button{background:#4c3f86 var(--grain);border:0;color:#fff;font-weight:600;
+    box-shadow:0 3px 0 #2a2152,0 6px 10px rgba(5,2,20,.3),inset 0 2px 4px rgba(255,255,255,.18),inset 0 -3px 5px rgba(10,5,30,.25)}
+  .rtabs button.on{background:var(--butter) var(--grain);color:var(--btn-ink);box-shadow:0 3px 0 var(--butter-d),0 6px 10px rgba(5,2,20,.3),inset 0 2px 4px rgba(255,255,255,.55),inset 0 -3px 5px rgba(70,30,20,.18)}
+  .acct,#roomStars{background:#4c3f86 var(--grain)!important;border-color:transparent!important;box-shadow:0 3px 0 #2a2152,0 6px 10px rgba(5,2,20,.3),inset 0 2px 4px rgba(255,255,255,.18)}
   .hb{color:#fff;font-weight:600;text-shadow:0 1px 0 #2a2152,0 0 4px #2a2152,0 0 8px rgba(42,33,82,.8)}
 </style>
 
