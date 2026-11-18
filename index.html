@@ -507,8 +507,71 @@
     .roofs{height:60px}
   }
   @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
+
+  /* ===================== 立體黏土風（覆蓋上面的舊樣式） ===================== */
+  :root{ --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .2 0 0 0 0 .12 0 0 0 .5 -.12'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+    --frame:#4a3a78; --clay-card:#43377a; --clay-card-hi:#54479a; }
+  /* 按鈕：軟軟胖胖、內側有光、底下有厚度 */
+  .b3d{border-radius:26px;background-color:var(--c);background-image:var(--grain);
+    box-shadow:0 7px 0 var(--d),0 14px 20px rgba(10,5,30,.38),inset 0 -7px 10px rgba(70,30,20,.16),inset 0 6px 8px rgba(255,255,255,.55)}
+  .b3d::before{left:14px;right:14px;top:5px;height:34%;border-radius:99px;filter:blur(2px);background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,0))}
+  .b3d:active{box-shadow:0 2px 0 var(--d),0 4px 8px rgba(10,5,30,.3),inset 0 -5px 8px rgba(70,30,20,.16),inset 0 5px 8px rgba(255,255,255,.5)}
+  .b3d.ghost{--c:#5a4c95;--d:#352a63}
+  /* 首頁的大卡片 */
+  .tile{border-radius:26px;border:0;background-color:var(--clay-card);background-image:var(--grain),linear-gradient(180deg,var(--clay-card-hi),var(--clay-card));
+    box-shadow:0 6px 0 #2a2152,0 14px 22px rgba(5,2,20,.38),inset 0 4px 6px rgba(255,255,255,.16),inset 0 -6px 10px rgba(10,5,30,.22)}
+  .tile:active{box-shadow:0 2px 0 #2a2152,0 4px 8px rgba(5,2,20,.3),inset 0 4px 6px rgba(255,255,255,.14),inset 0 -5px 8px rgba(10,5,30,.2)}
+  .tile .bub{border-radius:18px;background-image:var(--grain);box-shadow:0 3px 0 rgba(20,10,40,.35),inset 0 -5px 7px rgba(70,30,20,.2),inset 0 4px 6px rgba(255,255,255,.6)}
+  .ibtn{border-radius:17px;border:0;background:#4c3f86 var(--grain);box-shadow:0 4px 0 #2a2152,0 8px 12px rgba(5,2,20,.3),inset 0 3px 5px rgba(255,255,255,.18),inset 0 -4px 6px rgba(10,5,30,.25)}
+  .ibtn:active{transform:translateY(3px) scale(.96);box-shadow:0 1px 0 #2a2152,inset 0 3px 5px rgba(255,255,255,.15)}
+  .logo{background:radial-gradient(circle at 45% 35%,#6a5bb0,#3e3275 72%);box-shadow:0 8px 0 #2a2152,0 18px 30px rgba(5,2,20,.45),inset 0 6px 10px rgba(255,255,255,.22),inset 0 -10px 16px rgba(10,5,30,.35)}
+  .hero h1{text-shadow:0 2px 0 #c9a3ff,0 5px 0 #2a2152,0 10px 18px rgba(5,2,20,.5)}
+  /* 彈出視窗 */
+  .sheet{border:0;background-color:var(--clay-card);background-image:var(--grain),linear-gradient(180deg,var(--clay-card-hi),var(--clay-card));
+    box-shadow:0 10px 0 #2a2152,0 30px 60px rgba(0,0,0,.55),inset 0 5px 8px rgba(255,255,255,.14),inset 0 -8px 14px rgba(10,5,30,.25)}
+  /* 棋盤：一塊黏土托盤，每個區域是一片鼓鼓的黏土 */
+  .board{border:0;padding:6px;border-radius:24px;background:#4a3a78 var(--grain);
+    box-shadow:0 9px 0 #2a2152,0 22px 40px rgba(5,2,20,.5),inset 0 4px 6px rgba(255,255,255,.18),inset 0 -6px 10px rgba(10,5,30,.35)}
+  .cell{background-image:var(--grain)}
+  .cell::before{background:radial-gradient(120% 90% at 30% 20%,rgba(255,255,255,.22),rgba(255,255,255,0) 60%);border-radius:inherit}
+  @media (hover:hover){ .cell:hover::after{border-radius:inherit} }
+  .cell .xm{stroke:rgba(90,50,40,.5);stroke-width:2.6}
+  .cell svg.cat{filter:drop-shadow(0 3px 2px rgba(60,25,15,.35))}
+  /* 小窩畫框 */
+  .scene{box-shadow:0 0 0 6px #4a3a78,0 9px 0 6px #2a2152,0 26px 44px rgba(5,2,20,.5)}
+  /* 黏土夜晚後院背景圖（Codex 繪製） */
+  .sky{background:#1b1733 url("assets/home-bg.webp") center bottom/cover no-repeat}
+  .sky::before{opacity:1;animation:none;background:linear-gradient(180deg,rgba(20,14,44,.15),rgba(20,14,44,.35) 55%,rgba(20,14,44,.1))}
+  .sky::after,.moon,.roofs{display:none}
+  .hb{color:#fff;font-weight:600;text-shadow:0 1px 0 #2a2152,0 0 4px #2a2152,0 0 8px rgba(42,33,82,.8)}
 </style>
 
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <!-- 黏土光影：左上亮邊、右下暗邊、柔和高光 -->
+  <filter id="cl" x="-20%" y="-20%" width="140%" height="150%" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="2.6" result="b"/>
+    <feOffset in="b" dx="-2" dy="-3" result="o1"/><feComposite in="SourceAlpha" in2="o1" operator="out" result="r1"/>
+    <feFlood flood-color="#4a2618" flood-opacity=".34"/><feComposite in2="r1" operator="in" result="sh"/>
+    <feOffset in="b" dx="1.6" dy="2.4" result="o2"/><feComposite in="SourceAlpha" in2="o2" operator="out" result="r2"/>
+    <feFlood flood-color="#fff" flood-opacity=".5"/><feComposite in2="r2" operator="in" result="hl"/>
+    <feSpecularLighting in="b" surfaceScale="2" specularConstant=".28" specularExponent="12" lighting-color="#fff" result="sp"><feDistantLight azimuth="225" elevation="55"/></feSpecularLighting>
+    <feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"/>
+    <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="7" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 .3  0 0 0 0 .18  0 0 0 0 .12  0 0 -.9 0 .4" result="n2"/>
+    <feComposite in="n2" in2="SourceAlpha" operator="in" result="gr"/>
+    <feOffset in="b" dx=".6" dy="2.2" result="ds0"/><feFlood flood-color="#3a1e14" flood-opacity=".28"/><feComposite in2="ds0" operator="in" result="ds"/>
+    <feMerge><feMergeNode in="ds"/><feMergeNode in="SourceGraphic"/><feMergeNode in="gr"/><feMergeNode in="sh"/><feMergeNode in="hl"/><feMergeNode in="sp2"/></feMerge>
+  </filter>
+  <filter id="cl2" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="1.6" result="b"/>
+    <feOffset in="b" dx="-1.2" dy="-2" result="o1"/><feComposite in="SourceAlpha" in2="o1" operator="out" result="r1"/>
+    <feFlood flood-color="#4a2618" flood-opacity=".28"/><feComposite in2="r1" operator="in" result="sh"/>
+    <feOffset in="b" dx="1" dy="1.6" result="o2"/><feComposite in="SourceAlpha" in2="o2" operator="out" result="r2"/>
+    <feFlood flood-color="#fff" flood-opacity=".55"/><feComposite in2="r2" operator="in" result="hl"/>
+    <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="sh"/><feMergeNode in="hl"/></feMerge>
+  </filter>
+</defs></svg>
 <div class="sky"></div>
 <div class="moon"></div>
 
@@ -789,6 +852,8 @@
 </svg>
 
 <script>
+const SK='#2a1d1a', OL='rgba(90,50,35,.3)';   // SK：眼睛鼻子；OL：黏土接縫（不再用粗描邊）
+const CL=' filter="url(#cl)"', CL2=' filter="url(#cl2)"';
 /* ===================== 圖示與狗 ===================== */
 const ICON={
   users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.8"/><path d="M17 14.2a5.3 5.3 0 0 1 4.8 5.3"/>',
@@ -838,14 +903,14 @@ const DOGS=[['#e8b77a','#a86a3a','#fff3e0',0],['#f7f0e4','#c9a27a','#ffffff',1],
   ['#4a4658','#2a2734','#d9d2e3',0],['#d9a066','#7a4a2a','#f6e1c4',1],['#c4bfcf','#77728a','#f3eff8',0]];
 const CAT_COLORS=DOGS.map((_,k)=>k);
 function catSVG(kind=0,cls='cat'){   // 函式名沿用，畫的是狗
-  const [fur,ear,muz,patch]=DOGS[typeof kind==='number'?kind:0], s='#2b2140';
+  const [fur,ear,muz,patch]=DOGS[typeof kind==='number'?kind:0], s=SK, o=`stroke="${OL}" stroke-width="1.6"`;
   const dark=fur==='#4a4658';
   return `<svg class="${cls}" viewBox="0 0 100 100" aria-label="狗">
-    <ellipse cx="19" cy="47" rx="12" ry="23" transform="rotate(20 19 47)" fill="${ear}" stroke="${s}" stroke-width="4.5"/>
-    <ellipse cx="81" cy="47" rx="12" ry="23" transform="rotate(-20 81 47)" fill="${ear}" stroke="${s}" stroke-width="4.5"/>
-    <ellipse cx="50" cy="53" rx="33" ry="32" fill="${fur}" stroke="${s}" stroke-width="4.5"/>
+    <g${CL}><ellipse cx="19" cy="47" rx="12" ry="23" transform="rotate(20 19 47)" fill="${ear}" ${o}/>
+    <ellipse cx="81" cy="47" rx="12" ry="23" transform="rotate(-20 81 47)" fill="${ear}" ${o}/></g>
+    <ellipse cx="50" cy="53" rx="33" ry="32" fill="${fur}" ${o}${CL}/>
     ${patch?`<ellipse cx="62" cy="45" rx="11" ry="10" fill="${ear}" opacity=".85"/>`:''}
-    <ellipse cx="50" cy="69" rx="18" ry="13" fill="${muz}"/>
+    <ellipse cx="50" cy="69" rx="18" ry="13" fill="${muz}"${CL2}/>
     <g class="eyes"><g class="blink"><ellipse cx="38" cy="48" rx="4.8" ry="5.6" fill="${s}"/><ellipse cx="62" cy="48" rx="4.8" ry="5.6" fill="${s}"/>
     <circle cx="39.8" cy="46" r="1.8" fill="#fff"/><circle cx="63.8" cy="46" r="1.8" fill="#fff"/></g></g>
     <g class="snout"><ellipse cx="50" cy="62" rx="7" ry="5" fill="${s}"/><ellipse cx="48" cy="60.5" rx="2.2" ry="1.3" fill="#fff" opacity=".6"/>
@@ -1275,9 +1340,9 @@ function awardStars(){   // 要在關卡進度 +1 之前呼叫
 }
 
 /* ----- 畫狗：頭（可選全身）＋品種＋毛色＋配件 ----- */
-const SK='#2b2140';
-function earsSVG(type,ear,muz,fur){
-  const st=`stroke="${SK}" stroke-width="4.5" stroke-linejoin="round"`;
+function earsSVG(...a){ return `<g${CL}>${earsSVG0(...a)}</g>`; }
+function earsSVG0(type,ear,muz,fur){
+  const st=`stroke="${OL}" stroke-width="1.6" stroke-linejoin="round"`;
   const puffs=(pts,c)=>pts.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}" ${st}/>`).join('')+pts.map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r-2.4}" fill="${c}"/>`).join('');
   if(type==='cloud'){   // 比熊：整顆頭是一朵棉花雲
     const pts=[]; for(let k=0;k<12;k++){ const a=k/12*Math.PI*2; pts.push([+(50+Math.cos(a)*35).toFixed(1),+(53+Math.sin(a)*33).toFixed(1),k%2?12:13.5]); }
@@ -1300,8 +1365,9 @@ function earsSVG(type,ear,muz,fur){
   return `<ellipse cx="19" cy="47" rx="12" ry="23" transform="rotate(20 19 47)" fill="${ear}" ${st}/><ellipse cx="81" cy="47" rx="12" ry="23" transform="rotate(-20 81 47)" fill="${ear}" ${st}/>`;
 }
 const EAR_AT={flop:[12,66],long:[9,84],point:[17,42],big:[15,44],fold:[13,46],fluffy:[9,80],cloud:[9,74],pom:[22,42],bat:[18,42],huge:[17,46]};
-function accSVG(id,ex){
-  const st=`stroke="${SK}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"`;
+function accSVG(...a){ const r=accSVG0(...a); return r?`<g${CL2}>${r}</g>`:r; }
+function accSVG0(id,ex){
+  const st=`stroke="${OL}" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"`;
   switch(id){
     case 'bow': return `<g transform="translate(70 25) rotate(18)"><path d="M0 0 L-15 -10 L-15 10 Z M0 0 L15 -10 L15 10 Z" fill="#ff7da7" ${st}/><circle r="5" fill="#ffa9c6" ${st}/></g>`;
     case 'party': return `<g transform="rotate(-14 50 24)"><path d="M35 27 L50 -9 L65 27 Z" fill="#8fd3ff" ${st}/><path d="M40 16 L59 14 M44 5 L56 4" stroke="#ff7d8e" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="-10" r="5.5" fill="#ffd76e" ${st}/></g>`;
@@ -1335,10 +1401,10 @@ function dogSVG(cfg,o={}){
   const fur=F[1], ear=F[2], muz=F[3], dark=cfg.f===3, pat=B.pat;
   const top=o.full?'-10 -14 120 160':'-8 -14 116 122';
   let body='';
-  if(o.full){ const st=`stroke="${SK}" stroke-width="4.5"`, paw=(x)=>`<rect x="${x}" y="118" width="13" height="20" rx="6.5" fill="${fur}" ${st}/><ellipse cx="${x+6.5}" cy="138" rx="9.5" ry="6" fill="${muz}" ${st}/><path d="M${x+4} 136 v3.6 M${x+9} 136 v3.6" stroke="${SK}" stroke-width="1.7" stroke-linecap="round"/>`;
+  if(o.full){ const st=`stroke="${OL}" stroke-width="1.6"`, paw=(x)=>`<g${CL}><rect x="${x}" y="118" width="13" height="20" rx="6.5" fill="${fur}" ${st}/><ellipse cx="${x+6.5}" cy="138" rx="9.5" ry="6" fill="${muz}" ${st}/><path d="M${x+4} 136 v3.6 M${x+9} 136 v3.6" stroke="${SK}" stroke-width="1.7" stroke-linecap="round" opacity=".5"/></g>`;
     body=`<g transform="translate(-6 0)">${tailSVG(B,fur,ear,muz,80,128,true)}</g>
-    <ellipse cx="27" cy="130" rx="15" ry="11" fill="${fur}" ${st}/><ellipse cx="73" cy="130" rx="15" ry="11" fill="${fur}" ${st}/>
-    <path d="M24 128 C20 98 34 84 50 84 C66 84 80 98 76 128 C70 138 30 138 24 128 Z" fill="${fur}" ${st}/>
+    <g${CL}><ellipse cx="27" cy="130" rx="15" ry="11" fill="${fur}" ${st}/><ellipse cx="73" cy="130" rx="15" ry="11" fill="${fur}" ${st}/>
+    <path d="M24 128 C20 98 34 84 50 84 C66 84 80 98 76 128 C70 138 30 138 24 128 Z" fill="${fur}" ${st}/></g>
     <path d="M38 96 C44 92 56 92 62 96 C66 110 64 124 50 130 C36 124 34 110 38 96 Z" fill="${muz}"/>
     ${pat==='spots'?`<circle cx="32" cy="112" r="4" fill="${ear}"/><circle cx="68" cy="118" r="3.5" fill="${ear}"/><circle cx="66" cy="102" r="3" fill="${ear}"/>`:''}
     ${paw(36)}${paw(51)}`; }
@@ -1350,14 +1416,14 @@ function dogSVG(cfg,o={}){
   else if(pat==='bichon') face=puffTop(fur);
   else if(pat==='frenchie') face=`<path d="M41 32 Q50 28 59 32" fill="none" stroke="${ear}" stroke-width="2.4" stroke-linecap="round"/>`;
   else if(pat==='schnauzer') face=`<path d="M29 64 Q29 93 50 95 Q71 93 71 64 Q50 57 29 64 Z" fill="${muz}"/><path d="M28 39 L44 43 M72 39 L56 43" stroke="${muz}" stroke-width="5.5" stroke-linecap="round"/>`;
-  else if(pat==='poodle') face=[[50,22,13],[37,25,10],[63,25,10]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${ear}" stroke="${SK}" stroke-width="4"/>`).join('')+[[50,22,10.5],[37,25,7.5],[63,25,7.5]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${ear}"/>`).join('');
-  const muzzle=pat==='pug'?`<ellipse cx="50" cy="68" rx="19" ry="14" fill="${ear}"/><path d="M40 33 Q50 29 60 33 M43 38 Q50 35 57 38" fill="none" stroke="${ear}" stroke-width="2.4" stroke-linecap="round"/>`
-    :pat==='husky'?'':`<ellipse cx="50" cy="69" rx="18" ry="13" fill="${muz}"/>`;
+  else if(pat==='poodle') face=[[50,22,13],[37,25,10],[63,25,10]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${ear}" stroke="${OL}" stroke-width="1.6"/>`).join('')+[[50,22,10.5],[37,25,7.5],[63,25,7.5]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${ear}"/>`).join('');
+  const muzzle=pat==='pug'?`<ellipse cx="50" cy="68" rx="19" ry="14" fill="${ear}"${CL2}/><path d="M40 33 Q50 29 60 33 M43 38 Q50 35 57 38" fill="none" stroke="${ear}" stroke-width="2.4" stroke-linecap="round"/>`
+    :pat==='husky'?'':`<ellipse cx="50" cy="69" rx="18" ry="13" fill="${muz}"${CL2}/>`;
   const eye=pat==='husky'?'#5fb6e8':SK;
   const a=cfg, ex=EAR_AT[B.ear]||EAR_AT.flop;
   const onTopHead=a.head&&a.head!=='space'?accSVG(a.head):'';
   const head=`${earsSVG(B.ear,ear,muz,fur)}
-    <ellipse cx="50" cy="53" rx="33" ry="32" fill="${fur}" ${B.ear==='cloud'?'':`stroke="${SK}" stroke-width="4.5"`}/>
+    <ellipse cx="50" cy="53" rx="33" ry="32" fill="${fur}" ${B.ear==='cloud'?'':`stroke="${OL}" stroke-width="1.6"${CL}`}/>
     ${pat==='poodle'?'':face}${pat==='poodle'?face:''}
     ${!pat&&cfg.f===1?`<ellipse cx="62" cy="45" rx="11" ry="10" fill="${ear}" opacity=".85"/>`:''}
     ${muzzle}
@@ -1376,28 +1442,28 @@ function dogSVG(cfg,o={}){
 // 站著／走路用的身體：側身、四條腿、尾巴，頭沿用同一顆（品種、毛色、配件都一樣）
 // 尾巴：捲尾（柴犬、博美、哈士奇…）或蓬鬆羽毛尾
 function tailSVG(B,fur,ear,muz,x,y,flip){
-  const c=B.ear==='cloud'?fur:ear, st=`stroke="${SK}" stroke-width="4" stroke-linejoin="round"`, curl=['point','pom','huge','big'].includes(B.ear)||B.pat==='bichon';
+  const c=B.ear==='cloud'?fur:ear, st=`stroke="${OL}" stroke-width="1.6" stroke-linejoin="round"`, curl=['point','pom','huge','big'].includes(B.ear)||B.pat==='bichon';
   const tf=flip?` transform="translate(${2*x} 0) scale(-1 1)"`:'';
-  if(curl) return `<g${tf}><path d="M${x} ${y} C${x-20} ${y-2} ${x-22} ${y-26} ${x-8} ${y-30} C${x+4} ${y-32} ${x+8} ${y-20} ${x-2} ${y-16} C${x-8} ${y-14} ${x-6} ${y-6} ${x+4} ${y-4} Z" fill="${c===ear&&B.pat!=='bichon'?fur:c}" ${st}/>
+  if(curl) return `<g${tf}${CL}><path d="M${x} ${y} C${x-20} ${y-2} ${x-22} ${y-26} ${x-8} ${y-30} C${x+4} ${y-32} ${x+8} ${y-20} ${x-2} ${y-16} C${x-8} ${y-14} ${x-6} ${y-6} ${x+4} ${y-4} Z" fill="${c===ear&&B.pat!=='bichon'?fur:c}" ${st}/>
     <path d="M${x-8} ${y-26} C${x} ${y-28} ${x+3} ${y-21} ${x-3} ${y-18}" fill="none" stroke="${muz}" stroke-width="4" stroke-linecap="round"/></g>`;
-  return `<g${tf}><path d="M${x} ${y} C${x-14} ${y+2} ${x-26} ${y-12} ${x-22} ${y-32} C${x-12} ${y-24} ${x-4} ${y-16} ${x+4} ${y-8} Z" fill="${c}" ${st}/>
+  return `<g${tf}${CL}><path d="M${x} ${y} C${x-14} ${y+2} ${x-26} ${y-12} ${x-22} ${y-32} C${x-12} ${y-24} ${x-4} ${y-16} ${x+4} ${y-8} Z" fill="${c}" ${st}/>
     <path d="M${x-22} ${y-32} C${x-20} ${y-24} ${x-17} ${y-21} ${x-12} ${y-19}" fill="none" stroke="${muz}" stroke-width="4" stroke-linecap="round"/></g>`;
 }
 // 一條腿：短胖的腿＋淺色肉球腳掌（腳趾縫兩條線）
 function legSVG(x,y,h,fur,muz,cls,far){
-  const st=`stroke="${SK}" stroke-width="4"`;
-  return `<g class="leg ${cls}"><rect x="${x}" y="${y}" width="15" height="${h}" rx="7.5" fill="${fur}" ${st}/>
-    <ellipse cx="${x+8}" cy="${y+h}" rx="10.5" ry="6.5" fill="${muz}" ${st}/>
+  const st=`stroke="${OL}" stroke-width="1.6"`;
+  return `<g class="leg ${cls}"><g${CL}><rect x="${x}" y="${y}" width="15" height="${h}" rx="7.5" fill="${fur}" ${st}/>
+    <ellipse cx="${x+8}" cy="${y+h}" rx="10.5" ry="6.5" fill="${muz}" ${st}/></g>
     <path d="M${x+5} ${y+h-2} v4 M${x+11} ${y+h-2} v4" stroke="${SK}" stroke-width="1.8" stroke-linecap="round"/>
     ${far?`<rect x="${x-3}" y="${y-2}" width="22" height="${h+11}" rx="9" fill="#1b1733" opacity=".18"/>`:''}</g>`;
 }
 function dogWalkSVG(cfg){
   cfg=cfg||{}; const F=FURS[cfg.f]||FURS[0], B=BREEDS.find(x=>x.id===cfg.b)||BREEDS[0], fur=F[1], ear=F[2], muz=F[3];
-  const st=`stroke="${SK}" stroke-width="4"`;
+  const st=`stroke="${OL}" stroke-width="1.6"`;
   return `<svg class="dg walk" viewBox="-20 -12 150 156" aria-label="狗">
     <g class="tail">${tailSVG(B,fur,ear,muz,18,96)}</g>
     ${legSVG(18,104,26,fur,muz,'b far',1)}${legSVG(63,104,26,fur,muz,'a far',1)}
-    <path d="M14 98 C12 78 30 72 52 72 C76 72 92 80 92 98 C92 116 76 122 52 122 C30 122 14 116 14 98 Z" fill="${fur}" ${st}/>
+    <path d="M14 98 C12 78 30 72 52 72 C76 72 92 80 92 98 C92 116 76 122 52 122 C30 122 14 116 14 98 Z" fill="${fur}" ${st}${CL}/>
     <path d="M30 112 C40 119 64 119 78 110 C74 116 64 119 52 119 C42 119 34 117 30 112 Z" fill="${muz}"/><path d="M74 80 C86 84 92 92 90 104 C86 112 78 112 74 104 C70 96 70 86 74 80 Z" fill="${muz}"/>
     ${B.pat==='spots'?`<circle cx="32" cy="90" r="5" fill="${ear}"/><circle cx="50" cy="84" r="3.6" fill="${ear}"/><circle cx="42" cy="104" r="3.2" fill="${ear}"/>`:''}
     ${B.pat==='bichon'||B.ear==='pom'?[[24,82],[40,76],[58,76],[74,80],[86,92]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="7" fill="${fur}"/>`).join(''):''}
@@ -1826,18 +1892,21 @@ function buildBoard(){
   const cs=Math.max(26,Math.min(72,Math.floor(avail/n)));
   boardEl.style.gridTemplateColumns=`repeat(${n},${cs}px)`;
   boardEl.innerHTML='';
-  const thin='rgba(36,28,63,.2)', thick='#241c3f';
+  const thin='rgba(110,60,45,.13)', thick='#4a3a78', rad=Math.round(cs*.24), e=Math.max(2,Math.round(cs*.06));
   for(let i=0;i<n*n;i++){
     const r=Math.floor(i/n),c=i%n,g=P.reg[i];
     const d=document.createElement('div');
     d.className='cell'; d.dataset.i=i;
     d.style.width=d.style.height=cs+'px';
-    d.style.background=REGION_COLORS[g];
-    const side=(cond,diff)=>cond?['0',thick]:(diff?['1.5px',thick]:['.5px',thin]);
+    d.style.backgroundColor=REGION_COLORS[g];
+    const side=(cond,diff)=>cond?['0',thick,1]:(diff?['1.5px',thick,1]:['.5px',thin,0]);
     const T=side(r===0,r>0&&P.reg[i-n]!==g), B=side(r===n-1,r<n-1&&P.reg[i+n]!==g);
     const L=side(c===0,c>0&&P.reg[i-1]!==g), R=side(c===n-1,c<n-1&&P.reg[i+1]!==g);
     d.style.borderWidth=`${T[0]} ${R[0]} ${B[0]} ${L[0]}`;
     d.style.borderColor=`${T[1]} ${R[1]} ${B[1]} ${L[1]}`;
+    d.style.borderRadius=`${T[2]&&L[2]?rad:0}px ${T[2]&&R[2]?rad:0}px ${B[2]&&R[2]?rad:0}px ${B[2]&&L[2]?rad:0}px`;
+    d.style.boxShadow=[T[2]&&`inset 0 ${e}px ${e}px -${e>>1}px rgba(255,255,255,.6)`,L[2]&&`inset ${e}px 0 ${e}px -${e>>1}px rgba(255,255,255,.35)`,
+      B[2]&&`inset 0 -${e+1}px ${e+1}px -${e>>1}px rgba(100,45,30,.24)`,R[2]&&`inset -${e}px 0 ${e}px -${e>>1}px rgba(100,45,30,.16)`].filter(Boolean).join(',')||'none';
     boardEl.appendChild(d);
   }
   for(let i=0;i<n*n;i++) drawCell(i);
