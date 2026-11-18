@@ -539,6 +539,8 @@
   .cell svg.cat{filter:drop-shadow(0 3px 2px rgba(60,25,15,.35))}
   /* 小窩畫框 */
   .scene{box-shadow:0 0 0 6px #4a3a78,0 9px 0 6px #2a2152,0 26px 44px rgba(5,2,20,.5)}
+  #room .stage{padding:14px 8px 22px}   /* 畫框的厚邊不要蓋到上面的按鈕和下面的分類 */
+  #room .rtabs{position:relative;z-index:2}
   /* 黏土夜晚後院背景圖（Codex 繪製） */
   .sky{background:#1b1733 url("assets/home-bg.webp") center bottom/cover no-repeat}
   .sky::before{opacity:1;animation:none;background:linear-gradient(180deg,rgba(20,14,44,.15),rgba(20,14,44,.35) 55%,rgba(20,14,44,.1))}
