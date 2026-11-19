@@ -555,6 +555,23 @@
   .codechip{background:#4c3f86 var(--grain);border:0;color:#d9cffc;box-shadow:0 3px 0 #2a2152,0 6px 10px rgba(5,2,20,.3),inset 0 2px 4px rgba(255,255,255,.18)}
   .codechip b{color:#fff}
   .hb{color:#fff;font-weight:600;text-shadow:0 1px 0 #2a2152,0 0 4px #2a2152,0 0 8px rgba(42,33,82,.8)}
+  /* ===================== 解法重播 ===================== */
+  body.replaying #game .gtools, body.replaying #game .msg{display:none}
+  .rpbar{display:flex;flex-direction:column;gap:8px;padding-bottom:4px}
+  .rpnote{background:#fff8ec var(--grain);color:#4a3426;border-radius:18px;padding:9px 14px;font-size:15px;line-height:1.45;
+    box-shadow:0 4px 0 #d9c2a6,0 8px 14px rgba(5,2,20,.3);word-break:break-word}
+  .rpnote b{color:#b8572f}
+  .rpcap{text-align:center;font-size:15px;min-height:22px;color:#fff;font-weight:600;text-shadow:0 1px 0 #2a2152,0 0 4px #2a2152,0 0 8px rgba(42,33,82,.85)}
+  .rpseek{width:100%;accent-color:var(--butter);touch-action:auto}
+  .rpbtns{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center}
+  .rpbtns .b3d{font-size:18px;padding:11px 14px}
+  .rpbtns .ibtn{font-family:var(--num);font-weight:700;font-size:15px}
+  .rpbar .sbtns{margin-top:2px} .rpbar .sbtns .b3d{font-size:16px;padding:11px 12px}
+  .rpta{width:100%;min-height:86px;resize:none;font:inherit;font-size:16px;color:var(--ink);background:rgba(0,0,0,.25);border:1px solid var(--glass-line);
+    border-radius:16px;padding:10px 12px;outline:none;user-select:text;-webkit-user-select:text;touch-action:auto}
+  .rpta:focus{border-color:var(--butter)}
+  .rpcount{text-align:right;font-size:12px;color:var(--ink-dim);margin-top:4px}
+  .rpdone{min-height:20px;margin-top:8px;font-size:14px;color:var(--mint);text-align:center;word-break:break-all}
 </style>
 
 
@@ -645,6 +662,21 @@
     <button class="tool" id="btnPen"><span class="knob" id="penKnob"></span><span id="penLabel">點一下：打叉</span></button>
     <button class="tool butter" id="btnHint"><span class="knob" data-ic="bulb"></span>提示</button>
     <button class="tool mint" id="btnClear"><span class="knob" data-ic="eraser"></span>清除叉叉</button>
+  </div>
+  <div class="rpbar" id="rpBar" hidden>
+    <div class="rpnote" id="rpNote" hidden></div>
+    <div class="rpcap" id="rpCap"></div>
+    <input type="range" class="rpseek" id="rpSeek" min="0" max="1" value="0" aria-label="重播進度">
+    <div class="rpbtns">
+      <button class="ibtn" id="rpPrev" aria-label="上一步" data-ic="prev"></button>
+      <button class="b3d butter" id="rpPlay">播放</button>
+      <button class="ibtn" id="rpNext" aria-label="下一步" data-ic="next"></button>
+      <button class="ibtn" id="rpSpeed" aria-label="播放速度">1x</button>
+    </div>
+    <div class="sbtns two">
+      <button class="b3d mint" id="rpTry"><span data-ic="play"></span>自己挑戰</button>
+      <button class="b3d ghost" id="rpHome"><span data-ic="home"></span>主選單</button>
+    </div>
   </div>
 </main>
 
@@ -828,10 +860,23 @@
     <div class="winscore" id="winScore"></div>
     <div class="winonline" id="winOnline"></div>
     <div class="sbtns"><button class="b3d" id="btnNext">下一關</button></div>
+    <div class="sbtns"><button class="b3d lav" id="wShare"><span data-ic="share"></span>分享解法重播給朋友</button></div>
     <div class="sbtns two">
       <button class="b3d ghost" id="btnReplay"><span data-ic="restart"></span>再玩一次</button>
       <button class="b3d ghost" id="wHome"><span data-ic="home"></span>主選單</button>
     </div>
+  </div>
+</div>
+
+<div class="backdrop" id="shareSheet" hidden>
+  <div class="sheet" role="dialog" aria-labelledby="shareTitle">
+    <h2 id="shareTitle" style="margin:0 0 6px;font-weight:400;text-align:center">分享解法重播</h2>
+    <div class="sub" style="text-align:center;color:var(--ink-dim);font-size:14px;margin-bottom:12px">朋友打開連結，就能一步一步看你怎麼解這題（共 <b id="shareSteps">0</b> 步）</div>
+    <textarea class="rpta" id="shareNote" maxlength="120" placeholder="想跟朋友說的話（選填），例如：先看最小的那塊區域！"></textarea>
+    <div class="rpcount"><span id="shareCount">0</span> / 120</div>
+    <div class="sbtns"><button class="b3d lav" id="shareGo"><span data-ic="share"></span>分享連結</button></div>
+    <div class="rpdone" id="shareDone"></div>
+    <div class="sbtns"><button class="b3d ghost" id="shareBack">返回</button></div>
   </div>
 </div>
 
@@ -890,6 +935,8 @@ const ICON={
   calendar:'<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/><path d="M9 14.5l2 2 4-4"/>',
   grid:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 9.3h16M4 14.6h16M9.3 4v16M14.6 4v16"/>',
   play:'<path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/>',
+  prev:'<path d="M15 5.5l-7 6.5 7 6.5"/>', next:'<path d="M9 5.5l7 6.5-7 6.5"/>',
+  share:'<path d="M12 3v12"/><path d="M7.5 7.5L12 3l4.5 4.5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>',
   close:'<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
   chev:'<path d="M9 6l6 6-6 6"/>',
   cross:'<path d="M7 7l10 10M17 7L7 17"/>',
@@ -1875,8 +1922,17 @@ function startGame(m){
     $('loading').hidden=true; boardEl.style.visibility='';
   }),40);
 }
+/* ===================== 操作軌跡：記下每一步，過關後可以分享成重播連結 =====================
+   每一步 5 個字：種類 1 字 + 格子 2 字（36 進位）+ 距離上一步的時間 2 字（0.1 秒，36 進位）
+   種類：X 打叉、O 擦掉叉、C 放狗、D 放狗並自動打叉、H 提示放狗、J 提示放狗並自動打叉、E 提示擦掉錯的叉、K 清除全部叉叉 */
+let rec=null, recMute=false, recHint=false, lastRec=null, replay=null;
+function recEv(type,i){
+  if(!rec||replay||recMute) return;
+  const now=performance.now(), d=Math.min(1295,Math.round((now-rec.last)/100)); rec.last=now;
+  rec.ev.push(type+(i||0).toString(36).padStart(2,'0')+d.toString(36).padStart(2,'0'));
+}
 function resetBoard(){
-  const n=P.n;
+  const n=P.n; rec={last:performance.now(),ev:[]};
   marks=Array(n*n).fill(0); cats=new Set(); hearts=3; mistakes=0; hintsUsed=0; finished=false; paused=false;
   document.querySelectorAll('.backdrop').forEach(b=>b.hidden=true);
   boardEl.classList.remove('done');
@@ -1886,6 +1942,7 @@ function resetBoard(){
 }
 function tick(){ if(!finished&&!paused) elapsed=performance.now()-startT; $('timer').textContent=fmt(elapsed); }
 function pauseGame(){
+  if(replay){ exitReplay(); goHome(); return; }
   if(!P||finished||$('game').hidden) return;
   if(!paused){ paused=true; pauseAt=performance.now(); }
   $('pauseGameBtns').hidden=false; $('pauseTitle').textContent='暫停';
@@ -1947,8 +2004,8 @@ function copyCode(){
 }
 
 /* ===================== 操作 ===================== */
-function toggleX(i){ if(finished||cats.has(i)) return; Sound.play('tap'); marks[i]=marks[i]===1?0:1; drawCell(i); }
-function setX(i,val){ if(cats.has(i)) return; if(marks[i]!==val){marks[i]=val;drawCell(i);} }
+function toggleX(i){ if(finished||cats.has(i)) return; Sound.play('tap'); marks[i]=marks[i]===1?0:1; drawCell(i); recEv(marks[i]?'X':'O',i); }
+function setX(i,val){ if(cats.has(i)) return; if(marks[i]!==val){marks[i]=val;drawCell(i);recEv(val?'X':'O',i);} }
 function autoMark(i){
   const n=P.n,r=Math.floor(i/n),c=i%n,g=P.reg[i];
   for(let j=0;j<n*n;j++){
@@ -1963,9 +2020,11 @@ function placeCat(i){
   const el=cellEl(i); el.classList.remove('hint');
   if(P.sol[r]===c){
     cats.add(i); marks[i]=0; drawCell(i);
-    if(save.auto) autoMark(i);
+    recEv(recHint?(save.auto?'J':'H'):(save.auto?'D':'C'),i);
+    if(save.auto){ recMute=true; autoMark(i); recMute=false; }
     if(cats.size===n) win(); else { Sound.play('cat'); woofFx(el); }
   }else{
+    recEv(recHint?'H':'C',i);
     hearts--; mistakes++; renderHearts(hearts);
     if(hearts>0) Sound.play('wrong');
     marks[i]=1; drawCell(i);
@@ -1978,7 +2037,7 @@ function hint(){
   if(finished||paused||!P) return;
   const n=P.n;
   boardEl.querySelectorAll('.hint').forEach(e=>e.classList.remove('hint'));
-  for(let r=0;r<n;r++){const i=r*n+P.sol[r]; if(marks[i]===1&&!cats.has(i)){marks[i]=0;drawCell(i);cellEl(i).classList.add('hint');Sound.play('hint');setMsg('發光的這格叉叉打錯了，已幫你擦掉');hintsUsed++;return;}}
+  for(let r=0;r<n;r++){const i=r*n+P.sol[r]; if(marks[i]===1&&!cats.has(i)){marks[i]=0;drawCell(i);recEv('E',i);cellEl(i).classList.add('hint');Sound.play('hint');setMsg('發光的這格叉叉打錯了，已幫你擦掉');hintsUsed++;return;}}
   let best=null,bestCnt=1e9;
   for(let r=0;r<n;r++){
     const i=r*n+P.sol[r]; if(cats.has(i)) continue;
@@ -1986,9 +2045,9 @@ function hint(){
     for(let j=0;j<n*n;j++) if(P.reg[j]===g&&marks[j]===0&&!cats.has(j)) cnt++;
     if(cnt<bestCnt){bestCnt=cnt;best=i;}
   }
-  if(best!==null){hintsUsed++; Sound.play('hint'); placeCat(best); if(!finished) cellEl(best).classList.add('hint'); setMsg('幫你放了一隻狗');}
+  if(best!==null){hintsUsed++; Sound.play('hint'); recHint=true; placeCat(best); recHint=false; if(!finished) cellEl(best).classList.add('hint'); setMsg('幫你放了一隻狗');}
 }
-function clearX(){ if(finished||paused) return; Sound.play('click'); for(let i=0;i<marks.length;i++) if(marks[i]===1){marks[i]=0;drawCell(i);} }
+function clearX(){ if(finished||paused) return; Sound.play('click'); if(marks.some(v=>v===1)) recEv('K',0); for(let i=0;i<marks.length;i++) if(marks[i]===1){marks[i]=0;drawCell(i);} }
 function renderPen(){
   const cat=save.pen==='cat';
   $('btnPen').classList.toggle('peach',cat); $('btnPen').classList.toggle('lav2',!cat);
@@ -2016,7 +2075,7 @@ function pawRain(){
   }
 }
 function win(){
-  finished=true; elapsed=performance.now()-startT; tick();
+  finished=true; lastRec=rec&&mode&&mode.code?{code:mode.code,ev:rec.ev.slice()}:null; elapsed=performance.now()-startT; tick();
   boardEl.classList.add('done'); Sound.play('win'); pawRain();
   [...cats].sort(()=>Math.random()-.5).forEach((ci,k)=>setTimeout(()=>woofFx(cellEl(ci),k%3===2?'汪汪！':'汪！'),k*150));
   const key=mode.type==='daily'?'daily':`size${P.n}`;
@@ -2054,6 +2113,7 @@ function win(){
     $('winStars').innerHTML=[1,2,3].map(k=>STAR_SVG.replace('<svg',`<svg class="${k<=starRes.got?'':'off'}"`)).join('')+`<small>${starRes.gain?`+${starRes.gain} 顆星星`:'這關的星星已經拿過了'}</small>`;
     $('winChips').innerHTML=`<span>${ic('clock')}${fmt(elapsed)}</span><span>${ic('heart')}錯 ${mistakes}</span><span>${ic('bulb')}提示 ${hintsUsed}</span>`;
     $('winBest').innerHTML=isBest?'<span class="newbest">新紀錄！</span>':`<div class="sub" style="margin-top:10px">最佳紀錄 ${fmt(prev)}</div>`;
+    $('wShare').parentElement.hidden=!lastRec;
     $('btnNext').innerHTML=ic('play')+(mode.type==='level'?`下一關（第 ${mode.level+1} 關）`:mode.type==='daily'?'去關卡模式':'再來一題');
     openSheet('winSheet');
   },trophy?1300:1000);
@@ -2214,7 +2274,7 @@ $('btnNext').onclick=()=>{
   else if(mode.type==='level') startGame({type:'level',level:Math.min(mode.level+1,save.level)});
   else startGame({type:'level',level:save.level});
 };
-const goHome=()=>{ clearInterval(timerId); document.querySelectorAll('.backdrop').forEach(b=>b.hidden=true); refreshHome(); showScreen('home'); };
+const goHome=()=>{ if(replay) exitReplay(); clearInterval(timerId); document.querySelectorAll('.backdrop').forEach(b=>b.hidden=true); refreshHome(); showScreen('home'); };
 $('wHome').onclick=goHome; $('lHome').onclick=goHome;
 
 // 點面板外面：暫停面板＝繼續；說明／尺寸／紀錄＝關閉
@@ -2672,5 +2732,126 @@ $('rankSheet').addEventListener('click',e=>{ if(e.target===$('rankSheet')) close
 setTimeout(()=>Online.init(),300);
 renderAcct();
 
+/* ===================== 分享解法、重播 ===================== */
+const SHARE_BASE=/github\.io$/.test(location.hostname)?location.origin+location.pathname:'https://boomboomkai.github.io/dog-territory/';
+function replayLink(note){
+  const by=(Online.me&&Online.me.name)||'';
+  let u=`${SHARE_BASE}?r=${lastRec.code}${lastRec.ev.join('')}`;
+  if(note) u+='&m='+encodeURIComponent(note);
+  if(by) u+='&by='+encodeURIComponent(by);
+  return u;
+}
+function openShare(){
+  if(!lastRec) return;
+  $('shareSteps').textContent=lastRec.ev.length; $('shareDone').textContent='';
+  $('shareCount').textContent=$('shareNote').value.length;
+  openSheet('shareSheet');
+}
+$('wShare').onclick=openShare;
+$('shareBack').onclick=()=>openSheet('winSheet');
+$('shareNote').addEventListener('input',()=>$('shareCount').textContent=$('shareNote').value.length);
+$('shareGo').onclick=async()=>{
+  const note=$('shareNote').value.trim().slice(0,120), url=replayLink(note);
+  const text=`我在汪汪領地解開了題號 ${fmtCode(lastRec.code)}，來看我怎麼解的！`;
+  const copied=()=>{ $('shareDone').textContent='已複製連結，貼給朋友就可以了！'; };
+  try{
+    if(navigator.share){ await navigator.share({title:'汪汪領地 解法重播',text,url}); $('shareDone').textContent='分享好了！'; return; }
+  }catch(e){ if(e&&e.name==='AbortError') return; }
+  try{ await navigator.clipboard.writeText(text+'\n'+url); copied(); }
+  catch(e){ $('shareDone').textContent=url; }
+  Sound.play('click');
+};
+
+function parseReplay(){
+  const q=new URLSearchParams(location.search), r=q.get('r'); if(!r) return null;
+  const info=parseCode(r.slice(0,6)); if(!info) return null;
+  const body=r.slice(6), ev=[];
+  for(let k=0;k+5<=body.length;k+=5){ const t=body[k]; if(!'XOCDHJEK'.includes(t)) return null;
+    const i=parseInt(body.slice(k+1,k+3),36), d=parseInt(body.slice(k+3,k+5),36);
+    if(isNaN(i)||isNaN(d)||i>=info.n*info.n) return null; ev.push({t,i,d}); }
+  if(!ev.length) return null;
+  return {code:info.code,info,ev,note:(q.get('m')||'').slice(0,120),by:(q.get('by')||'').slice(0,20)};
+}
+function startReplay(R){
+  replay={...R,k:0,playing:false,speed:1,timer:null};
+  mode={type:'replay',code:R.code,n:R.info.n,diff:R.info.d};
+  $('title').textContent=`解法重播 · ${R.info.n}×${R.info.n} · ${DIFF_NAME[R.info.d]}`;
+  document.querySelectorAll('.backdrop').forEach(b=>b.hidden=true);
+  showScreen('game'); document.body.classList.add('replaying'); $('rpBar').hidden=false;
+  const nb=$('rpNote'); nb.hidden=!(R.note||R.by);
+  nb.innerHTML=(R.by?`<b>${esc(R.by)}</b> 的解法`:'朋友的解法')+(R.note?`：${esc(R.note)}`:'');
+  $('rpSeek').max=R.ev.length; $('rpCap').textContent='';
+  $('loading').hidden=false; boardEl.style.visibility='hidden'; boardEl.innerHTML='';
+  clearInterval(timerId); finished=true; P=null;
+  genFromCode(R.info).then(p=>{
+    if(!p||!replay) return;
+    P=p; rpGo(0); $('loading').hidden=true; boardEl.style.visibility='';
+    $('rpCap').textContent=`共 ${R.ev.length} 步，按「播放」開始看`;
+  });
+}
+function exitReplay(){
+  if(!replay) return; clearTimeout(replay.timer); replay=null;
+  document.body.classList.remove('replaying'); $('rpBar').hidden=true; boardEl.classList.remove('done');
+  if(location.search.includes('r=')) try{ history.replaceState(null,'',location.pathname); }catch(e){}
+}
+function rpBlank(){
+  const n=P.n; marks=Array(n*n).fill(0); cats=new Set(); hearts=3; finished=true; paused=false;
+  boardEl.classList.remove('done'); buildBoard(); renderHearts();
+}
+const RP_CAP={X:'打叉：這格不可能放狗',O:'擦掉叉叉',C:'放一隻狗',D:'放一隻狗，並把不能放的格子打叉',H:'用提示放了一隻狗',J:'用提示放了一隻狗',E:'用提示擦掉打錯的叉',K:'清除全部叉叉'};
+function rpApply(e,fx){
+  const n=P.n, i=e.i, el=cellEl(i);
+  if(e.t==='X'||e.t==='O'){ if(!cats.has(i)){ marks[i]=e.t==='X'?1:0; drawCell(i); } if(fx) Sound.play('tap'); return RP_CAP[e.t]; }
+  if(e.t==='K'){ for(let j=0;j<marks.length;j++) if(marks[j]===1){marks[j]=0;drawCell(j);} if(fx) Sound.play('click'); return RP_CAP.K; }
+  if(e.t==='E'){ marks[i]=0; drawCell(i); if(fx){ el.classList.add('hint'); Sound.play('hint'); } return RP_CAP.E; }
+  const r=Math.floor(i/n), c=i%n;
+  if(P.sol[r]===c){
+    cats.add(i); marks[i]=0; drawCell(i);
+    if(e.t==='D'||e.t==='J') autoMark(i);
+    if(fx){ Sound.play('cat'); woofFx(el); if(e.t==='H'||e.t==='J') el.classList.add('hint'); }
+    return RP_CAP[e.t];
+  }
+  hearts=Math.max(0,hearts-1); marks[i]=1; drawCell(i); renderHearts(fx?hearts:-1);
+  if(fx){ Sound.play('wrong'); el.classList.remove('wrong'); void el.offsetWidth; el.classList.add('wrong'); }
+  return '放錯了，扣一顆愛心';
+}
+function rpTime(k){ let t=0; for(let j=0;j<k;j++) t+=replay.ev[j].d*100; return t; }
+function rpRender(cap){
+  const R=replay, done=R.k>=R.ev.length;
+  $('rpSeek').value=R.k; $('timer').textContent=fmt(rpTime(R.k));
+  $('rpPlay').innerHTML=R.playing?ic('pause')+'暫停':ic('play')+(done?'重看一次':'播放');
+  $('rpSpeed').textContent=R.speed+'x';
+  if(cap!=null) $('rpCap').textContent=`第 ${R.k} / ${R.ev.length} 步：${cap}`;
+  if(done&&P&&cats.size===P.n){ boardEl.classList.add('done'); if(cap!=null) $('rpCap').textContent=`第 ${R.k} / ${R.ev.length} 步：全部就位，解開了！`; }
+}
+function rpGo(k){
+  const R=replay; R.k=Math.max(0,Math.min(R.ev.length,k)); rpBlank(); let cap='';
+  for(let j=0;j<R.k;j++) cap=rpApply(R.ev[j],false);
+  rpRender(R.k?cap:null); if(!R.k) $('rpCap').textContent='還沒開始';
+}
+function rpStep(){
+  const R=replay; if(!R||!P||R.k>=R.ev.length) return false;
+  boardEl.querySelectorAll('.hint').forEach(e=>e.classList.remove('hint'));
+  const cap=rpApply(R.ev[R.k],true); R.k++; rpRender(cap); return true;
+}
+function rpLoop(){
+  const R=replay; if(!R||!R.playing) return;
+  if(R.k>=R.ev.length){ R.playing=false; rpRender(); return; }
+  const wait=Math.min(1800,Math.max(350,R.ev[R.k].d*100))/R.speed;
+  R.timer=setTimeout(()=>{ if(!replay||!R.playing) return; rpStep(); rpLoop(); },wait);
+}
+function rpPause(){ if(!replay) return; replay.playing=false; clearTimeout(replay.timer); rpRender(); }
+$('rpPlay').onclick=()=>{ const R=replay; if(!R||!P) return;
+  if(R.playing){ rpPause(); return; }
+  if(R.k>=R.ev.length) rpGo(0);
+  R.playing=true; rpRender(); rpLoop(); };
+$('rpNext').onclick=()=>{ if(!replay||!P) return; rpPause(); rpStep(); };
+$('rpPrev').onclick=()=>{ if(!replay||!P) return; rpPause(); rpGo(replay.k-1); };
+$('rpSpeed').onclick=()=>{ if(!replay) return; replay.speed=replay.speed===1?2:replay.speed===2?4:1; rpRender(); if(replay.playing){ clearTimeout(replay.timer); rpLoop(); } };
+$('rpSeek').oninput=()=>{ if(!replay||!P) return; const k=+$('rpSeek').value; rpPause(); rpGo(k); };
+$('rpTry').onclick=()=>{ const c=replay&&replay.code; exitReplay(); if(c) startGame({type:'code',code:c}); };
+$('rpHome').onclick=()=>{ exitReplay(); goHome(); };
+
 refreshHome(); refreshToggles(); showScreen('home');
+{ const R=parseReplay(); if(R) startReplay(R); }
 </script>
