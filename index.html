@@ -1291,6 +1291,8 @@ const Sound=(function(){
 const SAVE_KEY='cat-territory-v1';
 let save={level:1,best:{},daily:{},auto:true,wins:0,music:true,sfx:true};
 try{Object.assign(save,JSON.parse(localStorage.getItem(SAVE_KEY))||{});}catch(e){}
+// 進度欄位（關卡、時間、星星、商店與小窩）；save.owner = 這份進度屬於哪個帳號
+function clearProg(){ save.level=1; save.levels={}; save.best={}; save.daily={}; save.wins=0; save.stars={}; save.shop={}; }
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catch(e){}}
 
 /* ===================== 畫面切換與面板 ===================== */
@@ -1904,7 +1906,7 @@ function startGame(m){
     if(!m.code) m.code=m.level<=MAX_LEVEL?levelCode(m.level):codeOf(10,2+Math.floor(Math.random()*2),Math.floor(Math.random()*10000));
     info=parseCode(m.code); title=`第 ${m.level} 關 · ${info.n}×${info.n} · ${DIFF_NAME[info.d]}`;
   }else if(m.type==='daily'){
-    m.code=codeOf(8,2,hashStr('daily-'+m.date)%10000); info=parseCode(m.code);
+    m.code=dailyCode(m.date); info=parseCode(m.code);
     title=`每日挑戰 · ${+m.date.slice(5,7)}/${+m.date.slice(8)}`;
   }else{
     if(!m.code) m.code=codeOf(m.size,m.diff,Math.floor(Math.random()*10000));
@@ -1920,7 +1922,7 @@ function startGame(m){
     if(!p||mode!==m) return;
     P=p; resetBoard();
     $('loading').hidden=true; boardEl.style.visibility='';
-  }),40);
+  }).catch(()=>{ if(mode!==m) return; $('loading').hidden=true; goHome(); setTimeout(()=>alert('出題失敗了，請再試一次。'),100); }),40);
 }
 /* ===================== 操作軌跡：記下每一步，過關後可以分享成重播連結 =====================
    每一步 5 個字：種類 1 字 + 格子 2 字（36 進位）+ 距離上一步的時間 2 字（0.1 秒，36 進位）
@@ -2099,7 +2101,7 @@ function win(){
     $('winOnline').textContent='';
     up.then(res=>{
       const el=$('winOnline');
-      if(res.status==='ok') el.innerHTML=`${res.improved?'已上傳排行榜':'沒有超過你這題的最高分'} · 總分 ${res.total} · <button id="winRank">看這題排名</button>`;
+      if(res.status==='ok') el.innerHTML=`${res.improved?'已上傳排行榜':'沒有超過你這題的最高分'} · 總分 ${numOf(res.total)} · <button id="winRank">看這題排名</button>`;
       else if(res.status==='guest') el.innerHTML=Online.failed?'排行榜只在 GitHub 版網頁可以用':'<button id="winLogin">登入</button>後，成績才會上排行榜';
       else el.textContent='成績上傳失敗，請檢查網路';
       const wr=$('winRank'); if(wr) wr.onclick=()=>{ $('rankSheet').dataset.back='winSheet'; openRank(mode.type==='daily'?'daily':'code',mode.code); };
@@ -2345,13 +2347,19 @@ Online.init=function(){
       Online.A=authM; Online.F=fsM; Online.auth=authM.getAuth(app); Online.db=fsM.getFirestore(app);
       Online.ready=true;
       authM.onAuthStateChanged(Online.auth,async u=>{
+        const tok=Online.authTok=(Online.authTok||0)+1;   // 帳號切換時，舊的讀取結果作廢
         Online.user=u; Online.me=null; Friends.out=new Map(); Friends.inc=new Map(); Friends.ok=false; Friends.err=''; updateFriendBadge();
         if(u){
+          if(save.owner&&save.owner!==u.uid){ clearProg(); persist(); if(typeof refreshHome==='function') refreshHome(); }
+          let me;
           try{ const s=await fsM.getDoc(fsM.doc(Online.db,'players',u.uid));
-            Online.me=s.exists()?s.data():{name:u.displayName||'玩家',total:0,solved:0,best:{}}; }
-          catch(e){ Online.me={name:u.displayName||'玩家',total:0,solved:0,best:{}}; }
-          Online.me.best=Online.me.best||{};
+            me=s.exists()?s.data():{name:u.displayName||'玩家',total:0,solved:0,best:{}}; }
+          catch(e){ me={name:u.displayName||'玩家',total:0,solved:0,best:{}}; }
+          if(tok!==Online.authTok||!Online.user||Online.user.uid!==u.uid) return;
+          Online.me=me; Online.me.best=Online.me.best||{};
+          save.owner=u.uid; persist();
           await syncProg();
+          if(tok!==Online.authTok) return;
           ensureFriendCode(); loadLinks();
         }
         renderAcct();
@@ -2367,7 +2375,7 @@ async function doRegister(nick,pw){
   await A.updateProfile(cred.user,{displayName:nick});
   const me={name:nick,total:0,solved:0,best:{},prog:progOf(save),fcode:friendCode(cred.user.uid)};
   await F.setDoc(F.doc(Online.db,'players',cred.user.uid),{...me,updated:F.serverTimestamp()},{merge:true});
-  Online.me=me; renderAcct();
+  Online.me=me; save.owner=cred.user.uid; persist(); renderAcct();
 }
 // 進度同步：登入後把「這台裝置」和「雲端」的進度合併（關卡取較遠、時間取較快），兩邊都存成合併後的結果
 function progOf(s){ const sh=s.shop||{}; return {level:s.level||1,levels:s.levels||{},best:s.best||{},daily:s.daily||{},wins:s.wins||0,stars:s.stars||{},
@@ -2400,7 +2408,7 @@ function pushProg(now){
   return new Promise(r=>{ progTimer=setTimeout(()=>go().then(r),800); });
 }
 async function doLogin(nick,pw){ await Online.A.signInWithEmailAndPassword(Online.auth,nickEmail(nick),pw); }
-async function doLogout(){ await Online.A.signOut(Online.auth); }
+async function doLogout(){ await Online.A.signOut(Online.auth); clearProg(); save.owner=null; persist(); refreshHome(); if(typeof renderRoom==='function') try{ renderRoom(); }catch(e){} }
 
 // 過關後上傳：每一題記「最快時間」和「最高分」；總分 = 每一題最高分的加總
 async function submitRun(r){
@@ -2515,6 +2523,7 @@ async function setAllowAdd(on){
   updateFriendBadge();
 }
 const errText=x=>x&&x.message&&!x.code?x.message:(x&&x.code==='permission-denied'?'好友功能還沒開通（資料庫規則需要更新）':'沒有成功，請檢查網路後再試');
+const numOf=v=>{ const n=Number(v); return Number.isFinite(n)?Math.round(n):0; };
 const playerAv=d=>{ const sh=cleanShop(d&&d.prog&&d.prog.shop); return dogSVG(sh.dogs[0]||{b:'mix',f:0},{cls:''}); };
 function friendRow(id,kind){
   const d=Friends.cache.get(id), pr=d&&d.prog||{}, nm=d?esc(d.name||'玩家'):esc((Friends.inc.get(id)||{}).fromName||'玩家');
@@ -2632,7 +2641,7 @@ function renderAcctSheet(mode){
     $('acctTitle').textContent='我的帳號';
     const fc=friendCode(Online.user.uid);
     body.innerHTML=`<div class="me-card"><span class="acct-av">${dogSVG((save.shop&&save.shop.dogs&&save.shop.dogs[0])||{b:'mix',f:0},{cls:''})}</span>
-      <div><div class="nm">${esc(me.name)}</div><div class="sc">總分 <b>${me.total||0}</b> · 上榜題數 ${me.solved||0}</div></div></div>
+      <div><div class="nm">${esc(me.name)}</div><div class="sc">總分 <b>${numOf(me.total)}</b> · 上榜題數 ${numOf(me.solved)}</div></div></div>
       <div class="fcode"><div><div class="lb">我的好友代碼</div><div class="cd">${fc}</div></div><button id="fcCopy">${ic('copy')}複製</button></div>
       <div class="sbtns"><button class="b3d mint" id="acctFriends">${ic('users')}好友</button></div>
       <div class="sbtns"><button class="b3d butter" id="acctRank">${ic('podium')}看排行榜</button></div>
@@ -2696,13 +2705,14 @@ async function renderRank(){
     if(rankTab==='total'){
       const q=F.query(F.collection(Online.db,'players'),F.orderBy('total','desc'),F.limit(50));
       const s=await F.getDocs(q);
-      rows=s.docs.map(d=>({id:d.id,name:d.data().name,val:d.data().total||0,sub:`${d.data().solved||0} 題`,av:playerAv(d.data())})).filter(r=>r.val>0).map(r=>({...r,show:r.val+' 分'}));
+      rows=s.docs.map(d=>({id:d.id,name:d.data().name,val:numOf(d.data().total),sub:`${numOf(d.data().solved)} 題`,av:playerAv(d.data())})).filter(r=>r.val>0).map(r=>({...r,show:r.val+' 分'}));
       head='每一題取你的最高分，全部加起來';
     }else{
       const code=rankTab==='daily'?todayCode():rankCode;
       const s=await F.getDocs(F.query(F.collection(Online.db,'runs'),F.where('code','==',code)));
-      rows=s.docs.map(d=>d.data()).sort((a,b)=>a.bestMs-b.bestMs).slice(0,50)
-        .map(x=>({id:x.uid,name:x.name,show:fmt(x.bestMs),sub:`${x.bestScore} 分`,av:dogSVG({b:'mix',f:hashStr(String(x.uid))%3},{cls:''})}));
+      const since=new Date(); since.setHours(0,0,0,0);
+      rows=s.docs.map(d=>d.data()).filter(x=>rankTab!=='daily'||(x.at&&typeof x.at.toMillis==='function'&&x.at.toMillis()>=since.getTime())).sort((a,b)=>numOf(a.bestMs)-numOf(b.bestMs)).slice(0,50)
+        .map(x=>({id:x.uid,name:x.name,show:fmt(numOf(x.bestMs)),sub:`${numOf(x.bestScore)} 分`,av:dogSVG({b:'mix',f:hashStr(String(x.uid))%3},{cls:''})}));
       head=rankTab==='daily'?`今天的題目（題號 ${fmtCode(code)}），比誰最快`:`題號 ${fmtCode(code)}，比誰最快`;
     }
     if(tok!==rankToken) return;
@@ -2717,7 +2727,8 @@ async function renderRank(){
     body.innerHTML=`<div class="rank-empty">讀不到排行榜（${esc(e.code||'錯誤')}）。<br>如果是第一次使用，可能是資料庫規則還沒設定。</div>`;
   }
 }
-const todayCode=()=>codeOf(8,2,hashStr('daily-'+todayStr())%10000);
+function dailyCode(d){ const [y,mo,dd]=String(d).split('-').map(Number); const k=Math.floor(Date.UTC(y,mo-1,dd)/864e5); return codeOf(8,2,((k*7919+4021)%10000+10000)%10000); }
+const todayCode=()=>dailyCode(todayStr());
 
 $('acctBtn').onclick=openAcct;
 $('acctClose').onclick=()=>{closeSheet('acctSheet');Sound.play('shut');};
@@ -2764,11 +2775,12 @@ $('shareGo').onclick=async()=>{
 
 function parseReplay(){
   const q=new URLSearchParams(location.search), r=q.get('r'); if(!r) return null;
-  const info=parseCode(r.slice(0,6)); if(!info) return null;
+  const info=parseCode(r.slice(0,6)); if(!info) return {bad:true};
   const body=r.slice(6), ev=[];
+  if(!body||!/^([XOCDHJEK][0-9a-z]{4})+$/.test(body)) return {bad:true};
   for(let k=0;k+5<=body.length;k+=5){ const t=body[k]; if(!'XOCDHJEK'.includes(t)) return null;
     const i=parseInt(body.slice(k+1,k+3),36), d=parseInt(body.slice(k+3,k+5),36);
-    if(isNaN(i)||isNaN(d)||i>=info.n*info.n) return null; ev.push({t,i,d}); }
+    if(!(i>=0&&i<info.n*info.n)||!(d>=0)) return {bad:true}; ev.push({t,i,d}); }
   if(!ev.length) return null;
   return {code:info.code,info,ev,note:(q.get('m')||'').slice(0,120),by:(q.get('by')||'').slice(0,20)};
 }
@@ -2787,7 +2799,7 @@ function startReplay(R){
     if(!p||!replay) return;
     P=p; rpGo(0); $('loading').hidden=true; boardEl.style.visibility='';
     $('rpCap').textContent=`共 ${R.ev.length} 步，按「播放」開始看`;
-  });
+  }).catch(()=>{ if(!replay) return; $('loading').hidden=true; exitReplay(); goHome(); setTimeout(()=>alert('重播載入失敗，請再試一次。'),100); });
 }
 function exitReplay(){
   if(!replay) return; clearTimeout(replay.timer); replay=null;
@@ -2853,5 +2865,5 @@ $('rpTry').onclick=()=>{ const c=replay&&replay.code; exitReplay(); if(c) startG
 $('rpHome').onclick=()=>{ exitReplay(); goHome(); };
 
 refreshHome(); refreshToggles(); showScreen('home');
-{ const R=parseReplay(); if(R) startReplay(R); }
+{ const R=parseReplay(); if(R&&R.bad){ try{ history.replaceState(null,'',location.pathname); }catch(e){} setTimeout(()=>alert('這個重播連結不完整或已損壞，請朋友重新分享一次。'),300); } else if(R) startReplay(R); }
 </script>
