@@ -596,6 +596,9 @@
     #game .rpbar .sbtns .b3d{font-size:14px;padding:9px 8px}
     #game .rpbar .rpbtns .b3d{font-size:15px;padding:9px 8px}
   }
+  /* iPhone：整頁固定不捲動，避免最上面的按鈕被推到畫面外 */
+  html{overflow:hidden;overscroll-behavior:none}
+  body{height:100%;height:100dvh;overflow:hidden;overscroll-behavior:none}
 </style>
 
 
@@ -1113,6 +1116,7 @@ function makePuzzle(n,seed){
     setTimeout(()=>{ meta.setAttribute('content',base); window.scrollTo(0,0); fixing=false; },60);
   }
   if(window.visualViewport) visualViewport.addEventListener('resize',()=>setTimeout(unzoom,250));
+  window.addEventListener('scroll',()=>{ if(window.scrollY||window.scrollX) window.scrollTo(0,0); },{passive:true});
 })();
 
 /* ===================== 背景音樂合成器：直接算出整首曲子的聲音資料（在背景執行緒跑，不卡畫面） ===================== */
@@ -1326,7 +1330,7 @@ $('logo').innerHTML=catSVG(0,'');
 $('icDaily').innerHTML=ic('calendar'); $('icFree').innerHTML=ic('grid'); $('playIcon').innerHTML=ic('play');
 $('winCat').innerHTML=catSVG(0,''); $('loseCat').innerHTML=catSVG(3,'');
 
-function showScreen(name){ $('home').hidden=name!=='home'; $('game').hidden=name!=='game'; $('room').hidden=name!=='room'; $('roofs').style.display=name==='home'?'':'none'; document.querySelector('.moon').style.display=name==='home'?'':'none'; }
+function showScreen(name){ try{ window.scrollTo(0,0); document.documentElement.scrollTop=0; document.body.scrollTop=0; }catch(e){} $('home').hidden=name!=='home'; $('game').hidden=name!=='game'; $('room').hidden=name!=='room'; $('roofs').style.display=name==='home'?'':'none'; document.querySelector('.moon').style.display=name==='home'?'':'none'; }
 function openSheet(id){ document.querySelectorAll('.backdrop').forEach(b=>b.hidden=true); $(id).hidden=false; Sound.play('open'); }
 function closeSheet(id){ $(id).hidden=true; }
 
